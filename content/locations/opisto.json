@@ -1,0 +1,25 @@
+{
+  "id": "opisto",
+  "name": "Ryttylä School",
+  "node": "opisto",
+  "description": "The village school. In the evenings the kansalaisopisto runs classes here for every ambition.",
+  "greeting": ["A course catalogue lies on the teacher's desk.", "Somewhere a choir is practising.", "Children's drawings of elk on every wall."],
+  "host": {
+    "name": "Hannele",
+    "title": "evening class teacher",
+    "lines": {
+      "hello": ["Never too late to learn!", "Sit anywhere. Except the back row.", "Homework? Of course there's homework."],
+      "enroll": ["Welcome to the course!", "Wonderful. First lesson is on Monday."],
+      "lesson": ["Good work today.", "You're getting there!", "Excellent question."],
+      "graduate": ["Congratulations! I knew you could do it.", "Well done! Frame that certificate."],
+      "work": ["Thank you, colleague. The class loved it.", "Good lesson. The biscuits in the staff room are communal.", "The pensioners asked for homework. Homework!", "Someone fell asleep in the back row. It happens to the best of us."],
+      "hired": ["Welcome to the staff room. Biscuits are communal."],
+      "broke": ["The course fee is due at enrolment, I'm afraid.", "Come back when you've saved a little."],
+      "refuse": ["One step at a time.", "That's not possible yet."]
+    }
+  },
+  "actions": [
+    { "id": "study", "kind": "courses", "label": "Courses", "time": "params.enrollTime" },
+    { "id": "work", "kind": "work" }
+  ]
+}

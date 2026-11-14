@@ -1,0 +1,854 @@
+/* Everything is laid out in the theme's logical pixel size (default 640x360) and scaled as a whole. */
+:root {
+  --panel: #f3ead2;
+  --panel-dark: #e2d6b5;
+  --border: #3a2a1e;
+  --text: #2a1d14;
+  --muted: #7a6650;
+  --accent: #9e2f22;
+  --good: #2f7d3a;
+  --bad: #b0302a;
+  --highlight: #ffe27a;
+  --ink: #1e1a22;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #121014;
+  overflow: hidden;
+}
+
+#stage {
+  position: absolute;
+  width: 640px;
+  height: 360px;
+  transform-origin: 0 0;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--text);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.loading,
+.fatal {
+  color: #eee;
+  padding: 20px;
+  font-size: 18px;
+}
+.fatal h1 {
+  font-size: 26px;
+  margin: 0 0 10px;
+  color: #ff9b8f;
+}
+.fatal li {
+  margin: 3px 0;
+  font-size: 14px;
+  user-select: text;
+}
+
+canvas.map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ui > .hud,
+.ui > .panel,
+.modal-layer > .backdrop {
+  pointer-events: auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  font-weight: normal;
+}
+h1 {
+  font-size: 34px;
+  color: var(--accent);
+}
+h2 {
+  font-size: 24px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+h3 {
+  font-size: 17px;
+  margin: 6px 0 3px;
+  color: var(--accent);
+}
+p {
+  margin: 3px 0;
+  line-height: 1.05;
+}
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 13px;
+}
+.good {
+  color: var(--good);
+}
+.bad {
+  color: var(--bad);
+}
+
+/* ---------------------------------------------------------------- controls */
+button {
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--text);
+  background: var(--panel-dark);
+  border: 2px solid var(--border);
+  padding: 2px 8px 1px;
+  cursor: pointer;
+  box-shadow:
+    inset -2px -2px 0 rgba(0, 0, 0, 0.15),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.55);
+}
+button:hover:not(:disabled) {
+  background: var(--highlight);
+}
+button:active:not(:disabled) {
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, 0.18),
+    inset -2px -2px 0 rgba(255, 255, 255, 0.4);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+button.primary {
+  background: var(--accent);
+  color: #fff8ec;
+}
+button.primary:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.15);
+}
+button.icon {
+  padding: 0 4px;
+  font-size: 13px;
+  line-height: 13px;
+}
+
+input,
+select {
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: #fffaf0;
+  border: 1px solid var(--border);
+  padding: 0 3px;
+  height: 18px;
+}
+input[type='range'] {
+  accent-color: var(--accent);
+  height: 12px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+input[type='checkbox'] {
+  accent-color: var(--accent);
+  height: 11px;
+  vertical-align: -1px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  vertical-align: 0;
+}
+
+.bar {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 7px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  vertical-align: 1px;
+}
+.bar .fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--good);
+}
+.bar.time .fill {
+  background: var(--accent);
+}
+.bar.done .fill {
+  background: #d9a53a;
+}
+.bar .target {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+}
+
+/* ---------------------------------------------------------------- HUD */
+.hud {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 3px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 6px;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+.hud small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.hud b {
+  font-weight: normal;
+  font-size: 17px;
+}
+.hud .who {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 112px;
+}
+.hud .who .swatch {
+  width: 12px;
+  height: 12px;
+}
+.hud .clock {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 5px;
+  align-items: center;
+}
+.hud .clock small {
+  grid-column: 1 / 3;
+}
+.hud .hudwarn {
+  font-size: 17px;
+  padding: 0 7px;
+  color: #fff;
+  background: var(--bad);
+  animation: hudwarn 1.2s steps(2) infinite;
+}
+@keyframes hudwarn {
+  50% {
+    opacity: 0.55;
+  }
+}
+.hud .btns {
+  margin-left: auto;
+  display: flex;
+  gap: 3px;
+}
+.hud .btns button {
+  font-size: 14px;
+  padding: 2px 5px 1px;
+}
+
+/* ---------------------------------------------------------------- location panel */
+.panel.location {
+  position: absolute;
+  left: 12px;
+  top: 46px;
+  width: 616px;
+  height: 308px;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+.panel .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--border);
+  color: var(--panel);
+  padding: 1px 2px 1px 6px;
+  height: 17px;
+  font-size: 17px;
+}
+/* The name sits over the options column so speech bubbles may rise over the left part. */
+.panel .head .name {
+  margin-left: calc(var(--interior-w, 200px) + 8px);
+}
+.panel .head button.icon {
+  background: var(--panel-dark);
+  border-width: 1px;
+}
+.panel .body {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  min-height: 0;
+}
+.panel .left {
+  width: calc(var(--interior-w, 200px) + 2px);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* The interior with its animated owner and the cartoon speech bubble. */
+.scene {
+  position: relative;
+  flex: none;
+  box-sizing: content-box;
+  border: 1px solid var(--ink);
+  background: var(--panel-dark);
+}
+.scene > img,
+.scene > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.scene > img {
+  width: 100%;
+  height: 100%;
+}
+.scene > img.front {
+  pointer-events: none;
+}
+.scene .no-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 22px;
+  color: var(--muted);
+}
+.speech {
+  position: absolute;
+  z-index: 2;
+  max-width: calc(var(--interior-w, 200px) - 8px);
+  width: max-content;
+  background: #fffdf6;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  padding: 2px 6px 3px;
+  font-size: 15px;
+  line-height: 0.9;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  --tail-x: 20px;
+}
+.speech .who {
+  font-weight: normal;
+  color: var(--accent);
+}
+.speech .rest {
+  visibility: hidden;
+}
+/* The tail: a dark triangle with a light one inside it. */
+.speech::before,
+.speech::after {
+  content: '';
+  position: absolute;
+  left: var(--tail-x);
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.speech::before {
+  bottom: -10px;
+  margin-left: -7px;
+  border-width: 10px 7px 0 7px;
+  border-color: var(--ink) transparent transparent transparent;
+}
+.speech::after {
+  bottom: -6px;
+  margin-left: -4px;
+  border-width: 7px 4px 0 4px;
+  border-color: #fffdf6 transparent transparent transparent;
+}
+.speech.notail::before,
+.speech.notail::after {
+  display: none;
+}
+.speech.pop {
+  animation: speech-pop 0.18s steps(3) both;
+  transform-origin: var(--tail-x) 100%;
+}
+.speech.notail.pop {
+  animation: none;
+}
+@keyframes speech-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Narration: what happened (outside the owner's words). */
+.panel .captions {
+  margin-top: 4px;
+  max-height: 64px;
+  overflow-y: auto;
+  user-select: text;
+}
+.panel .captions:empty {
+  display: none;
+}
+.panel .captions p {
+  margin: 0 0 2px;
+  padding: 1px 5px;
+  font-size: 14px;
+  background: #fff4c9;
+  border: 1px solid var(--ink);
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
+  color: var(--ink);
+}
+.panel .captions p.good {
+  background: #e3f5d6;
+  color: #1f5a28;
+}
+.panel .captions p.bad {
+  background: #fbe0da;
+  color: #8a221c;
+}
+.panel .host-name {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.panel .host-name b {
+  font-weight: normal;
+  color: var(--accent);
+}
+.panel .desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  line-height: 0.95;
+  overflow-y: auto;
+  min-height: 0;
+}
+.panel .options {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+.panel .options h4 {
+  font-size: 13px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 4px 0 1px;
+}
+.panel .options h4:first-child {
+  margin-top: 0;
+}
+.panel .closed {
+  color: var(--muted);
+  padding: 8px 2px;
+}
+button.opt {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: baseline;
+  text-align: left;
+  font-size: 15px;
+  padding: 1px 4px 0;
+  margin: 0 0 2px;
+  border-width: 1px;
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.12);
+}
+button.opt .meta {
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left: 6px;
+  font-size: 13px;
+}
+button.opt.off {
+  opacity: 0.5;
+}
+button.opt.off:hover {
+  background: var(--panel-dark);
+}
+.panel.locked button {
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- tooltip & toast */
+.tooltip {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 1px 5px 2px;
+  font-size: 14px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+.tooltip b {
+  font-weight: normal;
+  font-size: 15px;
+}
+.toast {
+  position: absolute;
+  top: 46px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 440px;
+  background: rgba(24, 18, 26, 0.92);
+  color: #f7f1e3;
+  border: 1px solid #000;
+  border-left: 4px solid var(--highlight);
+  padding: 3px 10px;
+  font-size: 15px;
+}
+.toast.bad {
+  border-left-color: var(--bad);
+}
+
+/* ---------------------------------------------------------------- modals */
+.modal-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 10, 18, 0.45);
+}
+.modal {
+  position: relative;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  box-shadow:
+    0 0 0 2px var(--panel-dark),
+    0 4px 0 2px rgba(0, 0, 0, 0.4);
+  padding: 8px 12px 10px;
+  max-height: 340px;
+  max-width: 600px;
+  min-width: 220px;
+  overflow-y: auto;
+}
+.modal.wide {
+  width: 560px;
+}
+.modal.small {
+  width: 270px;
+}
+.modal > .close {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+.modal .buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+}
+.modal ul {
+  margin: 2px 0;
+  padding-left: 16px;
+}
+.modal li {
+  margin: 1px 0;
+}
+
+.title-screen {
+  width: 320px;
+  text-align: center;
+  padding: 16px 18px;
+}
+.title h1 {
+  font-size: 46px;
+  line-height: 0.9;
+  text-shadow: 2px 2px 0 var(--panel-dark);
+}
+.title .subtitle {
+  color: var(--muted);
+  font-size: 17px;
+  margin: 6px 0 14px;
+}
+.title-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.title-buttons button {
+  width: 170px;
+  font-size: 18px;
+  padding: 3px 0 2px;
+}
+
+.howto p {
+  font-size: 15px;
+}
+
+.confirm p {
+  font-size: 16px;
+}
+
+.handoff-modal {
+  width: 360px;
+  text-align: center;
+}
+.handoff h2 {
+  margin-bottom: 0;
+}
+.handoff .who {
+  font-size: 22px;
+  margin: 2px 0 6px;
+}
+.handoff .who .swatch {
+  width: 13px;
+  height: 13px;
+}
+.handoff .prev {
+  border-bottom: 1px dashed var(--muted);
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+}
+.handoff .prev h3 {
+  margin-top: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+.handoff ul.msgs {
+  text-align: left;
+  list-style: none;
+  padding: 0 4px;
+  font-size: 15px;
+}
+.handoff ul.msgs li::before {
+  content: '› ';
+  color: var(--muted);
+}
+.handoff .buttons {
+  justify-content: center;
+}
+
+/* setup */
+.setup .cols {
+  display: flex;
+  gap: 16px;
+}
+.setup .col-players {
+  width: 280px;
+}
+.setup .col-goals {
+  flex: 1;
+}
+.player-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin: 0 0 3px;
+}
+.player-row input.name {
+  width: 92px;
+}
+.player-row select {
+  width: 136px;
+}
+.swatch-btn {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 2px solid var(--ink);
+}
+.swatch-btn:hover:not(:disabled) {
+  filter: brightness(1.2);
+  background-blend-mode: normal;
+}
+button.add {
+  margin-top: 2px;
+  font-size: 14px;
+}
+.goal-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 24px;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+}
+.goal-row .val {
+  text-align: right;
+}
+label.check {
+  display: block;
+  margin-top: 8px;
+}
+.seed-row {
+  display: block;
+  margin-top: 6px;
+}
+input.seed {
+  width: 110px;
+}
+
+/* status, goals, log */
+.status .cols {
+  display: flex;
+  gap: 18px;
+}
+.status .cols > div {
+  flex: 1;
+}
+table {
+  border-collapse: collapse;
+}
+table.kv th {
+  text-align: left;
+  font-weight: normal;
+  color: var(--muted);
+  padding: 1px 10px 1px 0;
+  white-space: nowrap;
+}
+table.kv td {
+  padding: 1px 0;
+}
+table.kv {
+  margin-bottom: 6px;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 0 20px 6px 0;
+}
+.tabs button {
+  font-size: 14px;
+  padding: 1px 5px;
+}
+.tabs button.active {
+  background: var(--highlight);
+}
+.goal-table th,
+.goal-table td {
+  padding: 3px 6px;
+  text-align: left;
+  font-weight: normal;
+  white-space: nowrap;
+}
+.goal-table tr:first-child th {
+  color: var(--muted);
+}
+.goal-table tr.current th {
+  color: var(--accent);
+}
+.goal-table .bar {
+  width: 82px;
+  height: 9px;
+}
+.log ul {
+  list-style: none;
+  padding: 0;
+}
+.log li {
+  border-bottom: 1px dotted var(--panel-dark);
+  padding: 1px 0;
+}
+.menu .speed {
+  display: flex;
+  gap: 4px;
+}
+.menu-buttons {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 8px;
+}
+.sound-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 4px 10px;
+  align-items: end;
+}
+.sound-controls .vol {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: var(--muted);
+}
+.sound-controls input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+  margin: 2px 0 0;
+}
+.hud .btns button.sound.off {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+pre.error {
+  font-family: inherit;
+  white-space: pre-wrap;
+  color: var(--bad);
+  user-select: text;
+}
+.gameover h1 {
+  margin-bottom: 4px;
+}
+.gameover .goals h2 {
+  display: none;
+}

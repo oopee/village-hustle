@@ -1,0 +1,38 @@
+{
+  "id": "station",
+  "name": "Ryttylä Station",
+  "node": "station",
+  "description": "A yellow wooden station from 1863. Nobody has sold tickets here since the eighties, but the R train still stops on its way to Helsinki.",
+  "greeting": ["The R train to Helsinki is three minutes late.", "Kids are doing tricks at the skate ramp.", "A commuter in a suit sighs at the timetable.", "The underpass smells faintly of spray paint."],
+  "host": {
+    "name": "Pertti",
+    "title": "station regular since 1971",
+    "lines": {
+      "hello": ["The 7:42 was late again. Wrote it down.", "In my day this station had a stationmaster.", "Sit down, the bench is warm.", "Did you know this station opened in 1863?"],
+      "work": ["Off to the big city again? Good for you.", "Back from Helsinki. You look tired."],
+      "day_trip": ["Bring me a doughnut from the market square!", "Mind the seagulls in Helsinki."],
+      "broke": ["Train tickets aren't free, you know.", "Not enough for the ticket? Happens."],
+      "refuse": ["Not today, I think.", "Hmm. No."]
+    }
+  },
+  "actions": [
+    { "id": "work", "kind": "work", "label": "Take the train to work" },
+    {
+      "id": "day_trip", "kind": "basic", "label": "Day trip to Helsinki",
+      "description": "Market square, museums and a bowl of salmon soup.",
+      "time": "params.dayTripTime",
+      "cost": "params.dayTripPrice * world.economy",
+      "requires": [{ "test": "flag('tripWeek') != player.week", "message": "One trip to the city a week is plenty." }],
+      "effects": [
+        { "setFlag": { "tripWeek": "player.week" } },
+        { "add": { "happiness": "params.dayTripJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5" } },
+        { "add": { "funThisWeek": "1" } },
+        { "pick": [
+          { "weight": "1", "do": [{ "message": "A great day in the capital. A seagull stole your doughnut." }] },
+          { "weight": "1", "do": [{ "message": "Market square, a museum and salmon soup in the old market hall." }] },
+          { "weight": "1", "do": [{ "message": "You ride the ferry to Suomenlinna and back. The sea wind clears your head." }] }
+        ] }
+      ]
+    }
+  ]
+}

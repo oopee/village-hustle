@@ -1,0 +1,87 @@
+{
+  "title": "Summer in Ryttylä",
+  "bpm": 96,
+  "meter": 4,
+  "sections": { "A": 8, "A2": 8, "B": 8 },
+  "form": ["A", "A2", "B"],
+  "reverb": { "size": 0.65, "damp": 0.4, "wet": 1 },
+  "master": { "loudness": -20, "warmth": 1.5, "air": 1 },
+  "ambience": [{ "type": "birds", "level": 0.6, "rate": 0.5, "pan": 0.4, "rev": 0.4 }],
+  "tracks": [
+    {
+      "name": "melody-kantele",
+      "inst": "kantele",
+      "notes": {
+        "A": "A4:1/2@0.55 D5 F#5:2! E5:1/2 D5? | E5:1 B4:1.5 C#5:1/2? D5:1 | B4:1.5! A4:1/2? B4:1 D5 | E5:1/2 D5? C#5:1 A4:2 | A4:1/2 D5 F#5:2! A5:1/2 G5? | F#5:1 D5 B4:1/2 C#5? D5:1 | G5:1.5! E5:1/2? C#5:1 E5 | D5:3 r:1"
+      },
+      "vol": 1.8,
+      "pan": -0.1,
+      "rev": 0.3,
+      "opts": { "t60": 2.6 }
+    },
+    {
+      "name": "melody-flute",
+      "inst": "flute",
+      "notes": {
+        "A2": "A4:1/2 D5 F#5:2! E5:1/2 D5? | E5:1 B4:1.5 C#5:1/2? D5:1 | B4:1.5! A4:1/2? B4:1 D5 | E5:1/2 D5? C#5:1 A4:2 | A4:1/2 D5 F#5:2! A5:1/2 G5? | F#5:1 D5 B4:1/2 C#5? D5:1 | G5:1.5! E5:1/2? C#5:1 E5 | D5:2 A4:1 C5:1",
+        "B": "D5:1/2 G5 B5:2! A5:1/2 G5? | A5:1 E5 E5:1/2 F#5? G5:1 | F#5:1.5! E5:1/2? C#5:1 A4 | B4:1/2 C#5? D5 E5? F#5:2! | G5:1.5 F#5:1/2? E5:1 B4 | C#5:1/2 D5? E5:1 A5:2! | B5:1.5 A5:1/2? Bb5:2 | A5:2 G5:1 E5:1/2 C#5?"
+      },
+      "vol": 0.8,
+      "pan": 0.1,
+      "rev": 0.32,
+      "opts": { "vibrato": 0.8 }
+    },
+    {
+      "name": "kantele-arp",
+      "inst": "kantele",
+      "chords": {
+        "A2": "D | Em7 | G | A | D | Bm | Em7:2 A7:2 | D:2 D7:2",
+        "B": "G | A | F#m | Bm | Em7 | A | G:2 Gm:2 | A7sus4:2 A7:2"
+      },
+      "style": "arp",
+      "range": "G3-C5",
+      "vol": 0.5,
+      "pan": -0.4,
+      "rev": 0.3,
+      "opts": { "t60": 2 }
+    },
+    {
+      "name": "strings",
+      "inst": "strings",
+      "chords": {
+        "A": "D | Em7 | G | A | D | Bm | Em7:2 A7:2 | D:4",
+        "A2": "D | Em7 | G | A | D | Bm | Em7:2 A7:2 | D:2 D7:2",
+        "B": "G | A | F#m | Bm | Em7 | A | G:2 Gm:2 | A7sus4:2 A7:2"
+      },
+      "style": "pad",
+      "range": "D3-A4",
+      "vol": 0.26,
+      "pan": 0.3,
+      "rev": 0.35,
+      "opts": { "attack": 0.5, "release": 0.8, "cutoff": 2600 }
+    },
+    {
+      "name": "bass",
+      "inst": "bass",
+      "notes": {
+        "A": "D2:2 A2 | E2 B1 | G2 D2 | A2:2 E2:1 C#2 | D2:2 F#2 | B1 F#2 | E2 A1 | D2:2 F#2:1 A2",
+        "A2": "D2:2 A2 | E2 B1 | G2 D2 | A2:2 E2:1 C#2 | D2:2 F#2 | B1 F#2 | E2 A1 | D2:2 F#2",
+        "B": "G2:2 D2 | A2 E2 | F#2 C#2 | B1 D2 | E2 B1 | A1 E2 | G2 G2 | A1:2 A1:1 C#2"
+      },
+      "vol": 0.85,
+      "rev": 0.08
+    },
+    {
+      "name": "perc",
+      "kit": {
+        "shaker": { "A": "o.x.o.x.o.x.o.x.", "*": "x.o.x.o.x.o.x.o." },
+        "kick": { "A2": "x.......o.......", "B": "x.......x......." },
+        "brush": { "A2": "....x.......x...", "B": "....x.......x..o" }
+      },
+      "mix": { "shaker": 0.5, "kick": 0.7, "brush": 0.6 },
+      "vol": 0.45,
+      "pan": 0.15,
+      "rev": 0.15
+    }
+  ]
+}

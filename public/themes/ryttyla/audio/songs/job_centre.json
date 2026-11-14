@@ -1,0 +1,82 @@
+{
+  "title": "Take a Number (Työkkäri bossa)",
+  "bpm": 126,
+  "meter": 4,
+  "sections": { "A": 8, "A2": 8, "B": 8 },
+  "form": ["A", "A2", "B", "A"],
+  "reverb": { "size": 0.45, "damp": 0.5, "wet": 0.8 },
+  "master": { "loudness": -20, "warmth": 1, "air": 0.5 },
+  "ambience": [
+    { "type": "hum", "level": 0.5 },
+    { "type": "typing", "level": 0.45, "pan": 0.4 }
+  ],
+  "tracks": [
+    {
+      "name": "comp",
+      "inst": "guitar",
+      "chords": {
+        "B": "Bbmaj7:4 | Eb7:4 | Am7:4 | D7:4 | Gm7:4 | Bbm6:4 | Am7:2 D7:2 | Gm7:2 C7:2",
+        "*": "Fmaj7:4 | Gm7:2 C7:2 | Am7:4 | Abdim7:4 | Gm7:4 | C7:4 | Fmaj7:2 D7:2 | Gm7:2 C7:2"
+      },
+      "style": "bossa",
+      "range": "E3-C5",
+      "roll": 0.012,
+      "vol": 0.55,
+      "pan": -0.3,
+      "rev": 0.2,
+      "opts": { "t60": 1.6, "damp": 0.1 }
+    },
+    {
+      "name": "melody",
+      "inst": "vibes",
+      "notes": {
+        "A": "E5:1.5! C5:1 A4:1/2 C5:1 | D5:1.5 Bb4:1 G4:1/2 Bb4:1 | r:1/2 C5? E5:1/2 G5:1.5! E5:1 | F5:1.5 D5:1 B4:1.5 | F5:1.5! D5:1 Bb4:1/2 D5:1 | E5:1.5 C5:1 Bb4:1/2 G4:1 | A4:2 r:1/2 F#4 A4 C5 | Bb4:1.5 D5:1/2 C5:1.5 D5:1/2?",
+        "A2": "E5:1.5! C5:1 A4:1/2 C5:1 | D5:1.5 Bb4:1 G4:1/2 Bb4:1 | r:1/2 C5? E5:1/2 G5:1.5! E5:1 | F5:1.5 D5:1 B4:1.5 | F5:1.5! D5:1 Bb4:1/2 D5:1 | E5:1.5 C5:1 Bb4:1/2 G4:1 | A4:1/2 C5 E5:1 F#5:1 D5:1 | D5:1/2 Bb4 G4:1 C5:1/2? E5 G5:1",
+        "B": "A5:2.5! G5:1/2 F5:1/2 D5:1/2 | Db5:1.5 Eb5:1/2 G5:2 | E5:2.5 C5:1/2 D5:1/2 E5:1/2 | F#5:2 E5:1 D5:1 | D5:1.5! Bb4:1 G4:1/2 Bb4:1 | Db5:1.5 Bb4:1 G4:1/2 Bb4:1 | C5:1 E5:1 F#5:1.5 A5:1/2 | G5:1.5 F5:1/2 E5:1 r:1/2 D5:1/2?"
+      },
+      "vol": 1,
+      "pan": 0.1,
+      "rev": 0.3,
+      "opts": { "damp": 0.35, "trem": 0.35 }
+    },
+    {
+      "name": "counter",
+      "inst": "flute",
+      "notes": {
+        "A2": "E4:4 | F4:2 E4:2 | G4:4 | F4:4 | F4:4 | E4:4 | E4:2 F#4:2 | F4:2 E4:2",
+        "B": "F4:4 | G4:4 | G4:4 | F#4:4 | F4:4 | F4:4 | E4:2 F#4:2 | F4:2 E4:2"
+      },
+      "vol": 0.4,
+      "pan": 0.35,
+      "rev": 0.35,
+      "gate": 0.98,
+      "opts": { "vibrato": 0.5, "breath": 0.06 }
+    },
+    {
+      "name": "bass",
+      "inst": "bass",
+      "chords": {
+        "B": "Bbmaj7:4 | Eb7:4 | Am7:4 | D7:4 | Gm7:4 | Bbm6:4 | Am7:2 D7:2 | Gm7:2 C7:2",
+        "*": "Fmaj7:4 | Gm7:2 C7:2 | Am7:4 | Abdim7:4 | Gm7:4 | C7:4 | Fmaj7:2 D7:2 | Gm7:2 C7:2"
+      },
+      "style": "habanera",
+      "range": "E1-D3",
+      "vol": 0.62,
+      "pan": 0,
+      "rev": 0.08
+    },
+    {
+      "name": "perc",
+      "kit": {
+        "shaker": "2525252525252525",
+        "rim": "x.....x.....x.......x.....x.....",
+        "kick": "x.....x.x.......x.....x.x......."
+      },
+      "res": 4,
+      "mix": { "shaker": 0.45, "rim": 0.5, "kick": 0.45 },
+      "vol": 0.6,
+      "pan": 0.15,
+      "rev": 0.12
+    }
+  ]
+}

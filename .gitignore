@@ -1,0 +1,7 @@
+node_modules/
+dist/
+legacy/
+*.log
+.sim-cache/
+audio-preview/
+playtest/

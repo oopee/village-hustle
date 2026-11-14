@@ -1,0 +1,116 @@
+{
+  "turnStart": [
+    { "set": { "relaxedThisWeek": "0", "funThisWeek": "0", "lessonsThisWeek": "0" } },
+
+    { "if": "food >= 1",
+      "then": [
+        { "add": { "food": "-1" } }, { "set": { "hungryWeeks": "0" } },
+        { "if": "food < 1", "then": [{ "message": "You ate the last of your food over the weekend. Restock before next weekend." }] }
+      ],
+      "else": [
+        { "add": { "hungryWeeks": "1", "health": "-params.hungerHealthLoss", "happiness": "-params.hungerJoyLoss" } },
+        { "time": "-params.hungerTimeLoss" },
+        { "message": "There was no food at home. You spent the weekend hungry and feel weak.", "tone": "bad" }
+      ]
+    },
+
+    { "if": "homeIs('rental_flat')", "then": [
+      { "add": { "rentOwed": "params.rentFlat * world.economy" } },
+      { "if": "rentOwed > params.rentFlat * world.economy * params.evictAfterWeeks",
+        "then": [
+          { "setHome": "parents_house" }, { "moveTo": "parents_house" }, { "set": { "rentOwed": "0" } },
+          { "add": { "happiness": "-params.evictionJoyLoss", "reputation": "-10" } },
+          { "message": "You were evicted for unpaid rent! Back to your parents' place.", "tone": "bad" }
+        ],
+        "else": [
+          { "if": "rentOwed > params.rentFlat * world.economy * 1.5", "then": [{ "message": "A note from the landlady: your rent is overdue.", "tone": "bad" }] }
+        ]
+      }
+    ] },
+
+    { "if": "homeIs('parents_house') && turnsTaken > params.parentsGraceWeeks", "then": [
+      { "add": { "happiness": "-params.parentsNag" } },
+      { "pick": [
+        { "weight": "1", "do": [{ "message": "Dad: \"Still living here, are we?\"" }] },
+        { "weight": "1", "do": [{ "message": "Mom tidied your room again. Your things are 'somewhere safe'." }] },
+        { "weight": "1", "do": [{ "message": "Dad left a printout of flat listings on your pillow." }] },
+        { "weight": "1", "do": [{ "message": "Mom asked, loudly, when the neighbour's boy moved out. Age nineteen, apparently." }] }
+      ] }
+    ] },
+
+    { "if": "best('clothing') == 0", "then": [
+      { "add": { "happiness": "-params.noClothesJoyLoss", "reputation": "-2" } },
+      { "message": "You have nothing decent to wear.", "tone": "bad" }
+    ] },
+
+    { "if": "stress >= params.stressThreshold", "then": [
+      { "add": { "happiness": "-params.stressJoyLoss", "health": "-params.stressHealthLoss" } },
+      { "message": "Too much work and too little rest: you feel worn out. Rest at home or go to the sauna.", "tone": "bad" }
+    ] },
+    { "add": { "stress": "-params.stressRecovery" } },
+
+    { "add": { "happiness": "-params.happinessDecay - happiness * params.happinessDrift" } },
+    { "set": { "moodLastWeek": "moodThisWeek" } },
+    { "set": { "moodThisWeek": "happiness" } },
+    { "add": { "savings": "floor(savings * params.interestRate)" } },
+    { "if": "health < params.healthRecoveryCap", "then": [{ "add": { "health": "params.healthRecovery" } }] }
+  ],
+
+  "weekEnd": [
+    { "setWorld": { "economy": "clamp(world.economy + (rnd() - 0.5) * params.economyVolatility + (1 - world.economy) * params.economyPull, params.economyMin, params.economyMax)" } }
+  ],
+
+  "afterWork": [
+    { "add": { "experience": "hours / 8", "stress": "hours * params.stressPerWorkHour", "reputation": "params.reputationPerShift" } },
+    { "if": "jobLocation() == 'grill'", "then": [{ "setFlag": { "xpGrill": "flag('xpGrill') + hours / 8" } }] },
+    { "if": "jobLocation() == 'sawmill'", "then": [{ "setFlag": { "xpSawmill": "flag('xpSawmill') + hours / 8" } }] },
+    { "if": "jobLocation() == 'village_shop'", "then": [{ "setFlag": { "xpShop": "flag('xpShop') + hours / 8" } }] },
+    { "if": "jobLocation() == 'library'", "then": [{ "setFlag": { "xpLibrary": "flag('xpLibrary') + hours / 8" } }] },
+    { "if": "jobLocation() == 'bank'", "then": [{ "setFlag": { "xpBank": "flag('xpBank') + hours / 8" } }] }
+  ],
+
+  "afterLesson": [
+    { "chance": "knowledge / 100 * params.knowledgeBonusChance + (has('computer') ? params.computerBonusChance : 0)",
+      "then": [{ "let": { "gain": "2" } }] },
+    { "add": { "knowledge": "1", "stress": "params.stressPerLesson", "lessonsThisWeek": "1" } }
+  ],
+
+  "afterMove": [],
+
+  "lessonRequires": [
+    { "test": "lessonsThisWeek < params.maxLessonsPerWeek", "message": "Your head is full. No more lessons this week." }
+  ],
+
+  "turnEndChecks": [
+    { "test": "food >= 1", "message": "There is no food at home. You will go hungry this weekend." },
+    { "test": "!homeIs('rental_flat') || rentOwed < params.rentFlat * world.economy * 2", "message": "Your rent is overdue, and the landlady is losing patience." }
+  ],
+
+  "hints": [
+    "Employers notice who shows up reliably.",
+    "Managers are picked from their own staff. Shifts at another workplace don't count for that.",
+    "Long work weeks pile up stress. Past a point you wear out: rest, sauna or a lighter week helps.",
+    "A well-rested mind learns faster. So does a well-read one.",
+    "Better clothes open more doors than you would think.",
+    "Money in your pocket attracts the wrong kind of attention.",
+    "Nobody stays happy without a little sauna now and then.",
+    "Living with your parents is cheap, but it wears on you.",
+    "The city pays well, if you have the papers for it.",
+    "Stay too long in one job and someone upstairs may notice you.",
+    "Prices go up and down with the times. So do wages.",
+    "Never skip meals. A hungry week is a wasted week.",
+    "Old-timers say the furniture factory always needs strong hands.",
+    "A summer without a dance at the lava is a summer wasted.",
+    "Everyone ends up at the Trokari sooner or later. Even me.",
+    "Nobody can cram a whole course into one week. Plan for the long haul.",
+    "Appliances lose value the day you carry them home. Land and houses hold theirs.",
+    "The best jobs in the village have only one desk. Somebody else may get there first.",
+    "Happiness fades a little every week, and the happier you are, the faster it fades.",
+    "Money in the bank is safe from pickpockets, and it grows a little.",
+    "An evening with Pekki makes anyone's life look good by comparison.",
+    "Matti says a coffee break is the best medicine for a hard week. Matti is usually right.",
+    "Olli is insufferable, but you'll learn more from him than from any book.",
+    "Never split a bill with Juho. But do let him look at your savings.",
+    "Pellinen's door is always open. The curtains, never."
+  ]
+}

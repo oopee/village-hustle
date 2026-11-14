@@ -1,0 +1,56 @@
+{
+  "id": "parents_house",
+  "name": "Parents' House",
+  "node": "parents_house",
+  "description": "The falu-red house you grew up in. Your childhood room still has the ice hockey posters.",
+  "greeting": ["The cat ignores you, as usual.", "The coffee pot is always on.", "Dad is fixing the moped in the yard. Again."],
+  "host": {
+    "name": "Mom",
+    "title": "your mother",
+    "lines": {
+      "hello": ["Have you eaten? There's soup.", "Oh, it's you! Take your shoes off.", "Your father wants to talk about your future. Run.", "Did you remember your hat? It's cold out."],
+      "relax": ["Have a nap, I'll bring coffee.", "Rest, kulta. You look tired."],
+      "eat_soup": ["Have you thought about a real career?", "Eat, eat. You're too thin.", "There's more in the pot. And more advice."],
+      "move_back": ["Your room is just as you left it!", "Welcome home. House rules still apply."],
+      "refuse": ["Not now, kulta.", "You know that's not how it works."]
+    }
+  },
+  "actions": [
+    {
+      "id": "relax", "kind": "basic", "label": "Relax in your old room",
+      "description": "Rest and recharge. Mom will bring coffee.",
+      "visible": "homeIs('parents_house')",
+      "time": "params.relaxTime",
+      "requires": [{ "test": "relaxedThisWeek < 1", "message": "You already rested this week." }],
+      "effects": [
+        { "add": { "happiness": "params.relaxJoyParents", "stress": "-params.relaxStressRelief", "relaxedThisWeek": "1" } },
+        { "message": "You nap, read old Aku Ankka comics and feel a bit better." }
+      ]
+    },
+    {
+      "id": "eat_soup", "kind": "basic", "label": "Eat Mom's soup",
+      "description": "Free food, served with a side of life advice. Mom feeds visitors too, once a week, and they have to stay for coffee.",
+      "time": "homeIs('parents_house') ? 1 : params.soupVisitTime",
+      "requires": [
+        { "test": "food < statMax('food')", "message": "You are already full." },
+        { "test": "homeIs('parents_house') || flag('soupWeek') != player.week", "message": "Mom already fed you this week. \"Do you even buy groceries?\"" }
+      ],
+      "effects": [
+        { "add": { "food": "1", "happiness": "-params.parentsAdviceCost" } },
+        { "if": "homeIs('parents_house')",
+          "then": [{ "message": "Salmon soup and rye bread. And a lecture." }],
+          "else": [{ "setFlag": { "soupWeek": "player.week" } }, { "message": "Salmon soup, rye bread, three cups of coffee and the whole family news. It takes a while." }] }
+      ]
+    },
+    {
+      "id": "move_back", "kind": "basic", "label": "Move back in",
+      "description": "Free rent. No privacy.",
+      "visible": "!homeIs('parents_house')",
+      "time": "params.movingTime",
+      "effects": [
+        { "setHome": "parents_house" }, { "set": { "rentOwed": "0" } }, { "add": { "happiness": "-5" } },
+        { "message": "You carry your boxes back up the stairs." }
+      ]
+    }
+  ]
+}

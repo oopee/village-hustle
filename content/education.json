@@ -1,0 +1,71 @@
+{
+  "degrees": [
+    { "id": "basic_skills", "name": "Basic Skills certificate", "points": 10 },
+    { "id": "vocational_trade", "name": "Retail & Trade diploma", "points": 15 },
+    { "id": "vocational_tech", "name": "Machinery & Woodworking diploma", "points": 15 },
+    { "id": "business", "name": "Business Administration diploma", "points": 25 },
+    { "id": "healthcare", "name": "Practical Nursing diploma", "points": 25 },
+    { "id": "it", "name": "Software Development diploma", "points": 30 },
+    { "id": "management", "name": "Leadership & Management diploma", "points": 30 },
+    { "id": "nursing_adv", "name": "Registered Nurse degree", "points": 30 },
+    { "id": "pedagogy", "name": "Teacher Training diploma", "points": 25 }
+  ],
+  "courses": [
+    {
+      "id": "c_basic", "name": "Basic Skills", "location": "opisto", "degree": "basic_skills",
+      "description": "Brush up on reading, writing and maths.",
+      "fee": "params.fee_basic", "lessons": "params.lessons_basic", "lessonTime": "params.lessonTime"
+    },
+    {
+      "id": "c_trade", "name": "Retail & Trade", "location": "opisto", "degree": "vocational_trade",
+      "description": "Customer service, stock keeping and cash handling.",
+      "fee": "params.fee_vocational", "lessons": "params.lessons_vocational", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degree('basic_skills')", "message": "Complete Basic Skills first." }]
+    },
+    {
+      "id": "c_tech", "name": "Machinery & Woodworking", "location": "opisto", "degree": "vocational_tech",
+      "description": "Safe operation of industrial machinery.",
+      "fee": "params.fee_vocational", "lessons": "params.lessons_vocational", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degree('basic_skills')", "message": "Complete Basic Skills first." }]
+    },
+    {
+      "id": "c_business", "name": "Business Administration", "location": "opisto", "degree": "business",
+      "description": "Accounting, marketing and spreadsheets.",
+      "fee": "params.fee_business", "lessons": "params.lessons_business", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degree('basic_skills')", "message": "Complete Basic Skills first." }]
+    },
+    {
+      "id": "c_it", "name": "Software Development", "location": "opisto", "degree": "it",
+      "description": "Learn to program. Bring your own computer.",
+      "fee": "params.fee_it", "lessons": "params.lessons_it", "lessonTime": "params.lessonTime",
+      "requires": [
+        { "test": "degree('basic_skills')", "message": "Complete Basic Skills first." },
+        { "test": "has('computer')", "message": "You need your own computer for this course." }
+      ]
+    },
+    {
+      "id": "c_management", "name": "Leadership & Management", "location": "opisto", "degree": "management",
+      "description": "Leading people and organisations.",
+      "fee": "params.fee_management", "lessons": "params.lessons_management", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degreeCount() >= 2", "message": "You need at least two earlier qualifications." }]
+    },
+    {
+      "id": "c_pedagogy", "name": "Teacher Training", "location": "opisto", "degree": "pedagogy",
+      "description": "How people learn, and how to teach them.",
+      "fee": "params.fee_pedagogy", "lessons": "params.lessons_pedagogy", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degreeCount() >= 3", "message": "You need at least three earlier qualifications." }]
+    },
+    {
+      "id": "c_healthcare", "name": "Practical Nursing", "location": "health_centre", "degree": "healthcare",
+      "description": "Taught on site by the health station staff.",
+      "fee": "params.fee_healthcare", "lessons": "params.lessons_healthcare", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degree('basic_skills')", "message": "Complete Basic Skills at the village school first." }]
+    },
+    {
+      "id": "c_nursing_adv", "name": "Registered Nurse", "location": "health_centre", "degree": "nursing_adv",
+      "description": "Advanced nursing studies.",
+      "fee": "params.fee_nursing_adv", "lessons": "params.lessons_nursing_adv", "lessonTime": "params.lessonTime",
+      "requires": [{ "test": "degree('healthcare')", "message": "Complete Practical Nursing first." }]
+    }
+  ]
+}

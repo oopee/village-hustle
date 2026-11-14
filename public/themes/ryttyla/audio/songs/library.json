@@ -1,0 +1,97 @@
+{
+  "title": "Between the shelves",
+  "bpm": 60,
+  "meter": 4,
+  "sections": { "a1": 4, "a2": 4, "b": 4, "a3": 4 },
+  "form": ["a1", "a2", "b", "a3"],
+  "reverb": { "size": 0.8, "damp": 0.5, "predelay": 0.04, "wet": 1 },
+  "master": { "loudness": -22, "warmth": 1, "air": 0.5 },
+  "ambience": [
+    { "type": "pages", "level": 0.8, "rate": 0.6, "pan": -0.4, "rev": 0.3 },
+    { "type": "clock", "level": 0.7, "opts": { "period": 1 }, "pan": 0.5, "rev": 0.3 }
+  ],
+  "tracks": [
+    {
+      "name": "felt-melody",
+      "inst": "felt",
+      "notes": {
+        "a1": "r:0.02 G5:0.98@0.6 Bb5:1 D6:2! | C6:2 A5:2 | G5:1.5 F5:1/2? Eb5:2 | Eb5:1 F5:1 D5:2",
+        "a2": "G5:1 Bb5:1 D6:2! | C6:1.5 D6:1/2? A5:2 | Bb5:2! F5:1 G5:1 | C6:2 Bb5:2",
+        "a3": "G5:1 Bb5:1 D6:2! | C6:2 A5:2 | G5:1.5 F5:1/2? Eb5:2 | Eb5:1 F5:1 D5:2"
+      },
+      "vol": 1,
+      "pan": 0.1,
+      "rev": 0.4,
+      "opts": { "decay": 4, "bright": 0.4 }
+    },
+    {
+      "name": "harp-tune",
+      "inst": "harp",
+      "notes": {
+        "b": "Eb5:1 G5:1 C6:2! | Bb5:1.5 F5:1/2? D5:2 | D5:1 F5:1 Bb5:2! | Ab5:2 F5:1 D5:1"
+      },
+      "vol": 1.6,
+      "pan": 0.15,
+      "rev": 0.4,
+      "opts": { "t60": 3.5, "bright": 0.6 }
+    },
+    {
+      "name": "harp-arp",
+      "inst": "harp",
+      "chords": {
+        "a1": "Ebmaj7 | F/Eb | Cm7 | Bbsus4:2 Bb:2",
+        "a2": "Ebmaj7 | F/Eb | Gm7 | Abmaj7:2 Bb:2",
+        "a3": "Ebmaj7 | F/Eb | Cm7 | Bbsus4:2 Bb7:2"
+      },
+      "style": "arp",
+      "range": "Eb3-C5",
+      "vel": 0.7,
+      "vol": 0.5,
+      "pan": -0.35,
+      "rev": 0.4,
+      "opts": { "t60": 2.5, "bright": 0.45 }
+    },
+    {
+      "name": "felt-chords",
+      "inst": "felt",
+      "chords": {
+        "b": "Abmaj7 | Bb/Ab | Gm7 | Fm7:2 Bb7:2"
+      },
+      "style": "pad",
+      "range": "Eb3-C5",
+      "roll": 0.04,
+      "vol": 0.3,
+      "pan": -0.25,
+      "rev": 0.4,
+      "opts": { "decay": 4, "bright": 0.3 }
+    },
+    {
+      "name": "felt-bass",
+      "inst": "felt",
+      "notes": {
+        "a1": "r:0.02 Eb2:3.98@0.5 | Eb2:4 | C2:4 | Bb1:4",
+        "a2": "Eb2:4 | Eb2:4 | G1:4 | Ab1:2 Bb1:2",
+        "b": "Ab1:4 | Ab1:4 | G1:4 | F2:2 Bb1:2",
+        "a3": "Eb2:4 | Eb2:4 | C2:4 | Bb1:4"
+      },
+      "vel": 0.75,
+      "vol": 0.7,
+      "pan": -0.05,
+      "rev": 0.3,
+      "opts": { "decay": 5, "bright": 0.25 }
+    },
+    {
+      "name": "air",
+      "inst": "strings",
+      "chords": {
+        "b": "Abmaj7 | Bb/Ab | Gm7 | Fm7:2 Bb7:2"
+      },
+      "style": "pad",
+      "range": "Ab3-Eb5",
+      "vol": 0.14,
+      "pan": 0.4,
+      "rev": 0.6,
+      "opts": { "attack": 1.5, "release": 1.5, "cutoff": 1400 }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "health_centre",
+  "name": "Health Station",
+  "node": "health_centre",
+  "description": "The little village health station. Still open, for now. Bring a book; the wait is long.",
+  "greeting": ["Someone coughs in the waiting room.", "A poster: 'Wash your hands!'", "The number machine is out of paper."],
+  "host": {
+    "name": "Sirpa",
+    "title": "nurse",
+    "lines": {
+      "hello": ["Please take a number and wait.", "Name and date of birth?", "Feeling poorly? Sit down."],
+      "doctor": ["Rest, fluids, and no Trokari this week.", "You'll live. Next!"],
+      "buy": ["A tiny pinch. There, all done.", "Brave! You can have a sticker."],
+      "enroll": ["Welcome to the course. Wash your hands first.", "We need more nurses. Good choice."],
+      "lesson": ["Good. Now do it without fainting.", "You're getting the hang of it."],
+      "graduate": ["Congratulations! Welcome to the profession."],
+      "work": ["Thank you. Long day, wasn't it?", "Good shift. Get some sleep."],
+      "broke": ["The fee is at the counter. Sorry, dear.", "Not enough for the fee, I'm afraid."],
+      "refuse": ["Not possible, I'm afraid.", "The doctor says no."]
+    }
+  },
+  "actions": [
+    {
+      "id": "doctor", "kind": "basic", "label": "See a doctor",
+      "description": "Get checked up and treated.",
+      "time": "params.doctorTime",
+      "cost": "params.doctorPrice",
+      "requires": [{ "test": "health < 100", "message": "You are in perfect health." }],
+      "effects": [
+        { "add": { "health": "params.doctorHeal", "stress": "-3" } },
+        { "message": "The doctor prescribes rest and fluids. You feel better.", "tone": "good" }
+      ]
+    },
+    { "id": "vaccine", "kind": "shop", "label": "Vaccination", "items": ["flu_shot"] },
+    { "id": "study", "kind": "courses", "label": "Nursing courses", "time": "params.enrollTime" },
+    { "id": "work", "kind": "work" }
+  ]
+}

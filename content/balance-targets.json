@@ -1,0 +1,12 @@
+{
+  "games": 60,
+  "players": 4,
+  "randomizeBalance": true,
+  "medianWeeks": { "min": 25, "max": 40 },
+  "unfinishedRate": { "max": 0.05 },
+  "maxProfileWinRatio": { "max": 1.8 },
+  "comebackRate": { "min": 0.2 },
+  "hungryWeeksPerPlayerWeek": { "max": 0.05 },
+  "evictionsPerGame": { "max": 0.5 },
+  "unusedLocations": { "max": 0 }
+}

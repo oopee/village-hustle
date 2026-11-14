@@ -1,0 +1,219 @@
+[
+  {
+    "id": "pekki_call", "weight": "0.6",
+    "effects": [
+      { "time": "-3" }, { "add": { "stress": "3" } },
+      { "message": "Pekki called at three in the morning to talk about the meaning of life. It has none, apparently. You lost a night's sleep.", "tone": "bad" }
+    ]
+  },
+  {
+    "id": "pekki_sober", "weight": "0.3",
+    "effects": [
+      { "add": { "happiness": "3" } },
+      { "message": "Big news at the Trokari: Pekki has been sober for a month and went cross-country skiing. The whole pub cheered. He almost smiled.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "matti_helps", "weight": "0.6",
+    "effects": [
+      { "time": "3" }, { "add": { "happiness": "2" } },
+      { "message": "Matti saw you carrying boxes and helped without being asked. \"That's what neighbours are for!\" You saved hours.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "olli_bus_stop", "weight": "0.6",
+    "effects": [
+      { "time": "-2" }, { "add": { "stress": "3" } },
+      { "message": "Olli cornered you at the bus stop to explain his new app. It took two hours. It is a to-do list.", "tone": "bad" }
+    ]
+  },
+  {
+    "id": "olli_linux", "weight": "0.5",
+    "requires": "has('computer')",
+    "effects": [
+      { "add": { "knowledge": "3", "happiness": "-2" } },
+      { "message": "Olli \"fixed\" your computer while you were out. It now runs Linux. It's faster, and he will tell the whole village about it.", "tone": "bad" }
+    ]
+  },
+  {
+    "id": "juho_bill", "weight": "0.6",
+    "requires": "money > 30",
+    "effects": [
+      { "let": { "owed": "randInt(6, 14)" } },
+      { "add": { "money": "-owed" } },
+      { "message": "You split a pizza bill with Juho. By his spreadsheet you owe €{owed}. You only had a salad. You're still not sure how he did it.", "tone": "bad" }
+    ]
+  },
+  {
+    "id": "juho_repays", "weight": "0.3",
+    "effects": [
+      { "add": { "money": "20" } },
+      { "message": "Juho paid back the €20 you lent him in the spring, plus 37 cents of interest, counted out in coins. He wants a receipt.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "pellinen_pizza", "weight": "0.5",
+    "requires": "food < statMax('food')",
+    "effects": [
+      { "add": { "food": "1" } },
+      { "message": "Pellinen's pizza delivery came to your door by mistake. \"Keep it,\" he messaged. \"I ordered three.\"", "tone": "good" }
+    ]
+  },
+  {
+    "id": "pellinen_job", "weight": "0.3",
+    "effects": [
+      { "add": { "happiness": "1" } },
+      { "message": "Pellinen got a job testing games in Helsinki! He quit after one day. \"The commute had no save points.\"" }
+    ]
+  },
+  {
+    "id": "pickpocket", "weight": "min(params.robberyWeightMax, 3 * money / params.robberyThreshold)",
+    "requires": "money > params.robberyThreshold",
+    "effects": [
+      { "let": { "lost": "floor(money * params.robberyFraction)" } },
+      { "add": { "money": "-lost", "happiness": "-5" } },
+      { "message": "Somebody lifted your fat wallet on the way home. You lost €{lost}. Should have used the bank.", "tone": "bad" }
+    ]
+  },
+  {
+    "id": "found_money", "weight": "1",
+    "effects": [
+      { "let": { "found": "randInt(10, 40)" } },
+      { "add": { "money": "found" } },
+      { "message": "You found €{found} in an old jacket pocket.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "flu", "weight": "has('flu_shot') ? 0.3 : 2 + stress / 25",
+    "effects": [
+      { "add": { "health": "-params.fluHealthLoss", "happiness": "-3" } },
+      { "time": "-params.fluTimeLoss" },
+      { "if": "has('flu_shot')",
+        "then": [{ "message": "You caught the flu anyway, but the shot kept it short.", "tone": "bad" }],
+        "else": [{ "if": "stress > 40",
+          "then": [{ "message": "Run down from all that work, you caught the flu and spent days in bed.", "tone": "bad" }],
+          "else": [{ "message": "You caught the flu and spent days in bed. Half the village has it.", "tone": "bad" }] }] }
+    ]
+  },
+  {
+    "id": "tax_refund", "weight": "1",
+    "requires": "experience > 5",
+    "effects": [
+      { "let": { "refund": "randInt(50, 200)" } },
+      { "add": { "savings": "refund" } },
+      { "message": "Tax refund! €{refund} landed in your bank account.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "summer_cottage_invite", "weight": "1.5",
+    "effects": [
+      { "add": { "happiness": "6", "stress": "-10" } },
+      { "message": "Friends invited you to their summer cottage for the weekend. Sauna, lake, grilled sausages.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "bike_stolen", "weight": "0.5",
+    "requires": "has('bicycle') && itemAge('bicycle') > 6",
+    "effects": [{ "take": "bicycle" }, { "add": { "happiness": "-6" } }, { "message": "Your bicycle was stolen from the rack outside your building. Only the lock is left.", "tone": "bad" }]
+  },
+  {
+    "id": "tv_broke", "weight": "0.7",
+    "requires": "has('tv') && itemAge('tv') > 20",
+    "effects": [{ "take": "tv" }, { "add": { "happiness": "-4" } }, { "message": "Your TV died during the hockey final. Unforgivable.", "tone": "bad" }]
+  },
+  {
+    "id": "rain_ruins_clothes", "weight": "0.8",
+    "requires": "best('clothing') >= 2",
+    "effects": [{ "call": "damageBestClothes" }]
+  },
+  {
+    "id": "work_bonus", "weight": "1",
+    "requires": "job != '' && weeksInJob() >= 3",
+    "effects": [
+      { "let": { "bonus": "round(jobWage() * params.bonusHours)" } },
+      { "add": { "money": "bonus", "happiness": "3", "reputation": "3" } },
+      { "message": "Your boss gave you a bonus of €{bonus} for good work!", "tone": "good" }
+    ]
+  },
+  {
+    "id": "layoff", "weight": "world.economy < 0.9 ? 2 : 0.2",
+    "requires": "job != '' && reputation < 40",
+    "effects": [
+      { "setJob": null }, { "add": { "happiness": "-8" } },
+      { "message": "Bad times: you were laid off from your job.", "tone": "bad" }
+    ]
+  },
+  {
+    "id": "neighbour_party", "weight": "1",
+    "effects": [
+      { "add": { "happiness": "4", "health": "-2" } },
+      { "message": "The neighbours threw a crayfish party. You sang drinking songs until 3 a.m." }
+    ]
+  },
+  {
+    "id": "mosquitoes", "weight": "0.8",
+    "effects": [{ "add": { "happiness": "-2" } }, { "message": "A mosquito kept you awake all night." }]
+  },
+  {
+    "id": "berry_season", "weight": "1",
+    "effects": [
+      { "add": { "money": "params.berryMoney", "happiness": "3" } },
+      { "message": "You picked blueberries on Pirttisaari hill and sold the extra buckets.", "tone": "good" }
+    ]
+  },
+  {
+    "id": "snowstorm", "weight": "1",
+    "effects": [{ "time": "-params.snowstormTimeLoss" }, { "message": "A snowstorm! You spent hours shovelling, and the R train was cancelled anyway.", "tone": "bad" }]
+  },
+  {
+    "id": "kela_letter", "weight": "0.8",
+    "effects": [{ "time": "-2" }, { "add": { "happiness": "-1" } }, { "message": "A brown envelope from Kela. You spent an afternoon on the phone queue to understand it." }]
+  },
+  {
+    "id": "talkoot", "weight": "0.8",
+    "effects": [{ "time": "-4" }, { "add": { "happiness": "3", "reputation": "2" } }, { "message": "Village talkoot! You helped paint the kylätalo fence. There was coffee and pulla.", "tone": "good" }]
+  },
+  {
+    "id": "elk_on_tracks", "weight": "0.5",
+    "requires": "job == 'office_trainee' || job == 'it_consultant'",
+    "effects": [{ "time": "-3" }, { "message": "An elk on the tracks near Hikiä. The R train stood still for an hour." }]
+  },
+  {
+    "id": "grandma_gift", "weight": "0.8",
+    "requires": "money < 100",
+    "effects": [{ "add": { "money": "50", "happiness": "2" } }, { "message": "Grandma sent €50 in a birthday card, three months late.", "tone": "good" }]
+  },
+  {
+    "id": "overtime", "weight": "1",
+    "requires": "job != '' && weeksInJob() >= 4",
+    "effects": [
+      { "let": { "extra": "round(jobWage() * params.overtimeHours * 1.5)" } },
+      { "time": "-params.overtimeHours" }, { "add": { "money": "extra", "experience": "1", "stress": "5" } },
+      { "message": "A colleague called in sick and you covered their weekend shift. Overtime pay: €{extra}." }
+    ]
+  },
+  {
+    "id": "pipe_burst", "weight": "0.6",
+    "requires": "homeIs('rental_flat')",
+    "effects": [{ "time": "-3" }, { "add": { "happiness": "-2" } }, { "message": "A pipe burst upstairs. You spent the morning with buckets while the landlady phoned a plumber.", "tone": "bad" }]
+  },
+  {
+    "id": "apple_harvest", "weight": "1",
+    "requires": "has('cottage_deed')",
+    "effects": [{ "add": { "money": "params.appleMoney", "happiness": "3" } }, { "message": "The cottage apple tree is heavy with fruit. You sell crates of apples at the roadside.", "tone": "good" }]
+  },
+  {
+    "id": "hockey_gold", "weight": "0.4",
+    "effects": [{ "add": { "happiness": "5" } }, { "message": "Finland won the ice hockey world championship! The whole village celebrates in the Trokari yard.", "tone": "good" }]
+  },
+  {
+    "id": "local_paper", "weight": "0.6",
+    "requires": "job != '' && jobCareer() >= 45 && weeksInJob() >= 6",
+    "effects": [{ "add": { "reputation": "5", "happiness": "3" } }, { "message": "The local paper ran a story about you and your work. Your mother bought ten copies.", "tone": "good" }]
+  },
+  {
+    "id": "study_group", "weight": "0.8",
+    "requires": "enrolled()",
+    "effects": [{ "add": { "knowledge": "5" } }, { "message": "Your classmates started a study group at the library. Your notes are much better now.", "tone": "good" }]
+  }
+]

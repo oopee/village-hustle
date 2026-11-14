@@ -1,0 +1,49 @@
+{
+  "id": "sauna",
+  "name": "Ykslammi Beach",
+  "node": "sauna",
+  "description": "The village beach on Ykslammi: a smoke sauna, a pier, a lean-to with a fire ring. In winter there's a hole in the ice for the brave.",
+  "greeting": ["Steam rolls off the pier.", "Someone is already in the lake, howling.", "A disc golf frisbee lands in the reeds.", "The fire is going at the laavu."],
+  "host": {
+    "name": "Kalevi",
+    "title": "sauna warden",
+    "lines": {
+      "hello": ["The stove's been heating since morning.", "Leave your worries in the changing room.", "Water's lovely. Lovely cold."],
+      "sauna": ["More löyly? More löyly!", "Now that's a proper sauna.", "Don't forget the cold dip."],
+      "swim": ["Brave! Your lips are blue.", "That's the spirit!"],
+      "sausage": ["Sausage after sauna. The only way.", "Mustard's by the fire."],
+      "broke": ["The sauna fee goes in the tin. You're short.", "A few coins short, friend."],
+      "refuse": ["Easy now. Once a week is plenty.", "Your skin is still pink! Next week."]
+    }
+  },
+  "actions": [
+    {
+      "id": "sauna", "kind": "basic", "label": "Bathe in the smoke sauna",
+      "description": "Smoke sauna, cold lake, repeat.",
+      "time": "params.saunaTime",
+      "cost": "params.saunaPrice",
+      "requires": [{ "test": "flag('saunaWeek') != player.week", "message": "Your skin is still pink from the last round. Come back next week." }],
+      "effects": [
+        { "setFlag": { "saunaWeek": "player.week" } },
+        { "add": { "happiness": "params.saunaJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-params.saunaStressRelief", "health": "1" } },
+        { "add": { "funThisWeek": "1" } },
+        { "message": "Löyly hisses on the stones. All worries melt away.", "tone": "good" }
+      ]
+    },
+    {
+      "id": "swim", "kind": "basic", "label": "Swim in Ykslammi",
+      "description": "Free, refreshing, occasionally freezing.",
+      "time": "params.swimTime",
+      "requires": [{ "test": "flag('swimWeek') != player.week", "message": "Once a week is plenty in water this cold." }],
+      "effects": [{ "setFlag": { "swimWeek": "player.week" } }, { "add": { "happiness": "params.swimJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-2", "health": "1" } }, { "add": { "funThisWeek": "1" } }, { "message": "Brrr! But you feel alive." }]
+    },
+    {
+      "id": "sausage", "kind": "basic", "label": "Grill a sausage at the laavu",
+      "time": "1",
+      "cost": "params.saunaSausagePrice",
+      "visible": "flag('saunaWeek') == player.week",
+      "requires": [{ "test": "flag('sausageWeek') != player.week", "message": "One sausage is tradition. Two is just lunch." }],
+      "effects": [{ "setFlag": { "sausageWeek": "player.week" } }, { "add": { "happiness": "2 * 1 / (1 + funThisWeek * params.funFatigue)" } }, { "message": "Nothing beats a sausage after sauna." }]
+    }
+  ]
+}

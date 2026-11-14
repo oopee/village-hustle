@@ -1,0 +1,48 @@
+{
+  "id": "sawmill",
+  "name": "Furniture Factory",
+  "node": "sawmill",
+  "description": "Ryttylä has made furniture for a hundred years. The factory's wooden tower was an air-raid lookout during the war.",
+  "greeting": ["The planer screams. Then silence.", "Sawdust everywhere.", "A truck backs up, beeping.", "Rows of half-finished chairs wait for their legs."],
+  "host": {
+    "name": "Masa",
+    "title": "foreman",
+    "lines": {
+      "hello": ["Safety boots on? Good.", "Hands where I can see them. Near the saw, I mean.", "We've got an order of two hundred chairs. Get to it."],
+      "work": ["Decent shift. All fingers accounted for?", "Good work. Coffee break at nine sharp.", "Not bad. My father would've been faster."],
+      "firewood": ["There's always more wood. Cash at the end.", "Stack it neatly, this isn't Sweden."],
+      "hired": ["You're on the crew. Don't touch the big saw yet."],
+      "matti": ["Matti's my best man. Don't tell him, he'll ask for a raise. No, he won't. That's Matti.", "If everyone worked like Matti, we'd run out of trees.", "Thirty-one years and never a sick day. I don't trust it."],
+      "refuse": ["Not like that. Not in my factory.", "No overalls, no entry.", "You'd hurt yourself."]
+    }
+  },
+  "actions": [
+    { "id": "work", "kind": "work" },
+    {
+      "id": "firewood", "kind": "basic", "label": "Chop firewood for cash",
+      "description": "Odd jobs, paid in cash.",
+      "time": "params.oddJobTime",
+      "requires": [{ "test": "health >= 30", "message": "You are not in shape for heavy work." }],
+      "effects": [
+        { "add": { "money": "params.oddJobPay * world.economy", "health": "-2", "experience": "1" } },
+        { "message": "Your arms ache, but your wallet is a bit heavier." }
+      ]
+    },
+    {
+      "id": "matti", "kind": "basic", "label": "Coffee break with Matti",
+      "description": "Matti has worked here for thirty-one years and still whistles on his way in. His good mood is contagious.",
+      "time": "params.mattiTime",
+      "requires": [{ "test": "flag('mattiWeek') != player.week", "message": "Matti is back at work. \"Breaks are earned, friend!\" Come back next week." }],
+      "effects": [
+        { "setFlag": { "mattiWeek": "player.week" } },
+        { "add": { "stress": "-params.mattiStressRelief", "happiness": "1", "reputation": "1" } },
+        { "pick": [
+          { "weight": "1", "do": [{ "message": "Matti: \"Honest work, honest pay and coffee from a thermos. What more does a man need?\"" }] },
+          { "weight": "1", "do": [{ "message": "Matti: \"Monday is just Friday's little brother!\" He means it, every word." }] },
+          { "weight": "1", "do": [{ "message": "Matti pours you coffee. \"Things are always looking up. Unless you're on the roof, then look down.\"" }] },
+          { "weight": "1", "do": [{ "message": "Matti shows you photos of his grandchildren, his boat and a very straight stack of planks he is proud of." }] }
+        ] }
+      ]
+    }
+  ]
+}

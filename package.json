@@ -1,0 +1,32 @@
+{
+  "name": "village-hustle",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Hot-seat life-sim board game for the browser. Data-driven rules, swappable pixel-art themes.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "tsx src/tools/validate-cli.ts",
+    "sim": "tsx src/tools/sim-cli.ts",
+    "tune": "tsx src/tools/tune-cli.ts",
+    "diag": "tsx src/tools/diag-cli.ts",
+    "art": "tsx tools/gen-art.ts",
+    "audio": "tsx src/tools/audio-cli.ts",
+    "play": "tsx src/tools/play-cli.ts"
+  },
+  "dependencies": {
+    "@fontsource/vt323": "5.1.1",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.5",
+    "tsx": "4.19.2",
+    "typescript": "5.7.3",
+    "vite": "5.4.11",
+    "vitest": "2.1.8"
+  }
+}

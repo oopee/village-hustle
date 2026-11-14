@@ -1,0 +1,28 @@
+{
+  "title": "Village Hustle",
+  "subtitle": "Make it big in Ryttylä, a small Finnish village",
+  "theme": "ryttyla",
+  "currency": "€",
+  "timeUnit": "h",
+  "players": { "min": 1, "max": 8 },
+  "turnTime": "params.hoursPerWeek - (health < params.lowHealthThreshold ? params.lowHealthTimeLoss : 0)",
+  "travelTime": "ceil(distance * (has('bicycle') ? params.bicycleFactor : 1))",
+  "startHome": "parents_house",
+  "startStats": {
+    "money": "params.startMoney",
+    "food": "1"
+  },
+  "startItems": { "clothes_casual": 1 },
+  "world": { "economy": 1 },
+  "maxWeeks": 150,
+  "eventChance": "params.eventChance",
+  "maxEnrollments": "params.maxEnrollments",
+  "playerNames": ["Aino", "Eero", "Helmi", "Onni", "Kerttu", "Väinö", "Siiri", "Toivo"],
+  "intro": [
+    "You have just finished school in Ryttylä, a small village by the railway in southern Finland. You live with your parents, own one set of clothes and have a little pocket money.",
+    "Each week you have a limited number of hours. Walk around the village, work, study, shop and rest. Walking takes time too.",
+    "Set your own life goals before the game starts. Reach every goal and keep them all through the weekend to win. When someone does, the others still finish that week, and if several make it, the one furthest past their goals wins.",
+    "Nobody tells you exactly how the village works. Eat every week, keep yourself presentable, look after your health, and listen to the locals: Pirjo at Sale, Rane at the Trokari and the others all have opinions.",
+    "And then there are the regulars. Gloomy Pekki at the Trokari's corner table, ever-cheerful Matti at the furniture factory, Olli the IT guy who lives at the library computer, Juho who counts every cent at the bank, and Pellinen the gamer in the basement flat. Spend time with them, or try to avoid them."
+  ]
+}

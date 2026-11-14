@@ -1,0 +1,49 @@
+{
+  "id": "dance_pavilion",
+  "name": "Kolmilammi Dance Pavilion",
+  "node": "crossroads",
+  "description": "A wooden tanssilava by Kolmilammi pond. Live humppa and tango on summer Sundays, and an ice-cream kiosk by the gate.",
+  "greeting": ["The band is tuning up: accordion, bass, drums.", "Mosquitoes are dancing too.", "\"Naistenhaku!\" Ladies' choice!", "The pond is mirror-still."],
+  "host": {
+    "name": "Arvo",
+    "title": "the pavilion host",
+    "lines": {
+      "hello": ["Welcome to the lava! Tickets here.", "Tonight's band plays tango till midnight.", "Dance shoes? Wellies are fine too."],
+      "buy": ["Enjoy your ice cream!", "One cone, coming up."],
+      "broke": ["Ticket first, then the tango.", "No money, no dance, I'm afraid."],
+      "refuse": ["The band's packing up, come back next week."],
+      "dance": ["You've got rhythm! Mostly.", "Lovely tango. Same time next week?", "Even the accordion player smiled."],
+      "ice_cream": ["Blueberry, the best flavour.", "Eat it before it melts!"]
+    }
+  },
+  "actions": [
+    {
+      "id": "dance", "kind": "basic", "label": "Dance at the lava",
+      "description": "Humppa, tango and a summer night.",
+      "time": "params.danceTime",
+      "cost": "params.dancePrice * world.economy",
+      "requires": [{ "test": "flag('danceWeek') != player.week", "message": "Your feet are still sore. The next dance is next week." }],
+      "effects": [
+        { "setFlag": { "danceWeek": "player.week" } },
+        { "add": { "happiness": "params.danceJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5" } },
+        { "add": { "funThisWeek": "1" } },
+        { "pick": [
+          { "weight": "3", "do": [{ "message": "You dance humppa until your shirt is soaked." }] },
+          { "weight": "1", "do": [{ "message": "Someone asks you for a second tango. Your heart skips.", "tone": "good" }] },
+          { "weight": "1", "do": [{ "message": "You step on three different feet. Nobody minds." }] }
+        ] }
+      ]
+    },
+    {
+      "id": "ice_cream", "kind": "basic", "label": "Ice cream from the kiosk",
+      "time": "1",
+      "cost": "params.iceCreamPrice",
+      "requires": [{ "test": "flag('iceCreamWeek') != player.week", "message": "One cone a week. Doctor's orders." }],
+      "effects": [
+        { "setFlag": { "iceCreamWeek": "player.week" } },
+        { "add": { "happiness": "params.iceCreamJoy" } },
+        { "message": "Blueberry ice cream by the pond. Summer in one cone." }
+      ]
+    }
+  ]
+}

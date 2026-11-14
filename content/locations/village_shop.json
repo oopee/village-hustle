@@ -1,0 +1,26 @@
+{
+  "id": "village_shop",
+  "name": "Sale",
+  "node": "village_shop",
+  "description": "The village's own little Sale at the end of Vanha Kylätie. Groceries, a bakery corner, the scratch-card stand and the bottle return machine.",
+  "greeting": ["The bottle return machine clinks and rattles.", "A bulletin board full of lost cats and tractors for sale.", "Warm pulla smell from the bakery corner.", "Someone is complaining about the price of coffee."],
+  "host": {
+    "name": "Pirjo",
+    "title": "cashier at Sale",
+    "lines": {
+      "hello": ["Päivää! Fresh pulla today.", "Moi moi! Got your bonus card?", "Did you hear about the neighbour's new car? Of course you did.", "Bag? It's twenty cents."],
+      "buy": ["Kiitos! Have a nice week.", "Receipt? No? Good, saves paper.", "Bonus card next time, dear!"],
+      "groceries": ["That'll do you for the week.", "Rye bread is on offer, I put one in.", "Kiitos! Mind the eggs."],
+      "coffee_pulla": ["Warm from the oven.", "The coffee corner is all yours."],
+      "work": ["Good shift. The milk shelf looks tidy.", "Kiitos, see you next time!", "Nobody stole the karkki this time. Well done."],
+      "hired": ["Welcome to the team! The vest is in the back.", "You start right away. The bottle machine is jammed."],
+      "rejected": ["Sorry, we hired the neighbour's nephew.", "Not this time. Try again later?"],
+      "broke": ["Card declined, dear. Happens to everyone.", "You're a bit short there.", "No money, no pulla. Sorry!"],
+      "refuse": ["Can't do that, I'm afraid.", "Hmm, no."]
+    }
+  },
+  "actions": [
+    { "id": "groceries", "kind": "shop", "label": "Shop", "time": "1", "items": ["groceries", "coffee_pulla", "lottery_ticket"] },
+    { "id": "work", "kind": "work" }
+  ]
+}

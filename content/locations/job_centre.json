@@ -1,0 +1,37 @@
+{
+  "id": "job_centre",
+  "name": "Työkkäri",
+  "node": "job_centre",
+  "description": "The employment office keeps a desk in the 1990s kylätalo. Take a queue number. The youth club meets downstairs.",
+  "greeting": ["The queue display says 047.", "A poster promises 'New opportunities!'", "The coffee machine is broken again.", "Teenagers are playing table hockey downstairs."],
+  "host": {
+    "name": "Tarja",
+    "title": "case worker at Työkkäri",
+    "lines": {
+      "hello": ["Number 47, please.", "Have a seat. The form is only twelve pages.", "Did you fill in your job-seeker report?"],
+      "hired": ["Congratulations! I'll mark you as employed.", "Well done! One less form for me."],
+      "rejected": ["They chose someone else. Don't lose heart.", "No luck this time. There's a course for that, you know."],
+      "counselling": ["Here's a little tip for you.", "Off the record, of course."],
+      "quit": ["Are you sure? Fine, I'll update the form.", "Brave. Or foolish. We'll see."],
+      "work": ["Good day's work. Only forty forms left.", "Thank you, colleague."],
+      "broke": ["The application is free. The rest isn't."],
+      "refuse": ["The system won't let me, I'm afraid.", "Rules are rules.", "Computer says no."]
+    }
+  },
+  "actions": [
+    { "id": "apply", "kind": "jobs", "label": "Apply for a job", "time": "params.applyTime" },
+    {
+      "id": "counselling", "kind": "basic", "label": "Career counselling",
+      "description": "A short chat with a counsellor.",
+      "time": "1",
+      "effects": [{ "let": { "tip": "hint()" } }, { "say": "{tip}" }]
+    },
+    {
+      "id": "quit", "kind": "basic", "label": "Quit your current job",
+      "visible": "job != ''",
+      "time": "1",
+      "effects": [{ "setJob": null }, { "add": { "reputation": "-5" } }, { "message": "You hand in your notice." }]
+    },
+    { "id": "work", "kind": "work" }
+  ]
+}

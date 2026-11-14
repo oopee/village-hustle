@@ -1,0 +1,101 @@
+{
+  "title": "Village road waltz",
+  "bpm": 112,
+  "meter": 3,
+  "sections": { "A": 8, "C": 8, "B": 8, "C2": 8 },
+  "form": ["A", "C", "B", "C2"],
+  "reverb": { "size": 0.55, "damp": 0.45, "wet": 0.9 },
+  "master": { "loudness": -20, "warmth": 1.5, "air": 0.5 },
+  "ambience": [
+    { "type": "birds", "level": 1.0, "rate": 0.6, "pan": -0.3, "rev": 0.4 },
+    { "type": "cuckoo", "level": 0.7, "rate": 0.5, "pan": 0.6, "rev": 0.5 }
+  ],
+  "tracks": [
+    {
+      "name": "whistle",
+      "inst": "whistle",
+      "notes": {
+        "A": "B4:1 D5 G5 | B5:2! A5:1/2 G5? | E5:2 G5:1 | D5:3 | B4:1 E5 G5 | C6:2! B5:1/2 A5? | A5:1.5 G5:1/2? E5:1 | F#5:3",
+        "C": "B4:1 D5 G5 | B5:2! A5:1/2 G5? | E5:1.5 F#5:1/2? G5:1 | C6:2! A5:1 | B5:1.5 A5:1/2? G5:1 | E5:2 G5:1 | F#5:1.5 E5:1/2? D5:1 | G5:2 D5:1?",
+        "C2": "B4:1 D5 G5 | B5:2! A5:1/2 G5? | E5:1.5 F#5:1/2? G5:1 | C6:2! A5:1 | B5:1.5 A5:1/2? G5:1 | E5:2 G5:1 | F#5:1.5 E5:1/2? D5:1 | G5:2 D5:1?"
+      },
+      "vol": 0.62,
+      "pan": 0.15,
+      "rev": 0.28,
+      "opts": { "vibrato": 1.1, "breath": 0.04 }
+    },
+    {
+      "name": "kantele",
+      "inst": "kantele",
+      "notes": {
+        "A": "r:3 | r:3 | r:3 | r:1 B4:1/2 A4? G4:1 | r:3 | r:3 | r:3 | r:1 F#4:1/2? G4 A4 C5",
+        "C2": "G4:1 B4 D5 | G5:2 F#5:1/2? E5? | C5:1.5 D5:1/2? E5:1 | A5:2 E5:1 | G5:1.5 F#5:1/2? D5:1 | C5:2 E5:1 | D5:1.5 C5:1/2? A4:1 | B4:2 r:1"
+      },
+      "vol": 0.8,
+      "pan": -0.3,
+      "rev": 0.3,
+      "opts": { "t60": 2.4 }
+    },
+    {
+      "name": "kantele-tune",
+      "inst": "kantele",
+      "notes": {
+        "B": "B4:1/2 E5 G5:2! | G5:1 E5:1.5 D5:1/2? | D5:1/2 G5 B5:2! | A5:2 F#5:1 | G5:1.5 F#5:1/2? E5:1 | C5:1 E5 G5 | C6:1.5! B5:1/2? A5:1 | A5:1 F#5 D5"
+      },
+      "vol": 1.45,
+      "pan": -0.1,
+      "rev": 0.3,
+      "opts": { "t60": 2.6 }
+    },
+    {
+      "name": "guitar",
+      "inst": "guitar",
+      "chords": {
+        "A": "G | G | C | G | Em | C | Am | D",
+        "C": "G | G | C | Am | G | C | D7 | G",
+        "B": "Em | C | G | D | Em | C | Am7 | D7",
+        "C2": "G | G | C | Am | G | C | D7 | G"
+      },
+      "style": "waltz",
+      "range": "G3-D5",
+      "vol": 0.42,
+      "pan": 0.35,
+      "rev": 0.18,
+      "roll": 0.012,
+      "gate": 0.8
+    },
+    {
+      "name": "strings",
+      "inst": "strings",
+      "chords": {
+        "B": "Em | C | G | D | Em | C | Am7 | D7"
+      },
+      "style": "pad",
+      "range": "D3-B4",
+      "vol": 0.2,
+      "pan": -0.1,
+      "rev": 0.35,
+      "opts": { "attack": 0.6, "release": 0.8, "cutoff": 2200 }
+    },
+    {
+      "name": "bass",
+      "inst": "bass",
+      "notes": {
+        "A": "G2:2 r:1 | D2:2 r:1 | C2:2 r:1 | B1:2 r:1 | E2:2 r:1 | C2:2 r:1 | A1:2 r:1 | D2:2 F#2:1?",
+        "C": "G2:2 r:1 | D2:2 r:1 | C2:2 r:1 | A1:2 r:1 | D2:2 r:1 | C2:2 r:1 | D2:2 A1:1? | G1:2 B1:1?",
+        "B": "E2:2 r:1 | C2:2 r:1 | B1:2 r:1 | D2:2 r:1 | E2:2 r:1 | C2:2 r:1 | A1:2 r:1 | D2:2 F#2:1?",
+        "C2": "G2:2 r:1 | D2:2 r:1 | C2:2 r:1 | A1:2 r:1 | D2:2 r:1 | C2:2 r:1 | D2:2 A1:1? | G1:2 D2:1?"
+      },
+      "vol": 0.8,
+      "rev": 0.06
+    },
+    {
+      "name": "brush",
+      "kit": { "brush": "o...x...x...", "rim": { "B": "........o..." } },
+      "mix": { "brush": 0.6, "rim": 0.4 },
+      "vol": 0.35,
+      "pan": 0.1,
+      "rev": 0.12
+    }
+  ]
+}

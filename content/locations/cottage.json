@@ -1,0 +1,49 @@
+{
+  "id": "cottage",
+  "name": "Red Cottage",
+  "node": "cottage",
+  "description": "A falu-red cottage by the woods near Punkanjoki: a woodshed, an apple tree and its own little sauna. There is only one, and it is for sale.",
+  "greeting": ["Birds sing in the birch trees.", "The apple tree is in bloom.", "Punkanjoki murmurs behind the woods."],
+  "host": {
+    "name": "Eila",
+    "title": "the neighbour",
+    "lines": {
+      "hello": ["Hello, dear! I brought blueberries.", "The previous owner had such nice roses.", "You should put the sauna on. It's Saturday somewhere."],
+      "buy": ["Welcome to the neighbourhood!", "Oh how lovely, a young person moving in!"],
+      "move_in": ["Back home! I watered the plants."],
+      "relax": ["Enjoy the sauna, dear. I'll keep an eye on things.", "Lovely evening for a dip."],
+      "broke": ["Ooh, it's not cheap, is it? Save up, dear.", "One day, dear. One day."],
+      "refuse": ["Not today, dear."]
+    }
+  },
+  "actions": [
+    {
+      "id": "buy", "kind": "shop", "label": "Buy the cottage",
+      "visible": "!has('cottage_deed')",
+      "time": "params.movingTime",
+      "items": ["cottage_deed"],
+      "effects": [
+        { "setHome": "cottage" }, { "set": { "rentOwed": "0" } }, { "add": { "happiness": "params.cottageBuyJoy" } },
+        { "message": "The cottage is yours! You move in right away.", "tone": "good" }
+      ]
+    },
+    {
+      "id": "move_in", "kind": "basic", "label": "Move back into the cottage",
+      "visible": "has('cottage_deed') && !homeIs('cottage')",
+      "time": "params.movingTime",
+      "effects": [{ "setHome": "cottage" }, { "set": { "rentOwed": "0" } }, { "message": "Home sweet home." }]
+    },
+    {
+      "id": "relax", "kind": "basic", "label": "Relax at the cottage",
+      "description": "Wood-fired sauna and a swim in the river.",
+      "visible": "homeIs('cottage')",
+      "time": "params.relaxTime",
+      "requires": [{ "test": "relaxedThisWeek < 1", "message": "You already rested this week." }],
+      "effects": [
+        { "add": { "happiness": "params.relaxJoyCottage", "stress": "-params.relaxStressRelief * 2", "health": "2", "relaxedThisWeek": "1" } },
+        { "if": "has('tv')", "then": [{ "add": { "happiness": "params.tvRelaxJoy" } }] },
+        { "message": "Wood-fired sauna, a cold dip, a sausage on the fire. Bliss." }
+      ]
+    }
+  ]
+}

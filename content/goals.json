@@ -1,0 +1,34 @@
+{
+  "targetMin": 10,
+  "targetMax": 100,
+  "goals": [
+    {
+      "id": "wealth",
+      "label": "Wealth",
+      "description": "Cash, savings and what your belongings are worth, minus unpaid rent. Clothes count for nothing, appliances for a little, property for a lot.",
+      "score": "(money + savings + itemsValue() - rentOwed) / params.wealthScale * 100",
+      "defaultTarget": 60
+    },
+    {
+      "id": "happiness",
+      "label": "Happiness",
+      "description": "How content you are, averaged with how you felt a week ago. A good mood has to last.",
+      "score": "(happiness + moodLastWeek) / 2",
+      "defaultTarget": 70
+    },
+    {
+      "id": "education",
+      "label": "Education",
+      "description": "Degrees and diplomas earned.",
+      "score": "degreePoints() / params.educationScale * 100",
+      "defaultTarget": 60
+    },
+    {
+      "id": "career",
+      "label": "Career",
+      "description": "How far up the career ladder you are.",
+      "score": "jobCareer() * (params.careerBase + (1 - params.careerBase) * min(1, weeksInJob() / params.careerTenureWeeks))",
+      "defaultTarget": 60
+    }
+  ]
+}

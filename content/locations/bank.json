@@ -1,0 +1,44 @@
+{
+  "id": "bank",
+  "name": "Savings Bank",
+  "node": "bank",
+  "description": "Marble floor, a ticking clock and a very quiet queue. Open Tuesdays and Thursdays, in theory.",
+  "greeting": ["The clock ticks loudly.", "A pensioner is updating her passbook.", "A brochure: 'Save for your own sauna!'"],
+  "host": {
+    "name": "Marjatta",
+    "title": "teller",
+    "lines": {
+      "hello": ["Good day. How may we help?", "Next, please.", "Your ID, please. Yes, even though I know you."],
+      "deposit": ["Very sensible. Money grows slowly here.", "Safe and sound."],
+      "withdraw": ["Here you are. Count it, please.", "Don't spend it all at the Trokari."],
+      "work": ["The till balances. Lovely.", "Thank you, see you tomorrow."],
+      "hired": ["Welcome to the bank. Dress code applies."],
+      "juho": ["Juho has audited this bank twice. Voluntarily.", "He found a two-cent error in 1998. We still hear about it.", "Juho brings his own calculator. And a spare."],
+      "refuse": ["I'm afraid that isn't possible.", "The account says no."]
+    }
+  },
+  "actions": [
+    { "id": "deposit", "kind": "transfer", "label": "Deposit", "from": "money", "to": "savings", "amounts": [50, 200, 1000] },
+    { "id": "withdraw", "kind": "transfer", "label": "Withdraw", "from": "savings", "to": "money", "amounts": [50, 200, 1000] },
+    {
+      "id": "juho", "kind": "basic", "label": "Let Juho check your finances",
+      "description": "Juho knows his finances to the last cent, and somehow every split bill ends up in his favour. For a fee, he will find the cents you are missing.",
+      "time": "params.juhoTime",
+      "cost": "ceil(savings * params.juhoFind * params.juhoCut)",
+      "requires": [{ "test": "flag('juhoWeek') != player.week", "message": "Juho is busy recounting his own savings. Come back next week." }],
+      "effects": [
+        { "setFlag": { "juhoWeek": "player.week" } },
+        { "let": { "gain": "floor(savings * params.juhoFind)" } },
+        { "add": { "savings": "gain" } },
+        { "if": "gain < 1",
+          "then": [{ "message": "Juho studies your bank account. \"Zero. Well, at least it's easy to count.\" He doesn't charge you. This time." }],
+          "else": [{ "pick": [
+            { "weight": "1", "do": [{ "message": "Juho goes through your statements with a ruler and finds €{gain} the bank \"forgot\". His fee: €{cost}, rounded up. \"Rounding down is how they get you.\"", "tone": "good" }] },
+            { "weight": "1", "do": [{ "message": "Juho moves your savings to a slightly better account: €{gain} more. He charges €{cost} and asks for the receipt back.", "tone": "good" }] },
+            { "weight": "1", "do": [{ "message": "Juho finds €{gain} in fees you never needed to pay. His own fee of €{cost}, however, is non-negotiable.", "tone": "good" }] }
+          ] }] }
+      ]
+    },
+    { "id": "work", "kind": "work" }
+  ]
+}

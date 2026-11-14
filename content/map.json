@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    "parents_house", "job_centre", "station", "bank", "sawmill",
+    "department_store", "health_centre", "cottage",
+    "sauna", "village_shop", "grill", "rental_flat",
+    "opisto", "library", "crossroads"
+  ],
+  "edges": [
+    ["parents_house", "job_centre", 2],
+    ["job_centre", "station", 2],
+    ["station", "bank", 2],
+    ["bank", "sawmill", 2],
+    ["sawmill", "department_store", 1],
+    ["department_store", "health_centre", 1],
+    ["health_centre", "cottage", 1],
+    ["cottage", "sauna", 2],
+    ["sauna", "village_shop", 2],
+    ["village_shop", "grill", 2],
+    ["grill", "rental_flat", 2],
+    ["rental_flat", "opisto", 1],
+    ["opisto", "library", 1],
+    ["library", "parents_house", 1],
+    ["station", "crossroads", 2],
+    ["crossroads", "village_shop", 2]
+  ]
+}

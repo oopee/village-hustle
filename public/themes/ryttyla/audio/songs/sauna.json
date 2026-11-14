@@ -1,0 +1,80 @@
+{
+  "title": "Ykslammi evening",
+  "bpm": 80,
+  "meter": 4,
+  "swing": 0.3,
+  "sections": { "a1": 4, "a2": 4, "b": 4, "a3": 4 },
+  "form": ["a1", "a2", "b", "a3"],
+  "reverb": { "size": 0.7, "damp": 0.5, "wet": 0.9 },
+  "delay": { "time": 0.75, "feedback": 0.25, "wet": 0.6, "tone": 2200 },
+  "master": { "loudness": -21, "warmth": 1.5, "air": 0.5 },
+  "ambience": [
+    { "type": "waves", "level": 1.2, "pan": 0, "rev": 0.1 },
+    { "type": "loon", "level": 0.7, "rate": 0.4, "pan": 0.6, "rev": 0.6 },
+    { "type": "birds", "level": 0.7, "rate": 0.35, "pan": -0.5, "rev": 0.4 },
+    { "type": "fire", "level": 0.5, "pan": -0.6, "rev": 0.1 }
+  ],
+  "tracks": [
+    {
+      "name": "flute",
+      "inst": "flute",
+      "notes": {
+        "a1": "r:1/2 B4:1/2? E5 F#5 G#5:2! | E5:1.5 C#5:1/2? B4:2 | r:1/2 A4:1/2? C#5 E5 G#5:1.5! F#5:1/2? | E5:2 D#5:2",
+        "a2": "r:1/2 B4:1/2? E5 F#5 G#5:1.5! B5:1/2 | B5:1.5 G#5:1/2? F#5:1 D#5 | E5:1.5 C#5:1/2? F#5:1 A5 | G#5:2 r:2",
+        "b": "E5:1/2 A5 C#6:2! B5:1/2? A5? | B5:2 F#5:1 G#5 | E5:1/2 G#5 B5:2! A5:1/2? G#5? | A5:1.5 F#5:1/2? D#5:1 F#5",
+        "a3": "r:1/2 B4:1/2? E5 F#5 G#5:2! | E5:1.5 C#5:1/2? B4:2 | r:1/2 A4:1/2? C#5 E5 G#5:1.5! F#5:1/2? | E5:2 D#5:2"
+      },
+      "vol": 0.65,
+      "pan": 0.15,
+      "rev": 0.32,
+      "dly": 0.15,
+      "opts": { "vibrato": 0.8, "breath": 0.1 }
+    },
+    {
+      "name": "guitar",
+      "inst": "guitar",
+      "chords": {
+        "a1": "Emaj7 | C#m7 | Amaj7 | B7sus4:2 B7:2",
+        "a2": "Emaj7 | G#m7 | Amaj7:2 B7:2 | Emaj7:2 E7:2",
+        "b": "Amaj7 | G#m7 | C#m7 | F#m7:2 B7:2",
+        "a3": "Emaj7 | C#m7 | Amaj7 | B7sus4:2 B7:2"
+      },
+      "style": "arpud",
+      "range": "E3-C#5",
+      "vel": 0.85,
+      "vol": 1.0,
+      "pan": -0.3,
+      "rev": 0.25,
+      "opts": { "t60": 2, "bright": 0.4 }
+    },
+    {
+      "name": "pad",
+      "inst": "pad",
+      "chords": {
+        "a1": "Emaj7 | C#m7 | Amaj7 | B7sus4:2 B7:2",
+        "a2": "Emaj7 | G#m7 | Amaj7:2 B7:2 | Emaj7:2 E7:2",
+        "b": "Amaj7 | G#m7 | C#m7 | F#m7:2 B7:2",
+        "a3": "Emaj7 | C#m7 | Amaj7 | B7sus4:2 B7:2"
+      },
+      "style": "pad",
+      "range": "G#3-E5",
+      "vol": 0.2,
+      "pan": 0.35,
+      "rev": 0.5,
+      "opts": { "attack": 1, "release": 1.2, "cutoff": 1100 }
+    },
+    {
+      "name": "bass",
+      "inst": "bass",
+      "notes": {
+        "a1": "r:0.03 E2:1.97@0.5 B1:2 | C#2:2 G#1 | A1:2 E2 | B1:2 B1:1 D#2",
+        "a2": "E2:2 B1 | G#1:2 D#2 | A1:2 B1 | E2:2 D2",
+        "b": "C#2:2 A1 | G#1:2 B1 | C#2:2 G#1 | F#1:2 B1:1 A1",
+        "a3": "G#1:2 B1 | C#2:2 G#1 | A1:2 E2 | B1:2 B1:1 D#2"
+      },
+      "vol": 0.75,
+      "rev": 0.08,
+      "opts": { "t60": 1.6 }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "title": "Lasitehtaantie, Rainy Afternoon",
+  "bpm": 84,
+  "meter": 4,
+  "swing": 0.45,
+  "swingRes": 16,
+  "sections": { "A": 4, "A2": 4, "B": 4 },
+  "form": ["A", "A2", "B", "A2"],
+  "reverb": { "size": 0.5, "damp": 0.6, "wet": 0.8 },
+  "delay": { "time": 0.75, "feedback": 0.35, "wet": 0.4, "tone": 2200 },
+  "master": { "loudness": -20, "warmth": 2, "air": -1, "lofi": 0.5 },
+  "ambience": [{ "type": "rain", "level": 0.6 }],
+  "tracks": [
+    {
+      "name": "pad",
+      "inst": "pad",
+      "chords": {
+        "B": "Bbm9:4 | Abm9:2 Db9:2 | Gbmaj9:4 | Cm7b5:2 F7b9:2",
+        "*": "Gbmaj9:4 | Fm9:4 | Ebm9:4 | Ab9:4"
+      },
+      "style": "pad",
+      "range": "Ab3-Ab4",
+      "vol": 0.12,
+      "pan": 0.3,
+      "rev": 0.4,
+      "opts": { "attack": 0.9, "release": 0.6, "cutoff": 800 }
+    },
+    {
+      "name": "rhodes",
+      "inst": "epiano",
+      "notes": {
+        "B": "Ab3+C4+Db4+F4:3.5! Gb3+Bb3+B3+Eb4:1/2 | _:1.5 r:1/2 F3+Ab3+B3+Eb4:1.5 F3+Ab3+Bb3+Db4:1/2 | _:3 r:1/2 Gb3+Bb3+C4+Eb4:1/2 | _:1.5 r:1/2 Gb3+A3+C4+Eb4:2",
+        "*": "F3+Ab3+Bb3+Db4:3.5! Eb3+G3+Ab3+C4:1/2 | _:2.5 Eb3+G3+Ab3+C4:1/2? r:1/2 F3+Gb3+Bb3+Db4:1/2 | _:3 r:1/2 F3+Gb3+Bb3+C4:1/2 | _:2.5 F3+Gb3+Bb3+C4:1/2? r:1"
+      },
+      "roll": 0.008,
+      "vol": 0.55,
+      "pan": -0.2,
+      "rev": 0.3,
+      "chorus": 0.4,
+      "opts": { "bark": 0.6, "trem": 0.25, "decay": 4 }
+    },
+    {
+      "name": "melody",
+      "inst": "reed",
+      "notes": {
+        "A": "r:1 F5:1/2 Eb5:1/2? Db5:1 Bb4:1 | C5:2.5 r:1/2 Ab4:1/2? Bb4:1/2 | Bb4:1/2 Db5:1/2 F5:2 Eb5:1 | C5:3 r:1",
+        "A2": "r:1 F5:1/2 Eb5:1/2? Db5:1 Bb4:1 | C5:1 Eb5:1/2 F5:1/2? Ab5:2 | Gb5:1.5 F5:1/2 Db5:1 Bb4:1 | C5:1.5 Bb4:1/2? Ab4:2",
+        "B": "F5:1.5! Db5:1/2 C5:1 Db5:1 | Eb5:1.5 B4:1/2? F5:1.5 Eb5:1/2 | Db5:1 Bb4:1/2 Db5:1/2? F5:2 | Eb5:1.5 C5:1/2 A4:2"
+      },
+      "vol": 0.55,
+      "pan": 0.1,
+      "rev": 0.3,
+      "dly": 0.2,
+      "opts": { "vibrato": 0.7, "breath": 0.08, "vibDelay": 0.3 }
+    },
+    {
+      "name": "fills",
+      "inst": "epiano",
+      "notes": {
+        "A": "r:4 | r:4 | r:4 | r:3 Eb5:1/4@0.5 C5@0.45 Bb4@0.5 Ab4@0.45",
+        "B": "r:4 | r:4 | r:4 | r:3 C5:1/4@0.45 Eb5@0.5 Gb5@0.5 A5@0.55"
+      },
+      "vol": 1,
+      "pan": 0.35,
+      "rev": 0.35,
+      "dly": 0.35,
+      "opts": { "bark": 0.8, "decay": 3 }
+    },
+    {
+      "name": "bass",
+      "inst": "ebass",
+      "notes": {
+        "B": "Bb1:2.5 r:1/2 F2:1/2? Ab1:1/2 | _:1.5 Eb2:1/2? Db2:1.5 Gb1:1/2 | _:2.5 Db2:1/2? r:1/2 C2:1/2 | _:1.5 r:1/2 F2:2",
+        "*": "Gb2:2.5 r:1/2 Gb2:1/2? F2:1/2 | _:2.5 Ab2:1/2? r:1/2 Eb2:1/2 | _:2.5 Bb1:1/2? r:1/2 Ab1:1/2 | _:2.5 r:1/2 Ab2:1/2? G2:1/2?"
+      },
+      "vol": 0.6,
+      "pan": 0,
+      "rev": 0.05,
+      "opts": { "cutoff": 550, "release": 0.12 }
+    },
+    {
+      "name": "drums",
+      "kit": {
+        "kick": "X......x..x.....X.........x..x..",
+        "snare": "....X.......X.......X.......X..o",
+        "hat": "x.o.x.oox.o.x.o.x.o.x.o.x.oox.ox"
+      },
+      "res": 4,
+      "mix": { "kick": 0.9, "snare": 0.5, "hat": 0.3 },
+      "vol": 0.55,
+      "pan": 0,
+      "rev": 0.1,
+      "lp": 6000
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "id": "rental_flat",
+  "name": "Lasitehtaantie Flat",
+  "node": "rental_flat",
+  "description": "A one-room flat in the 1974 block on Lasitehtaantie, where the glassworks used to be. Shared sauna turns on Thursdays.",
+  "greeting": ["Someone is beating a rug in the yard.", "A notice on the door: 'Sauna turn: Thursday 18-19'.", "The neighbour's dog barks at nothing."],
+  "host": {
+    "name": "Leena",
+    "title": "the landlady",
+    "lines": {
+      "hello": ["Remember: no shoes on the stairs.", "The laundry room is booked till Sunday.", "Is that your bicycle in the hallway?"],
+      "lease": ["Here are your keys. Rent is due weekly.", "Welcome! Sauna turn is Thursday."],
+      "pay_rent": ["Thank you, right on time.", "Lovely. I'll write you a receipt."],
+      "relax": ["Enjoy your evening. Quietly, please.", "Don't play the TV too loud."],
+      "pellinen": ["Tell him to open a window. Please.", "Pellinen's rent is always on time. I have no idea how.", "If you see daylight on him, tell me. I'll call the paper."],
+      "broke": ["The deposit first, I'm afraid.", "Come back when you have it."],
+      "refuse": ["That's not how it works here.", "House rules, dear."]
+    }
+  },
+  "actions": [
+    {
+      "id": "lease", "kind": "basic", "label": "Sign a lease",
+      "description": "Rent is charged weekly. Pay it here.",
+      "visible": "!homeIs('rental_flat')",
+      "time": "params.movingTime",
+      "cost": "params.leaseDeposit * world.economy",
+      "effects": [
+        { "setHome": "rental_flat" }, { "set": { "rentOwed": "0" } }, { "add": { "happiness": "params.moveOutJoy" } },
+        { "message": "You get the keys. A place of your own!", "tone": "good" }
+      ]
+    },
+    {
+      "id": "pay_rent", "kind": "basic", "label": "Pay rent",
+      "description": "Settle what you owe.",
+      "visible": "homeIs('rental_flat') && rentOwed > 0",
+      "cost": "rentOwed",
+      "time": "0",
+      "effects": [{ "set": { "rentOwed": "0" } }, { "message": "Rent paid.", "tone": "good" }]
+    },
+    {
+      "id": "relax", "kind": "basic", "label": "Relax at home",
+      "description": "Sauna, sofa, silence. Maybe kalsarikännit.",
+      "visible": "homeIs('rental_flat')",
+      "time": "params.relaxTime",
+      "requires": [{ "test": "relaxedThisWeek < 1", "message": "You already rested this week." }],
+      "effects": [
+        { "add": { "happiness": "params.relaxJoyFlat", "stress": "-params.relaxStressRelief * 1.5", "relaxedThisWeek": "1" } },
+        { "if": "has('tv')",
+          "then": [{ "add": { "happiness": "params.tvRelaxJoy" } }, { "message": "Sauna turn, then the sofa in your underwear with ice hockey on TV. Pure kalsarikännit." }],
+          "else": [{ "message": "Sauna turn, then the sofa in your underwear with a book. A TV would make this perfect." }] }
+      ]
+    },
+    {
+      "id": "pellinen", "kind": "basic", "label": "Game night at Pellinen's",
+      "description": "Pellinen lives in the basement flat and has not been outside since spring. His door is always open, and the second controller is always charged.",
+      "time": "params.pellinenTime",
+      "requires": [{ "test": "flag('pellinenWeek') != player.week", "message": "Pellinen is in a ranked match and can't pause. He says that every time." }],
+      "effects": [
+        { "setFlag": { "pellinenWeek": "player.week" } },
+        { "add": { "happiness": "params.pellinenJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5", "health": "-2" } },
+        { "add": { "funThisWeek": "1" } },
+        { "pick": [
+          { "weight": "1", "do": [{ "message": "Pellinen hasn't seen daylight since the last patch. You play until four in the morning. He's honestly great company." }] },
+          { "weight": "1", "do": [{ "message": "Pellinen carries the whole team, then explains every mistake you made. Twice. You still had a great time." }] },
+          { "weight": "1", "do": [{ "message": "Energy drinks, cold pizza and a raid that lasts six hours. Pellinen says you're \"not totally useless\". High praise." }] },
+          { "weight": "1", "do": [{ "message": "Pellinen shows you his speedrun. It is genuinely impressive. He asks you not to tell his mother how long it took to learn." }] }
+        ] }
+      ]
+    }
+  ]
+}

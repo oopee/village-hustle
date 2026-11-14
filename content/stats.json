@@ -1,0 +1,19 @@
+[
+  { "id": "money", "label": "Cash", "default": 0, "display": "money", "description": "Money in your pocket. Can be stolen." },
+  { "id": "savings", "label": "Savings", "default": 0, "display": "money", "description": "Money in the bank." },
+  { "id": "happiness", "label": "Happiness", "default": 50, "max": 100, "display": "bar" },
+  { "id": "health", "label": "Health", "default": 80, "max": 100, "display": "bar" },
+  { "id": "food", "label": "Food supply", "default": 0, "max": "has('fridge') ? params.fridgeCapacity : 1", "display": "number", "description": "Weeks of food at home." },
+
+  { "id": "stress", "label": "Stress", "default": 10, "max": 100, "display": "hidden" },
+  { "id": "reputation", "label": "Reputation", "default": 0, "max": 100, "display": "hidden" },
+  { "id": "knowledge", "label": "Knowledge", "default": 0, "max": 100, "display": "hidden" },
+  { "id": "experience", "label": "Work experience", "default": 0, "display": "hidden" },
+  { "id": "rentOwed", "label": "Rent owed", "default": 0, "display": "hidden" },
+  { "id": "hungryWeeks", "label": "Hungry weeks in a row", "default": 0, "display": "hidden" },
+  { "id": "relaxedThisWeek", "label": "Relaxed this week", "default": 0, "display": "hidden" },
+  { "id": "lessonsThisWeek", "label": "Lessons this week", "default": 0, "display": "hidden" },
+  { "id": "moodThisWeek", "label": "Happiness at the start of this week", "default": 50, "display": "hidden" },
+  { "id": "moodLastWeek", "label": "Happiness at the start of last week", "default": 50, "display": "hidden" },
+  { "id": "funThisWeek", "label": "Leisure this week", "default": 0, "display": "hidden", "description": "Each leisure activity in the same week is a little less fun." }
+]

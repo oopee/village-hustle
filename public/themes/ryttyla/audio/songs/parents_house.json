@@ -1,0 +1,93 @@
+{
+  "title": "Mom's kitchen lullaby",
+  "bpm": 68,
+  "meter": 4,
+  "sections": { "a1": 4, "a2": 4, "b": 4, "a3": 4 },
+  "form": ["a1", "a2", "b", "a3"],
+  "reverb": { "size": 0.5, "damp": 0.55, "wet": 0.8 },
+  "master": { "loudness": -21, "warmth": 2, "air": -0.5 },
+  "ambience": [{ "type": "clock", "level": 0.8, "opts": { "period": 0.882 }, "pan": 0.5, "rev": 0.2 }],
+  "tracks": [
+    {
+      "name": "felt-melody",
+      "inst": "felt",
+      "notes": {
+        "a1": "r:1 C5:1 A5:1.5! G5:1/2? | F5:1.5 E5:1/2? D5:1 C5:1 | D5:1 F5:1 Bb5:1.5! A5:1/2? | G5:1 F5:1 E5:2",
+        "a2": "r:1 C5:1 A5:1.5! G5:1/2? | F5:1 D5:1 A5:1.5 G5:1/2? | Bb5:1.5! A5:1/2? G5:1 D5:1 | G5:1 E5:1 F5:2",
+        "a3": "r:1 C5:1 A5:1.5! G5:1/2? | F5:1 D5:1 A5:1.5 G5:1/2? | Bb5:1.5! A5:1/2? G5:1 D5:1 | G5:1 E5:1 F5:2"
+      },
+      "vol": 1,
+      "pan": 0.05,
+      "rev": 0.3,
+      "opts": { "decay": 3.5, "bright": 0.45 }
+    },
+    {
+      "name": "musicbox-high",
+      "inst": "musicbox",
+      "octave": 1,
+      "notes": {
+        "a2": "r:1 C5:1 A5:1.5 G5:1/2? | F5:1 D5:1 A5:1.5 G5:1/2? | Bb5:1.5 A5:1/2? G5:1 D5:1 | G5:1 E5:1 F5:2",
+        "a3": "r:1 C5:1 A5:1.5 G5:1/2? | F5:1 D5:1 A5:1.5 G5:1/2? | Bb5:1.5 A5:1/2? G5:1 D5:1 | G5:1 E5:1 F5:2"
+      },
+      "vol": 0.45,
+      "pan": 0.35,
+      "rev": 0.4
+    },
+    {
+      "name": "musicbox-tune",
+      "inst": "musicbox",
+      "notes": {
+        "b": "D5:1 F5:1 A5:2! | C6:1.5 B5:1/2? A5:1 E5:1 | D6:1.5! C6:1/2? A5:1 F5:1 | Bb5:1 G5:1 E5:1 G5:1?"
+      },
+      "vol": 1.6,
+      "pan": 0.15,
+      "rev": 0.4
+    },
+    {
+      "name": "felt-broken",
+      "inst": "felt",
+      "chords": {
+        "a1": "F | Dm7 | Bb | C7sus4:2 C7:2",
+        "a2": "F | Dm7 | Gm7 | C7:2 F:2",
+        "b": "Dm | Am | Bbmaj7 | Gm7:2 C7:2",
+        "a3": "F | Dm7 | Gm7 | C7:2 F:2"
+      },
+      "style": "broken",
+      "range": "F3-C5",
+      "vol": 0.42,
+      "pan": -0.25,
+      "rev": 0.28,
+      "opts": { "decay": 2.5, "bright": 0.35 }
+    },
+    {
+      "name": "felt-bass",
+      "inst": "felt",
+      "notes": {
+        "a1": "F2:4@0.5 | D2:4 | Bb1:4 | C2:4",
+        "a2": "F2:4 | D2:4 | G1:4 | C2:2 F2:2",
+        "b": "D2:4 | A1:4 | Bb1:4 | G1:2 C2:2",
+        "a3": "F2:4 | D2:4 | G1:4 | C2:2 F2:2"
+      },
+      "vel": 0.8,
+      "vol": 0.75,
+      "pan": -0.1,
+      "rev": 0.2,
+      "opts": { "decay": 4, "bright": 0.3 }
+    },
+    {
+      "name": "strings",
+      "inst": "strings",
+      "chords": {
+        "a2": "F | Dm7 | Gm7 | C7:2 F:2",
+        "b": "Dm | Am | Bbmaj7 | Gm7:2 C7:2",
+        "a3": "F | Dm7 | Gm7 | C7:2 F:2"
+      },
+      "style": "pad",
+      "range": "F3-D5",
+      "vol": 0.2,
+      "pan": 0.3,
+      "rev": 0.4,
+      "opts": { "attack": 0.9, "release": 1.2, "cutoff": 1600, "vibrato": 0.6 }
+    }
+  ]
+}

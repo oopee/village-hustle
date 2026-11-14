@@ -1,0 +1,77 @@
+{
+  "id": "grill",
+  "name": "Vanha Trokari",
+  "node": "grill",
+  "description": "Pub, pizzeria and the village living room since forever, at the corner of Vanha Kylätie and Tiilitehtaantie. The building used to be the village store before the war.",
+  "greeting": ["Someone is singing a schlager slightly off key.", "Lunch buffet: pea soup, again. Nobody minds.", "The rooftop terrace is full of regulars.", "A mölkky set leans against the door."],
+  "host": {
+    "name": "Rane",
+    "title": "the man behind the bar",
+    "lines": {
+      "hello": ["Terve! Pizza or kebab?", "Well look who it is. The usual?", "Karaoke tonight. Don't sing Tango again.", "Kitchen's open, sit anywhere."],
+      "buy": ["Coming right up!", "Kiitos!", "Good choice.", "There you go."],
+      "grill_meal": ["Enjoy. Extra garlic, on the house.", "Kiitos! Plates go back on the counter.", "One kebab pizza, extra everything."],
+      "coffee_pulla": ["Coffee is fresh. Well, fresh-ish.", "The pulla is from this morning. Mostly.", "Help yourself to milk."],
+      "lottery_ticket": ["Good luck! The bin is right there.", "Scratch it at the counter, everyone likes to watch."],
+      "work": ["Good shift. Grab a slice on your way out.", "The oven's still hot. Same time next week?", "You only burnt one pizza. Progress!"],
+      "hired": ["You're hired! Apron's on the hook.", "Welcome aboard. The dough won't knead itself."],
+      "rejected": ["Sorry, I just took on my cousin's kid.", "Not right now. Ask me again later."],
+      "broke": ["Running a tab? Not with me, friend.", "That's a few euros short.", "Pay first, eat later."],
+      "refuse": ["Not tonight.", "Nope. House rules."],
+      "karaoke": ["Bravo! Well. Brave, anyway.", "The crowd loved it. Mostly.", "Encore! No, wait, please don't."],
+      "molkky": ["Fifty points exactly? Lucky throw!", "Over fifty, back to twenty-five. Classic."],
+      "pekki": ["He's alright, Pekki. Just don't ask about the dog.", "Same table since 1994. We're thinking of putting up a plaque.", "Thanks for keeping him company. He won't say it, but he likes it."]
+    }
+  },
+  "actions": [
+    { "id": "food", "kind": "shop", "label": "Order", "items": ["grill_meal", "coffee_pulla", "lottery_ticket"] },
+    {
+      "id": "karaoke", "kind": "basic", "label": "Karaoke night",
+      "description": "A pint and a microphone. What could go wrong?",
+      "time": "params.karaokeTime",
+      "cost": "params.karaokePrice * world.economy",
+      "requires": [{ "test": "flag('karaokeWeek') != player.week", "message": "Your voice hasn't recovered from last time. Come back next week." }],
+      "effects": [
+        { "setFlag": { "karaokeWeek": "player.week" } },
+        { "add": { "happiness": "params.karaokeJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-4", "reputation": "1" } },
+        { "add": { "funThisWeek": "1" } },
+        { "pick": [
+          { "weight": "1", "do": [{ "message": "You sing a heartbroken schlager to a packed room. Someone films it." }] },
+          { "weight": "1", "do": [{ "message": "A duet with a retired train driver. The room goes quiet, then roars." }] },
+          { "weight": "1", "do": [{ "message": "You forget the second verse. The whole pub sings it for you." }] }
+        ] }
+      ]
+    },
+    {
+      "id": "molkky", "kind": "basic", "label": "Play mölkky in the yard",
+      "description": "Throw a stick at numbered sticks. A Finnish summer must.",
+      "time": "params.molkkyTime",
+      "requires": [{ "test": "flag('molkkyWeek') != player.week", "message": "The regulars won't let you win twice in a week." }],
+      "effects": [
+        { "setFlag": { "molkkyWeek": "player.week" } },
+        { "add": { "happiness": "params.molkkyJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-2", "health": "1" } },
+        { "add": { "funThisWeek": "1" } },
+        { "message": "An afternoon of mölkky with the regulars." }
+      ]
+    },
+    {
+      "id": "pekki", "kind": "basic", "label": "Buy Pekki a beer",
+      "description": "Pekki has held down the corner table since the nineties. He has views on life, and none of them are cheerful.",
+      "time": "params.pekkiTime",
+      "cost": "params.pekkiBeerPrice * world.economy",
+      "requires": [{ "test": "flag('pekkiWeek') != player.week", "message": "Pekki has gone home. Or somewhere. Try again next week." }],
+      "effects": [
+        { "setFlag": { "pekkiWeek": "player.week" } },
+        { "add": { "happiness": "params.pekkiJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-3" } },
+        { "add": { "funThisWeek": "1" } },
+        { "pick": [
+          { "weight": "1", "do": [{ "message": "Pekki: \"Summer is just three months of waiting for winter.\" Somehow your own life looks a lot brighter." }] },
+          { "weight": "1", "do": [{ "message": "Pekki tells you about his ex-wife, his ex-job and his ex-dog. You walk home grateful for everything you have." }] },
+          { "weight": "1", "do": [{ "message": "Pekki stares into his beer for an hour, then says: \"Well. That's life.\" Deep stuff." }] },
+          { "weight": "1", "do": [{ "message": "Pekki: \"Things could be worse.\" Long pause. \"They will be, though.\" You laugh until your sides hurt. He doesn't." }] }
+        ] }
+      ]
+    },
+    { "id": "work", "kind": "work" }
+  ]
+}

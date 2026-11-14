@@ -1,0 +1,923 @@
+{
+  "name": "Ryttylä (16-bit placeholder)",
+  "width": 640,
+  "height": 360,
+  "background": "background.png",
+  "foreground": "foreground.png",
+  "nodes": {
+    "parents_house": [
+      36,
+      112
+    ],
+    "job_centre": [
+      168,
+      112
+    ],
+    "station": [
+      320,
+      112
+    ],
+    "bank": [
+      456,
+      112
+    ],
+    "sawmill": [
+      604,
+      112
+    ],
+    "department_store": [
+      604,
+      178
+    ],
+    "health_centre": [
+      604,
+      246
+    ],
+    "cottage": [
+      604,
+      312
+    ],
+    "sauna": [
+      440,
+      312
+    ],
+    "village_shop": [
+      320,
+      312
+    ],
+    "grill": [
+      176,
+      312
+    ],
+    "rental_flat": [
+      36,
+      312
+    ],
+    "opisto": [
+      36,
+      246
+    ],
+    "library": [
+      36,
+      178
+    ],
+    "crossroads": [
+      320,
+      200
+    ]
+  },
+  "locations": {
+    "parents_house": {
+      "sprite": "buildings/parents_house.png",
+      "x": 18,
+      "y": 48,
+      "interior": "interiors/parents_house.png",
+      "interiorFront": "interiors/parents_house-front.png",
+      "host": {
+        "sprite": "hosts/parents_house.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 112,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "job_centre": {
+      "sprite": "buildings/job_centre.png",
+      "x": 121,
+      "y": 60,
+      "interior": "interiors/job_centre.png",
+      "interiorFront": "interiors/job_centre-front.png",
+      "host": {
+        "sprite": "hosts/job_centre.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 98,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "station": {
+      "sprite": "buildings/station.png",
+      "x": 268,
+      "y": 48,
+      "interior": "interiors/station.png",
+      "interiorFront": "interiors/station-front.png",
+      "host": {
+        "sprite": "hosts/station.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 136,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "bank": {
+      "sprite": "buildings/bank.png",
+      "x": 422,
+      "y": 54,
+      "interior": "interiors/bank.png",
+      "interiorFront": "interiors/bank-front.png",
+      "host": {
+        "sprite": "hosts/bank.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 112,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "sawmill": {
+      "sprite": "buildings/sawmill.png",
+      "x": 534,
+      "y": 46,
+      "interior": "interiors/sawmill.png",
+      "interiorFront": "interiors/sawmill-front.png",
+      "host": {
+        "sprite": "hosts/sawmill.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 112,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "department_store": {
+      "sprite": "buildings/department_store.png",
+      "x": 512,
+      "y": 121,
+      "interior": "interiors/department_store.png",
+      "interiorFront": "interiors/department_store-front.png",
+      "host": {
+        "sprite": "hosts/department_store.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 104,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "health_centre": {
+      "sprite": "buildings/health_centre.png",
+      "x": 518,
+      "y": 197,
+      "interior": "interiors/health_centre.png",
+      "interiorFront": "interiors/health_centre-front.png",
+      "host": {
+        "sprite": "hosts/health_centre.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 116,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "cottage": {
+      "sprite": "buildings/cottage.png",
+      "x": 496,
+      "y": 254,
+      "interior": "interiors/cottage.png",
+      "interiorFront": "interiors/cottage-front.png",
+      "host": {
+        "sprite": "hosts/cottage.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 120,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "sauna": {
+      "sprite": "buildings/sauna.png",
+      "x": 396,
+      "y": 260,
+      "interior": "interiors/sauna.png",
+      "interiorFront": "interiors/sauna-front.png",
+      "host": {
+        "sprite": "hosts/sauna.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 100,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "village_shop": {
+      "sprite": "buildings/village_shop.png",
+      "x": 236,
+      "y": 258,
+      "interior": "interiors/village_shop.png",
+      "interiorFront": "interiors/village_shop-front.png",
+      "host": {
+        "sprite": "hosts/village_shop.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 122,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "grill": {
+      "sprite": "buildings/grill.png",
+      "x": 131,
+      "y": 244,
+      "interior": "interiors/grill.png",
+      "interiorFront": "interiors/grill-front.png",
+      "host": {
+        "sprite": "hosts/grill.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 136,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "rental_flat": {
+      "sprite": "buildings/rental_flat.png",
+      "x": 45,
+      "y": 250,
+      "interior": "interiors/rental_flat.png",
+      "interiorFront": "interiors/rental_flat-front.png",
+      "host": {
+        "sprite": "hosts/rental_flat.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 120,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "opisto": {
+      "sprite": "buildings/opisto.png",
+      "x": 45,
+      "y": 189,
+      "interior": "interiors/opisto.png",
+      "interiorFront": "interiors/opisto-front.png",
+      "host": {
+        "sprite": "hosts/opisto.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 124,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "library": {
+      "sprite": "buildings/library.png",
+      "x": 45,
+      "y": 123,
+      "interior": "interiors/library.png",
+      "interiorFront": "interiors/library-front.png",
+      "host": {
+        "sprite": "hosts/library.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 116,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    },
+    "dance_pavilion": {
+      "sprite": "buildings/dance_pavilion.png",
+      "x": 329,
+      "y": 139,
+      "interior": "interiors/dance_pavilion.png",
+      "interiorFront": "interiors/dance_pavilion-front.png",
+      "host": {
+        "sprite": "hosts/dance_pavilion.png",
+        "frameWidth": 32,
+        "frameHeight": 48,
+        "x": 124,
+        "y": 38,
+        "anims": {
+          "idle": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            1,
+            1,
+            0
+          ],
+          "talk": [
+            3,
+            0,
+            4,
+            9
+          ],
+          "happy": [
+            5,
+            6
+          ],
+          "annoyed": [
+            7,
+            8
+          ]
+        }
+      }
+    }
+  },
+  "interiorSize": [
+    256,
+    160
+  ],
+  "overlays": [
+    {
+      "sprite": "overlays/0.png",
+      "frameWidth": 10,
+      "frameHeight": 20,
+      "frames": 4,
+      "x": 84,
+      "y": 31,
+      "fps": 3,
+      "above": false
+    },
+    {
+      "sprite": "overlays/1.png",
+      "frameWidth": 10,
+      "frameHeight": 20,
+      "frames": 4,
+      "x": 556,
+      "y": 244,
+      "fps": 3,
+      "above": false
+    },
+    {
+      "sprite": "overlays/2.png",
+      "frameWidth": 10,
+      "frameHeight": 20,
+      "frames": 4,
+      "x": 500,
+      "y": 255,
+      "fps": 3,
+      "above": false
+    },
+    {
+      "sprite": "overlays/3.png",
+      "frameWidth": 14,
+      "frameHeight": 22,
+      "frames": 4,
+      "x": 419,
+      "y": 249,
+      "fps": 3,
+      "above": false
+    },
+    {
+      "sprite": "overlays/4.png",
+      "frameWidth": 13,
+      "frameHeight": 10,
+      "frames": 4,
+      "x": 544,
+      "y": 256,
+      "fps": 5,
+      "above": false
+    },
+    {
+      "sprite": "overlays/5.png",
+      "frameWidth": 13,
+      "frameHeight": 10,
+      "frames": 4,
+      "x": 135,
+      "y": 194,
+      "fps": 5,
+      "above": false
+    },
+    {
+      "sprite": "overlays/6.png",
+      "frameWidth": 63,
+      "frameHeight": 6,
+      "frames": 3,
+      "x": 332,
+      "y": 165,
+      "fps": 2,
+      "above": false
+    },
+    {
+      "sprite": "overlays/7.png",
+      "frameWidth": 5,
+      "frameHeight": 5,
+      "frames": 3,
+      "x": 472,
+      "y": 298,
+      "fps": 6,
+      "above": false
+    },
+    {
+      "sprite": "overlays/8.png",
+      "frameWidth": 200,
+      "frameHeight": 34,
+      "frames": 3,
+      "x": 368,
+      "y": 324,
+      "fps": 3,
+      "above": false
+    },
+    {
+      "sprite": "overlays/9.png",
+      "frameWidth": 76,
+      "frameHeight": 52,
+      "frames": 3,
+      "x": 426,
+      "y": 138,
+      "fps": 3,
+      "above": false
+    },
+    {
+      "sprite": "overlays/10.png",
+      "frameWidth": 24,
+      "frameHeight": 14,
+      "frames": 4,
+      "x": 400,
+      "y": 208,
+      "fps": 4,
+      "above": false
+    },
+    {
+      "sprite": "overlays/11.png",
+      "frameWidth": 24,
+      "frameHeight": 14,
+      "frames": 4,
+      "x": 180,
+      "y": 196,
+      "fps": 4,
+      "above": false
+    }
+  ],
+  "player": {
+    "sprite": "player.png",
+    "frameWidth": 16,
+    "frameHeight": 24,
+    "frames": 12,
+    "tintKey": "#ff00ff",
+    "tintShadeKey": "#c000c0",
+    "directions": {
+      "down": [
+        0,
+        1,
+        0,
+        2
+      ],
+      "up": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "left": [
+        6,
+        7,
+        6,
+        8
+      ],
+      "right": [
+        9,
+        10,
+        9,
+        11
+      ]
+    }
+  },
+  "playerColors": [
+    "#d83a3a",
+    "#2f6fd6",
+    "#f2c230",
+    "#2fa85a",
+    "#9b4fd1",
+    "#f08a2c",
+    "#20b5b0",
+    "#e85fa8"
+  ],
+  "playerColorNames": [
+    "Red",
+    "Blue",
+    "Yellow",
+    "Green",
+    "Purple",
+    "Orange",
+    "Teal",
+    "Pink"
+  ],
+  "ui": {
+    "font": "VT323",
+    "panel": "#f3ead2",
+    "panelDark": "#e2d6b5",
+    "border": "#3a2a1e",
+    "text": "#2a1d14",
+    "muted": "#7a6650",
+    "accent": "#9e2f22",
+    "good": "#2f7d3a",
+    "bad": "#b0302a",
+    "highlight": "#ffe27a"
+  }
+}

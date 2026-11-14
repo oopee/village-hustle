@@ -1,0 +1,115 @@
+[
+  {
+    "id": "groceries", "name": "Week of groceries", "category": "food", "consumable": true,
+    "description": "Rye bread, potatoes, milk, karelian pies and a bit of salmon on Fridays.",
+    "price": "params.groceriesPrice * world.economy",
+    "requires": [{ "test": "food < statMax('food')", "message": "Your cupboard is full. A fridge would hold more." }],
+    "onBuy": [{ "add": { "food": "1" } }, { "message": "You stock up on groceries." }]
+  },
+  {
+    "id": "coffee_pulla", "name": "Coffee & pulla", "category": "treat", "consumable": true,
+    "description": "Strong coffee and a cardamom bun. The village runs on this.",
+    "price": "params.coffeePrice * world.economy", "time": "1",
+    "onBuy": [
+      { "add": { "stress": "-1" } },
+      { "if": "flag('coffeeWeek') != player.week",
+        "then": [{ "setFlag": { "coffeeWeek": "player.week" } }, { "add": { "happiness": "params.coffeeJoy" } }, { "message": "Ahh. Kahvi." }],
+        "else": [{ "message": "Another cup. Your hands are shaking a little." }] }
+    ]
+  },
+  {
+    "id": "grill_meal", "name": "Pizza or kebab with fries", "category": "food", "consumable": true,
+    "description": "Kebab, pizza or makkaraperunat. Fills you up for the week, more or less.",
+    "price": "params.grillMealPrice * world.economy", "time": "1",
+    "requires": [{ "test": "food < statMax('food')", "message": "You are already well fed." }],
+    "onBuy": [{ "add": { "food": "1", "happiness": "1", "health": "-1" } }, { "message": "Greasy, salty, perfect." }]
+  },
+  {
+    "id": "lottery_ticket", "name": "Scratch card", "category": "gamble", "consumable": true,
+    "description": "Scratch three matching symbols and dream.",
+    "price": "params.lotteryPrice", "time": "0",
+    "onBuy": [
+      { "pick": [
+        { "weight": "params.lotteryJackpotChance", "do": [{ "add": { "money": "params.lotteryJackpot", "happiness": "20" } }, { "message": "JACKPOT! You won €{params.lotteryJackpot}!", "tone": "good" }] },
+        { "weight": "params.lotterySmallWinChance", "do": [{ "add": { "money": "params.lotterySmallWin" } },{ "message": "A small win: €{params.lotterySmallWin}.", "tone": "good" }] },
+        { "weight": "1", "do": [{ "message": "No luck this time." }] }
+      ] }
+    ]
+  },
+
+  {
+    "id": "clothes_casual", "name": "Casual clothes", "category": "clothing", "tags": { "clothing": 1 },
+    "description": "Jeans, a hoodie and a decent winter jacket.",
+    "price": "params.clothesCasualPrice * world.economy", "wearWeeks": "params.clothesCasualWeeks",
+    "value": "0", "sellValue": "params.clothesCasualPrice * 0.2",
+    "wornOutText": "Your casual clothes are worn to rags."
+  },
+  {
+    "id": "clothes_smart", "name": "Smart clothes", "category": "clothing", "tags": { "clothing": 2 },
+    "description": "A collared shirt and proper trousers. Shop-floor ready.",
+    "price": "params.clothesSmartPrice * world.economy", "wearWeeks": "params.clothesSmartWeeks",
+    "value": "0", "sellValue": "params.clothesSmartPrice * 0.25",
+    "wornOutText": "Your smart clothes are frayed beyond repair."
+  },
+  {
+    "id": "clothes_business", "name": "Business suit", "category": "clothing", "tags": { "clothing": 3 },
+    "description": "Sharp enough for the bank and the Helsinki office.",
+    "price": "params.clothesBusinessPrice * world.economy", "wearWeeks": "params.clothesBusinessWeeks",
+    "value": "0", "sellValue": "params.clothesBusinessPrice * 0.3",
+    "wornOutText": "Your business suit is shiny at the elbows. Time for a new one."
+  },
+  {
+    "id": "work_overalls", "name": "Work overalls & boots", "category": "clothing", "tags": { "safety": 1 },
+    "description": "Required for factory work.",
+    "price": "params.overallsPrice * world.economy", "wearWeeks": "params.overallsWeeks",
+    "sellValue": "params.overallsPrice * 0.2",
+    "wornOutText": "Your work overalls are torn. The factory won't let you in like that."
+  },
+
+  {
+    "id": "bicycle", "name": "Bicycle", "category": "appliance",
+    "description": "Gets you around the village faster. Lock it up.",
+    "price": "params.bicyclePrice * world.economy",
+    "value": "params.bicyclePrice * 0.4", "sellValue": "params.bicyclePrice * 0.35"
+  },
+  {
+    "id": "fridge", "name": "Refrigerator", "category": "appliance",
+    "description": "Store several weeks of food.",
+    "price": "params.fridgePrice * world.economy",
+    "value": "params.fridgePrice * 0.4", "sellValue": "params.fridgePrice * 0.35"
+  },
+  {
+    "id": "coffee_maker", "name": "Coffee maker", "category": "appliance",
+    "description": "Fresh coffee at home every morning. A good start to every week.",
+    "price": "params.coffeeMakerPrice * world.economy",
+    "value": "params.coffeeMakerPrice * 0.3", "sellValue": "params.coffeeMakerPrice * 0.25",
+    "weekly": [{ "add": { "happiness": "params.coffeeMakerJoy" } }]
+  },
+  {
+    "id": "tv", "name": "Television", "category": "appliance",
+    "description": "Ice hockey and Finnish crime dramas. Evenings at home are better with one.",
+    "price": "params.tvPrice * world.economy",
+    "value": "params.tvPrice * 0.4", "sellValue": "params.tvPrice * 0.35",
+    "weekly": [{ "add": { "happiness": "params.tvJoy", "stress": "-2" } }]
+  },
+  {
+    "id": "computer", "name": "Computer", "category": "appliance",
+    "description": "Helps with studying. Required for some courses.",
+    "price": "params.computerPrice * world.economy",
+    "value": "params.computerPrice * 0.4", "sellValue": "params.computerPrice * 0.35"
+  },
+  {
+    "id": "flu_shot", "name": "Flu vaccination", "category": "health",
+    "description": "Protects against the seasonal flu for a while.",
+    "price": "params.fluShotPrice", "time": "1", "wearWeeks": "params.fluShotWeeks",
+    "wornOutText": "Your flu protection has run out."
+  },
+  {
+    "id": "cottage_deed", "name": "Cottage deed", "category": "property",
+    "description": "You own the red cottage by Punkanjoki. Property holds its value.",
+    "price": "params.cottagePrice * world.economy",
+    "value": "params.cottageValue * world.economy",
+    "requires": [{ "test": "ownedBy('cottage_deed') == ''", "message": "Sold! {ownedBy('cottage_deed')} owns the cottage now." }],
+    "weekly": [{ "add": { "happiness": "params.cottageJoy" } }]
+  }
+]
