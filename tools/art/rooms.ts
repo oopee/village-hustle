@@ -9,6 +9,7 @@
  * room y ~40-60, behind a counter/table drawn in the front layer.
  */
 import type { LocationId, RoomsArt } from './types';
+import { extrasFor, furnitureFor, propsFor } from './rooms-furniture';
 import { HOST_ANIMS, HOSTS, hostSheet } from './rooms-hosts';
 import { H, W } from './rooms-kit';
 import { bank, cottage, departmentStore, healthCentre, jobCentre, parentsHouse, sawmill, station, type Scene } from './rooms-scenes-a';
@@ -46,6 +47,9 @@ export function buildRooms(): RoomsArt {
         y: s.host[1],
         anims: { idle: [...HOST_ANIMS.idle], talk: [...HOST_ANIMS.talk], happy: [...HOST_ANIMS.happy], annoyed: [...HOST_ANIMS.annoyed] },
       },
+      extras: extrasFor(id),
+      furniture: furnitureFor(id),
+      props: propsFor(id),
     };
   }
   return { width: W, height: H, rooms };

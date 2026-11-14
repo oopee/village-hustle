@@ -94,6 +94,7 @@ all to `audio-preview/sfx/`), a file name (anything containing a dot, relative t
 | `week.new` | A new week begins (instead of `turn.start`) |
 | `msg.good`, `msg.bad` | The turn screen has good / bad news |
 | `game.over` | The game ends |
+| `poke.<location>.<id>` | Clicking a prop or regular in an interior (the cat, a clock...). See CONTENT-GUIDE §5.7 |
 
 Actions use the **most specific key that exists**, in this order:
 
@@ -123,6 +124,14 @@ own melody), with clicks for p/t/k and hisses for s. Music dips slightly while s
 | `buzz` | 0 soft and round .. 1 buzzy and nasal |
 | `len` | Syllable length multiplier |
 | `volume` | Loudness multiplier |
+| `glide` | Pitch slide inside each syllable, in semitones: negative = flat and weary, positive = chirpy and eager (default about -1.2) |
+| `vibrato` | 0..3 wobble (a shaky older voice) |
+| `gap` | Pause between syllables: above 1 slow and deliberate, below 1 a fast talker |
+
+Voices are keyed by **location id** for the owner, and by **poke id** for regulars and
+other named speakers in a room (e.g. `"pekki"`; see CONTENT-GUIDE §5.7). Give every
+character a different mix of pitch, `glide` and `gap` so they are recognisable with your
+eyes closed.
 
 `npm run audio voices` writes a short demo sentence for every voice.
 

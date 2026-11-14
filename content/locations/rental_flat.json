@@ -1,32 +1,62 @@
 {
   "id": "rental_flat",
-  "name": "Lasitehtaantie Flat",
+  "name": "Lasitehtaantie Flats",
   "node": "rental_flat",
-  "description": "A one-room flat in the 1974 block on Lasitehtaantie, where the glassworks used to be. Shared sauna turns on Thursdays.",
+  "description": "The 1974 block on Lasitehtaantie, where the glassworks used to be. Leena lets a damp basement studio and a proper one-room flat upstairs. Shared sauna turns on Thursdays.",
   "greeting": ["Someone is beating a rug in the yard.", "A notice on the door: 'Sauna turn: Thursday 18-19'.", "The neighbour's dog barks at nothing."],
   "host": {
     "name": "Leena",
     "title": "the landlady",
     "lines": {
       "hello": ["Remember: no shoes on the stairs.", "The laundry room is booked till Sunday.", "Is that your bicycle in the hallway?"],
-      "lease": ["Here are your keys. Rent is due weekly.", "Welcome! Sauna turn is Thursday."],
+      "lease_basement": ["Mind your head on the pipes. Rent is due at the start of every month.", "It's cosy! Some would say damp. I say cosy."],
+      "lease": ["Here are your keys. Rent is due at the start of every month.", "Welcome! Sauna turn is Thursday."],
       "pay_rent": ["Thank you, right on time.", "Lovely. I'll write you a receipt."],
       "relax": ["Enjoy your evening. Quietly, please.", "Don't play the TV too loud."],
       "pellinen": ["Tell him to open a window. Please.", "Pellinen's rent is always on time. I have no idea how.", "If you see daylight on him, tell me. I'll call the paper."],
-      "broke": ["The deposit first, I'm afraid.", "Come back when you have it."],
+      "broke": ["The first month up front, I'm afraid.", "Come back when you have it."],
       "refuse": ["That's not how it works here.", "House rules, dear."]
     }
   },
+  "pokes": {
+    "lamp": { "lines": [
+        "You click the lamp on and off. On. Off. On. The neighbour bangs on the wall.",
+        "The lampshade has a cigarette burn shaped like Finland. Upside down."
+    ] },
+    "books": { "lines": [
+        "Three paperbacks, a phone book from 2004 and \"Excel for Beginners\". Your library.",
+        "You open a book. A €5 note falls out! No. It's a bookmark that looks like a €5 note.",
+        "Pellinen lent you a book called \"Winning at Life\". The receipt is still in it. So is a lottery ticket. It didn't win."
+    ] }
+  },
   "actions": [
     {
-      "id": "lease", "kind": "basic", "label": "Sign a lease",
-      "description": "Rent is charged weekly. Pay it here.",
-      "visible": "!homeIs('rental_flat')",
+      "id": "lease_basement", "kind": "basic", "label": "Rent the basement studio",
+      "description": "Cheap, and next door to Pellinen. One small window at ankle height. Rent is due monthly; the first month is paid now.",
+      "visible": "!homeIs('rental_flat') || flag('basement') != 1",
       "time": "params.movingTime",
-      "cost": "params.leaseDeposit * world.economy",
+      "cost": "params.rentBasement * world.economy",
       "effects": [
-        { "setHome": "rental_flat" }, { "set": { "rentOwed": "0" } }, { "add": { "happiness": "params.moveOutJoy" } },
-        { "message": "You get the keys. A place of your own!", "tone": "good" }
+        { "if": "homeIs('rental_flat')",
+          "then": [{ "add": { "happiness": "-5" } }, { "message": "You carry your things down to the basement. It smells of damp and of Pellinen's pizza." }],
+          "else": [{ "add": { "happiness": "params.basementMoveJoy" } }, { "message": "You get the keys to the basement studio. It is small and damp, but it is yours.", "tone": "good" }] },
+        { "setHome": "rental_flat" }, { "set": { "rentOwed": "0" } },
+        { "setFlag": { "basement": "1", "rent": "round(params.rentBasement * world.economy)" } }
+      ]
+    },
+    {
+      "id": "lease", "kind": "basic", "label": "Rent the one-room flat",
+      "description": "Third floor, a balcony and a view of the old glassworks chimney. Rent is due monthly; the first month is paid now.",
+      "visible": "!homeIs('rental_flat') || flag('basement') == 1",
+      "time": "params.movingTime",
+      "cost": "params.rentFlat * world.economy",
+      "effects": [
+        { "if": "homeIs('rental_flat')",
+          "then": [{ "message": "You haul your boxes up from the basement. Daylight! Pellinen waves from his doorway without looking away from the screen.", "tone": "good" }],
+          "else": [{ "message": "You get the keys. A proper flat of your own!", "tone": "good" }] },
+        { "add": { "happiness": "params.moveOutJoy" } },
+        { "setHome": "rental_flat" }, { "set": { "rentOwed": "0" } },
+        { "setFlag": { "basement": "0", "rent": "round(params.rentFlat * world.economy)" } }
       ]
     },
     {
@@ -42,29 +72,44 @@
       "description": "Sauna, sofa, silence. Maybe kalsarikännit.",
       "visible": "homeIs('rental_flat')",
       "time": "params.relaxTime",
-      "requires": [{ "test": "relaxedThisWeek < 1", "message": "You already rested this week." }],
       "effects": [
-        { "add": { "happiness": "params.relaxJoyFlat", "stress": "-params.relaxStressRelief * 1.5", "relaxedThisWeek": "1" } },
-        { "if": "has('tv')",
-          "then": [{ "add": { "happiness": "params.tvRelaxJoy" } }, { "message": "Sauna turn, then the sofa in your underwear with ice hockey on TV. Pure kalsarikännit." }],
-          "else": [{ "message": "Sauna turn, then the sofa in your underwear with a book. A TV would make this perfect." }] }
+        { "let": { "rest": "(flag('basement') == 1 ? 0.6 : 1) / (1 + relaxedThisWeek)" } },
+        { "add": { "happiness": "params.relaxJoyFlat * rest", "stress": "-params.relaxStressRelief * 1.5 * rest" } },
+        { "if": "relaxedThisWeek >= 1",
+          "then": [{ "message": "You lie on the sofa again. The ceiling has not changed since last time." }],
+          "else": [
+            { "if": "has('tv')",
+              "then": [{ "add": { "happiness": "params.tvRelaxJoy" } }, { "message": "Sauna turn, then the sofa in your underwear with ice hockey on TV. Pure kalsarikännit." }],
+              "else": [{ "message": "Sauna turn, then the sofa in your underwear with a book. A TV would make this perfect." }] }
+          ] },
+        { "add": { "relaxedThisWeek": "1" } }
       ]
     },
     {
       "id": "pellinen", "kind": "basic", "label": "Game night at Pellinen's",
-      "description": "Pellinen lives in the basement flat and has not been outside since spring. His door is always open, and the second controller is always charged.",
+      "description": "Pellinen lives in the basement and has not been outside since spring. His door is always open, and the second controller is always charged.",
       "time": "params.pellinenTime",
-      "requires": [{ "test": "flag('pellinenWeek') != player.week", "message": "Pellinen is in a ranked match and can't pause. He says that every time." }],
       "effects": [
+        { "if": "flag('pellinenWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.pellinenJoy * 0.3 / (1 + funThisWeek * params.funFatigue)", "health": "-3" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Pellinen is in a ranked match. You watch him play for five hours. He narrates. You learn nothing." }] },
+              { "weight": "1", "do": [{ "message": "\"You again?\" Pellinen hands you the controller with the sticky button. You lose every round." }] },
+              { "weight": "1", "do": [{ "message": "Second night in a row. Your eyes are square. Pellinen looks exactly the same as always, which is worrying." }] }
+            ] }
+          ],
+          "else": [
+            { "add": { "happiness": "params.pellinenJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5", "health": "-2" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Pellinen hasn't seen daylight since the last patch. You play until four in the morning. He's honestly great company." }] },
+              { "weight": "1", "do": [{ "message": "Pellinen carries the whole team, then explains every mistake you made. Twice. You still had a great time." }] },
+              { "weight": "1", "do": [{ "message": "Energy drinks, cold pizza and a raid that lasts six hours. Pellinen says you're \"not totally useless\". High praise." }] },
+              { "weight": "1", "do": [{ "message": "Pellinen shows you his speedrun. It is genuinely impressive. He asks you not to tell his mother how long it took to learn." }] }
+            ] }
+          ] },
         { "setFlag": { "pellinenWeek": "player.week" } },
-        { "add": { "happiness": "params.pellinenJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5", "health": "-2" } },
-        { "add": { "funThisWeek": "1" } },
-        { "pick": [
-          { "weight": "1", "do": [{ "message": "Pellinen hasn't seen daylight since the last patch. You play until four in the morning. He's honestly great company." }] },
-          { "weight": "1", "do": [{ "message": "Pellinen carries the whole team, then explains every mistake you made. Twice. You still had a great time." }] },
-          { "weight": "1", "do": [{ "message": "Energy drinks, cold pizza and a raid that lasts six hours. Pellinen says you're \"not totally useless\". High praise." }] },
-          { "weight": "1", "do": [{ "message": "Pellinen shows you his speedrun. It is genuinely impressive. He asks you not to tell his mother how long it took to learn." }] }
-        ] }
+        { "add": { "funThisWeek": "1" } }
       ]
     }
   ]

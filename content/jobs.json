@@ -2,28 +2,28 @@
   {
     "id": "grill_cook", "title": "Pizza baker", "location": "grill",
     "description": "Stretch dough and fold kebab pizzas for the Friday crowd.",
-    "career": "params.career_grill_cook", "wage": "params.wage_grill_cook * params.wageScale * world.economy", "shift": "params.shiftShort",
+    "career": "params.career_grill_cook", "wage": "params.wage_grill_cook * params.wageScale * world.economy * payGrade()", "shift": "params.shiftShort",
     "requires": [], "promoteTo": "grill_manager"
   },
   {
     "id": "grill_manager", "title": "Trokari shift manager", "location": "grill",
     "description": "Run the bar and kitchen, order supplies, host karaoke night.",
-    "openings": "params.openingsTop", "career": "params.career_grill_manager", "wage": "params.wage_grill_manager * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "openings": "params.openingsTop", "career": "params.career_grill_manager", "wage": "params.wage_grill_manager * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [
       { "test": "flag('xpGrill') >= params.exp_grill_manager * 0.6", "message": "You need a lot more experience at the grill." }, { "test": "flag('xpGrill') >= params.exp_grill_manager", "message": "You need a little more experience at the grill." },
-      { "test": "degree('vocational_trade')", "message": "You need a Retail & Trade diploma." }
+      { "test": "degree('vocational_trade') || flag('xpGrill') >= params.exp_grill_manager * params.veteranXp", "message": "You need a Retail & Trade diploma, or a lot more experience at the grill." }
     ]
   },
   {
     "id": "cleaner", "title": "Cleaner", "location": "health_centre",
     "description": "Keep the health station spotless.",
-    "career": "params.career_cleaner", "wage": "params.wage_cleaner * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "career": "params.career_cleaner", "wage": "params.wage_cleaner * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": []
   },
   {
     "id": "laborer", "title": "Factory hand", "location": "sawmill",
     "description": "Sand chair legs, sweep sawdust, lift heavy things.",
-    "career": "params.career_laborer", "wage": "params.wage_laborer * params.wageScale * world.economy", "shift": "params.shiftLong",
+    "career": "params.career_laborer", "wage": "params.wage_laborer * params.wageScale * world.economy * payGrade()", "shift": "params.shiftLong",
     "requires": [{ "test": "best('safety') >= 1", "message": "You need work overalls & boots." }],
     "onWork": [{ "add": { "health": "-1", "stress": "1" } }],
     "promoteTo": "machine_operator"
@@ -31,51 +31,51 @@
   {
     "id": "machine_operator", "title": "Machine operator", "location": "sawmill",
     "description": "Run the planer and the big saws. Mind your fingers.",
-    "career": "params.career_machine_operator", "wage": "params.wage_machine_operator * params.wageScale * world.economy", "shift": "params.shiftLong",
+    "career": "params.career_machine_operator", "wage": "params.wage_machine_operator * params.wageScale * world.economy * payGrade()", "shift": "params.shiftLong",
     "requires": [
       { "test": "best('safety') >= 1", "message": "You need work overalls & boots." },
-      { "test": "degree('vocational_tech')", "message": "You need a Machinery & Woodworking diploma." }
+      { "test": "degree('vocational_tech') || flag('xpSawmill') >= params.exp_machine_operator * params.veteranXp", "message": "You need a Machinery & Woodworking diploma, or a lot more experience at the factory." }
     ],
     "promoteTo": "foreman"
   },
   {
     "id": "foreman", "title": "Factory foreman", "location": "sawmill",
     "description": "Lead the crew and get two hundred chairs out by Friday.",
-    "openings": "params.openingsTop", "career": "params.career_foreman", "wage": "params.wage_foreman * params.wageScale * world.economy", "shift": "params.shiftLong",
+    "openings": "params.openingsTop", "career": "params.career_foreman", "wage": "params.wage_foreman * params.wageScale * world.economy * payGrade()", "shift": "params.shiftLong",
     "requires": [
       { "test": "best('safety') >= 1", "message": "You need work overalls & boots." },
-      { "test": "degree('vocational_tech')", "message": "You need a Machinery & Woodworking diploma." },
-      { "test": "degree('management')", "message": "You need a Leadership & Management diploma." },
-      { "test": "flag('xpSawmill') >= params.exp_foreman * 0.6", "message": "You need a lot more experience at the factory." }, { "test": "flag('xpSawmill') >= params.exp_foreman", "message": "You need a little more experience at the factory." }
+      { "test": "degree('vocational_tech') || flag('xpSawmill') >= params.exp_machine_operator * params.veteranXp", "message": "You need a Machinery & Woodworking diploma, or a lot more experience at the factory." },
+      { "test": "flag('xpSawmill') >= params.exp_foreman * 0.6", "message": "You need a lot more experience at the factory." }, { "test": "flag('xpSawmill') >= params.exp_foreman", "message": "You need a little more experience at the factory." },
+      { "test": "degree('management') || flag('xpSawmill') >= params.exp_foreman * params.veteranXp", "message": "You need a Leadership & Management diploma, or years more experience at the factory." }
     ]
   },
   {
     "id": "cashier", "title": "Sale cashier", "location": "village_shop",
     "description": "Scan groceries and chat about the weather.",
-    "career": "params.career_cashier", "wage": "params.wage_cashier * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "career": "params.career_cashier", "wage": "params.wage_cashier * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [{ "test": "best('clothing') >= 1", "message": "You need something decent to wear." }],
     "promoteTo": "shop_manager"
   },
   {
     "id": "shop_manager", "title": "Sale store manager", "location": "village_shop",
     "description": "Run the village Sale: orders, shifts and the bottle machine.",
-    "openings": "params.openingsTop", "career": "params.career_shop_manager", "wage": "params.wage_shop_manager * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "openings": "params.openingsTop", "career": "params.career_shop_manager", "wage": "params.wage_shop_manager * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [
       { "test": "best('clothing') >= 2", "message": "You need smart clothes." },
-      { "test": "degree('vocational_trade')", "message": "You need a Retail & Trade diploma." },
-      { "test": "flag('xpShop') >= params.exp_shop_manager * 0.6", "message": "You need a lot more experience at the Sale." }, { "test": "flag('xpShop') >= params.exp_shop_manager", "message": "You need a little more experience at the Sale." }
+      { "test": "flag('xpShop') >= params.exp_shop_manager * 0.6", "message": "You need a lot more experience at the Sale." }, { "test": "flag('xpShop') >= params.exp_shop_manager", "message": "You need a little more experience at the Sale." },
+      { "test": "degree('vocational_trade') || flag('xpShop') >= params.exp_shop_manager * params.veteranXp", "message": "You need a Retail & Trade diploma, or a lot more experience at the Sale." }
     ]
   },
   {
     "id": "sales_clerk", "title": "Hardware store clerk", "location": "department_store",
     "description": "Sell fridges, wellies and paint by the litre.",
-    "career": "params.career_sales_clerk", "wage": "params.wage_sales_clerk * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "career": "params.career_sales_clerk", "wage": "params.wage_sales_clerk * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [{ "test": "best('clothing') >= 2", "message": "You need smart clothes." }]
   },
   {
     "id": "library_assistant", "title": "Library assistant", "location": "library",
     "description": "Shelve books and shush teenagers.",
-    "career": "params.career_library_assistant", "wage": "params.wage_library_assistant * params.wageScale * world.economy", "shift": "params.shiftShort",
+    "career": "params.career_library_assistant", "wage": "params.wage_library_assistant * params.wageScale * world.economy * payGrade()", "shift": "params.shiftShort",
     "requires": [
       { "test": "best('clothing') >= 1", "message": "You need something decent to wear." },
       { "test": "degree('basic_skills')", "message": "You need the Basic Skills certificate." }
@@ -86,18 +86,18 @@
   {
     "id": "librarian", "title": "Librarian", "location": "library",
     "description": "Run the village library and its volunteers.",
-    "openings": "params.openingsTop", "career": "params.career_librarian", "wage": "params.wage_librarian * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "openings": "params.openingsTop", "career": "params.career_librarian", "wage": "params.wage_librarian * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [
       { "test": "best('clothing') >= 2", "message": "You need smart clothes." },
-      { "test": "degree('pedagogy')", "message": "You need a Teacher Training diploma." },
-      { "test": "flag('xpLibrary') >= params.exp_librarian * 0.6", "message": "You need a lot more experience at the library." }, { "test": "flag('xpLibrary') >= params.exp_librarian", "message": "You need a little more experience at the library." }
+      { "test": "flag('xpLibrary') >= params.exp_librarian * 0.6", "message": "You need a lot more experience at the library." }, { "test": "flag('xpLibrary') >= params.exp_librarian", "message": "You need a little more experience at the library." },
+      { "test": "degree('pedagogy') || (flag('xpLibrary') >= params.exp_librarian * params.veteranXp && knowledge >= params.veteranKnowledge)", "message": "You need a Teacher Training diploma, or many more years at the library and a well-read mind." }
     ],
     "onWork": [{ "add": { "knowledge": "1" } }]
   },
   {
     "id": "practical_nurse", "title": "Practical nurse", "location": "health_centre",
     "description": "Care for patients. Uniform provided.",
-    "career": "params.career_practical_nurse", "wage": "params.wage_practical_nurse * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "career": "params.career_practical_nurse", "wage": "params.wage_practical_nurse * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [{ "test": "degree('healthcare')", "message": "You need a Practical Nursing diploma." }],
     "onWork": [{ "add": { "stress": "2" } }],
     "promoteTo": "registered_nurse"
@@ -105,14 +105,17 @@
   {
     "id": "registered_nurse", "title": "Registered nurse", "location": "health_centre",
     "description": "Responsible nursing work at the health station.",
-    "openings": "params.openingsTop + 1", "career": "params.career_registered_nurse", "wage": "params.wage_registered_nurse * params.wageScale * world.economy", "shift": "params.shiftNormal",
-    "requires": [{ "test": "degree('nursing_adv')", "message": "You need a Registered Nurse degree." }],
+    "openings": "params.openingsTop + 1", "career": "params.career_registered_nurse", "wage": "params.wage_registered_nurse * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
+    "requires": [
+      { "test": "degree('nursing_adv')", "message": "You need a Registered Nurse degree." },
+      { "test": "flag('xpHealth') >= params.exp_registered_nurse * 0.6", "message": "You need a lot more experience on the wards." }, { "test": "flag('xpHealth') >= params.exp_registered_nurse", "message": "You need a little more experience on the wards." }
+    ],
     "onWork": [{ "add": { "stress": "2" } }]
   },
   {
     "id": "bank_teller", "title": "Bank teller", "location": "bank",
     "description": "Count other people's money.",
-    "career": "params.career_bank_teller", "wage": "params.wage_bank_teller * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "career": "params.career_bank_teller", "wage": "params.wage_bank_teller * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [
       { "test": "best('clothing') >= 2", "message": "You need smart clothes." },
       { "test": "degree('business')", "message": "You need a Business Administration diploma." }
@@ -122,12 +125,12 @@
   {
     "id": "branch_manager", "title": "Bank branch manager", "location": "bank",
     "description": "The most respected desk in the village.",
-    "openings": "params.openingsTop", "career": "params.career_branch_manager", "wage": "params.wage_branch_manager * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "openings": "params.openingsTop", "career": "params.career_branch_manager", "wage": "params.wage_branch_manager * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [
       { "test": "best('clothing') >= 3", "message": "You need a business suit." },
       { "test": "degree('business')", "message": "You need a Business Administration diploma." },
-      { "test": "degree('management')", "message": "You need a Leadership & Management diploma." },
-      { "test": "flag('xpBank') >= params.exp_branch_manager * 0.6", "message": "You need a lot more experience at the bank." }, { "test": "flag('xpBank') >= params.exp_branch_manager", "message": "You need a little more experience at the bank." }
+      { "test": "flag('xpBank') >= params.exp_branch_manager * 0.6", "message": "You need a lot more experience at the bank." }, { "test": "flag('xpBank') >= params.exp_branch_manager", "message": "You need a little more experience at the bank." },
+      { "test": "degree('management') || flag('xpBank') >= params.exp_branch_manager * params.veteranXp", "message": "You need a Leadership & Management diploma, or years more experience at the bank." }
     ],
     "hireChance": "params.hireChanceSenior + reputation / 200",
     "onWork": [{ "add": { "stress": "2" } }]
@@ -135,7 +138,7 @@
   {
     "id": "case_worker", "title": "Employment case worker", "location": "job_centre",
     "description": "Help others find their way.",
-    "openings": "params.openingsTop", "career": "params.career_case_worker", "wage": "params.wage_case_worker * params.wageScale * world.economy", "shift": "params.shiftNormal",
+    "openings": "params.openingsTop", "career": "params.career_case_worker", "wage": "params.wage_case_worker * params.wageScale * world.economy * payGrade()", "shift": "params.shiftNormal",
     "requires": [
       { "test": "best('clothing') >= 2", "message": "You need smart clothes." },
       { "test": "degree('business')", "message": "You need a Business Administration diploma." }
@@ -144,7 +147,7 @@
   {
     "id": "teacher", "title": "Evening class teacher", "location": "opisto",
     "description": "Teach evening classes at the village school.",
-    "openings": "params.openingsTop", "career": "params.career_teacher", "wage": "params.wage_teacher * params.wageScale * world.economy", "shift": "params.shiftShort",
+    "openings": "params.openingsTop", "career": "params.career_teacher", "wage": "params.wage_teacher * params.wageScale * world.economy * payGrade()", "shift": "params.shiftShort",
     "requires": [
       { "test": "best('clothing') >= 2", "message": "You need smart clothes." },
       { "test": "degree('pedagogy')", "message": "You need a Teacher Training diploma." },
@@ -155,7 +158,7 @@
   {
     "id": "office_trainee", "title": "Office trainee (Helsinki)", "location": "station",
     "description": "Take the R train to a Helsinki office. Long days.",
-    "career": "params.career_office_trainee", "wage": "params.wage_office_trainee * params.wageScale * world.economy", "shift": "params.shiftCommute",
+    "career": "params.career_office_trainee", "wage": "params.wage_office_trainee * params.wageScale * world.economy * payGrade()", "shift": "params.shiftCommute",
     "requires": [
       { "test": "best('clothing') >= 3", "message": "You need a business suit." },
       { "test": "degree('business')", "message": "You need a Business Administration diploma." }
@@ -165,7 +168,7 @@
   {
     "id": "it_consultant", "title": "IT consultant (Helsinki)", "location": "station",
     "description": "Commute to the city and build software for clients. The firm hires one person from the village.",
-    "openings": "params.openingsTop", "career": "params.career_it_consultant", "wage": "params.wage_it_consultant * params.wageScale * world.economy", "shift": "params.shiftCommute",
+    "openings": "params.openingsTop", "career": "params.career_it_consultant", "wage": "params.wage_it_consultant * params.wageScale * world.economy * payGrade()", "shift": "params.shiftCommute",
     "requires": [
       { "test": "best('clothing') >= 2", "message": "You need smart clothes." },
       { "test": "degree('it')", "message": "You need a Software Development diploma." },
@@ -173,5 +176,38 @@
     ],
     "hireChance": "params.hireChanceSenior + reputation / 200",
     "onWork": [{ "add": { "stress": "3" } }]
+  },
+  {
+    "id": "kiosk_keeper", "title": "Beach kiosk owner", "location": "sauna",
+    "description": "Your own kiosk on Ykslammi beach: coffee, ice cream, sausages and fishing worms. Busy in summer, quiet in winter.",
+    "openings": "1", "career": "params.career_kiosk",
+    "wage": "params.wage_kiosk * params.wageScale * world.economy * payGrade() * (season() == 'summer' ? params.kioskSummer : season() == 'winter' ? params.kioskWinter : 1) * (degree('business') ? params.kioskBusinessBonus : 1)",
+    "shift": "params.shiftNormal",
+    "requires": [{ "test": "has('beach_kiosk')", "message": "You would need to lease the beach kiosk at Ykslammi first." }],
+    "onWork": [{ "add": { "stress": "1", "reputation": "0.5" } }]
+  },
+  {
+    "id": "band_singer", "title": "Dance band singer", "location": "dance_pavilion",
+    "description": "Sing humppa and tango with the house band at the lava. Short evenings, loud applause.",
+    "career": "params.career_band_singer", "wage": "params.wage_band_singer * params.wageScale * world.economy * payGrade()", "shift": "params.shiftShort",
+    "requires": [
+      { "test": "best('clothing') >= 2", "message": "You need smart clothes for the stage." },
+      { "test": "flag('karaokeNights') >= params.gigKaraoke * 0.5", "message": "The band has never heard you sing. Karaoke night at the Trokari is where they listen." },
+      { "test": "flag('karaokeNights') >= params.gigKaraoke", "message": "The band has heard you sing a few times. They want to hear more." },
+      { "test": "reputation >= params.gigReputation", "message": "Nobody in the village knows your name yet." }
+    ],
+    "onWork": [{ "add": { "happiness": "params.gigJoy", "stress": "-1" } }],
+    "promoteTo": "bandleader"
+  },
+  {
+    "id": "bandleader", "title": "Bandleader of the Kolmilammi Orchestra", "location": "dance_pavilion",
+    "description": "Lead the house band, pick the set and decide when it's ladies' choice.",
+    "openings": "params.openingsTop", "career": "params.career_bandleader", "wage": "params.wage_bandleader * params.wageScale * world.economy * payGrade()", "shift": "params.shiftShort",
+    "requires": [
+      { "test": "best('clothing') >= 2", "message": "You need smart clothes for the stage." },
+      { "test": "flag('xpBand') >= params.exp_bandleader * 0.6", "message": "You need a lot more nights on the stage." }, { "test": "flag('xpBand') >= params.exp_bandleader", "message": "You need a few more nights on the stage." },
+      { "test": "reputation >= params.bandleaderReputation", "message": "The whole village should know your name first." }
+    ],
+    "onWork": [{ "add": { "happiness": "params.gigJoy", "stress": "1" } }]
   }
 ]

@@ -2,40 +2,66 @@
   "turnStart": [
     { "set": { "relaxedThisWeek": "0", "funThisWeek": "0", "lessonsThisWeek": "0" } },
 
-    { "if": "food >= 1",
+    { "if": "homeIs('parents_house')",
       "then": [
-        { "add": { "food": "-1" } }, { "set": { "hungryWeeks": "0" } },
-        { "if": "food < 1", "then": [{ "message": "You ate the last of your food over the weekend. Restock before next weekend." }] }
+        { "set": { "hungryWeeks": "0" } },
+        { "time": "-params.choreTime" },
+        { "add": { "happiness": "-params.choreJoyLoss" } },
+        { "pick": [
+          { "weight": "1", "do": [{ "message": "Mom told you to clean the gutters. All of them. Twice, because the first time \"didn't count\".", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to drive Grandma to Hämeenlinna for her hair appointment. Grandma narrated the whole drive.", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to help Dad fix the moped. You held a torch for five hours while he swore at a carburettor.", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to stack the firewood. Then to restack it \"properly\", like your cousin does.", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to come to Aunt Raili's birthday. Seven kinds of cake and one question: \"So, any plans?\"", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to weed the potato patch. The weeds won. You lost a whole Saturday.", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to take the rag rugs to the lake and scrub them on the washing pier. It took all day, and a pike watched.", "tone": "bad" }] },
+          { "weight": "1", "do": [{ "message": "Mom told you to sort the attic. You found your old school reports. So did she.", "tone": "bad" }] }
+        ] }
       ],
       "else": [
-        { "add": { "hungryWeeks": "1", "health": "-params.hungerHealthLoss", "happiness": "-params.hungerJoyLoss" } },
-        { "time": "-params.hungerTimeLoss" },
-        { "message": "There was no food at home. You spent the weekend hungry and feel weak.", "tone": "bad" }
+        { "if": "food >= 1",
+          "then": [
+            { "add": { "food": "-1" } }, { "set": { "hungryWeeks": "0" } },
+            { "if": "food < 1", "then": [{ "message": "You ate the last of your food over the weekend. Restock before next weekend." }] }
+          ],
+          "else": [
+            { "add": { "hungryWeeks": "1", "health": "-params.hungerHealthLoss", "happiness": "-params.hungerJoyLoss" } },
+            { "time": "-params.hungerTimeLoss" },
+            { "message": "There was no food at home. You spent the weekend hungry and feel weak.", "tone": "bad" }
+          ]
+        }
       ]
     },
 
-    { "if": "homeIs('rental_flat')", "then": [
-      { "add": { "rentOwed": "params.rentFlat * world.economy" } },
-      { "if": "rentOwed > params.rentFlat * world.economy * params.evictAfterWeeks",
+    { "if": "flag('rent') > 0 && week % params.weeksPerMonth == 1", "then": [
+      { "if": "rentOwed >= flag('rent') * params.evictAfterMonths",
         "then": [
-          { "setHome": "parents_house" }, { "moveTo": "parents_house" }, { "set": { "rentOwed": "0" } },
+          { "setHome": "parents_house" }, { "moveTo": "parents_house" }, { "set": { "rentOwed": "0" } }, { "setFlag": { "rent": "0" } },
           { "add": { "happiness": "-params.evictionJoyLoss", "reputation": "-10" } },
-          { "message": "You were evicted for unpaid rent! Back to your parents' place.", "tone": "bad" }
+          { "message": "You were evicted for unpaid rent! Back to your parents' place, and Mom has a list of chores ready.", "tone": "bad" }
         ],
         "else": [
-          { "if": "rentOwed > params.rentFlat * world.economy * 1.5", "then": [{ "message": "A note from the landlady: your rent is overdue.", "tone": "bad" }] }
+          { "if": "rentOwed >= flag('rent')", "then": [{ "message": "A note on your door: last month's rent is still unpaid. Another month like that and you're out.", "tone": "bad" }] },
+          { "add": { "rentOwed": "flag('rent')" } },
+          { "message": "A new month: rent of €{flag('rent')} is due." }
         ]
       }
     ] },
 
-    { "if": "homeIs('parents_house') && turnsTaken > params.parentsGraceWeeks", "then": [
-      { "add": { "happiness": "-params.parentsNag" } },
+    { "if": "homeIs('rental_flat') && flag('basement') == 1", "then": [
+      { "add": { "happiness": "-params.basementGloom" } },
       { "pick": [
-        { "weight": "1", "do": [{ "message": "Dad: \"Still living here, are we?\"" }] },
-        { "weight": "1", "do": [{ "message": "Mom tidied your room again. Your things are 'somewhere safe'." }] },
-        { "weight": "1", "do": [{ "message": "Dad left a printout of flat listings on your pillow." }] },
-        { "weight": "1", "do": [{ "message": "Mom asked, loudly, when the neighbour's boy moved out. Age nineteen, apparently." }] }
+        { "weight": "4", "do": [] },
+        { "weight": "1", "do": [{ "message": "The basement studio smells of damp again. You can hear Pellinen's keyboard through the wall at all hours." }] },
+        { "weight": "1", "do": [{ "message": "Your one small window shows ankles. Ankles going to work, ankles coming home. Ankles in the rain." }] },
+        { "weight": "1", "do": [{ "message": "The boiler next door clanked all night. You dreamt of submarines." }] }
       ] }
+    ] },
+
+    { "if": "homeIs('cottage') && !has('cottage_deed') && ownedBy('cottage_deed') != ''", "then": [
+      { "setHome": "parents_house" }, { "moveTo": "parents_house" }, { "set": { "rentOwed": "0" } }, { "setFlag": { "rent": "0" } },
+      { "add": { "happiness": "-params.evictionJoyLoss" } },
+      { "message": "{ownedBy('cottage_deed')} bought the red cottage, and your lease ends with the sale. You carry your boxes back to your parents' house.", "tone": "bad" }
     ] },
 
     { "if": "best('clothing') == 0", "then": [
@@ -53,11 +79,27 @@
     { "set": { "moodLastWeek": "moodThisWeek" } },
     { "set": { "moodThisWeek": "happiness" } },
     { "add": { "savings": "floor(savings * params.interestRate)" } },
+    { "if": "shares >= 1", "then": [
+      { "let": { "change": "round(shares * world.market)" } },
+      { "add": { "shares": "change" } },
+      { "if": "world.market >= params.marketShock * 0.5", "then": [{ "pick": [
+        { "weight": "1", "do": [{ "message": "The stock market is booming! Your shares rose by €{change}. Juho says it can't last. Juho says that every week.", "tone": "good" }] },
+        { "weight": "1", "do": [{ "message": "A Finnish phone company announces something shiny. Your shares jump by €{change}.", "tone": "good" }] }
+      ] }] },
+      { "if": "world.market <= -params.marketShock * 0.5", "then": [{ "pick": [
+        { "weight": "1", "do": [{ "message": "The stock market crashed! Your shares lost €{-change}. Pekki nods slowly: \"Told you. Everything goes down eventually.\"", "tone": "bad" }] },
+        { "weight": "1", "do": [{ "message": "Red numbers on the evening news. Your shares are worth €{-change} less than last week.", "tone": "bad" }] }
+      ] }] }
+    ] },
     { "if": "health < params.healthRecoveryCap", "then": [{ "add": { "health": "params.healthRecovery" } }] }
   ],
 
   "weekEnd": [
-    { "setWorld": { "economy": "clamp(world.economy + (rnd() - 0.5) * params.economyVolatility + (1 - world.economy) * params.economyPull, params.economyMin, params.economyMax)" } }
+    { "setWorld": { "economy": "clamp(world.economy + (rnd() - 0.5) * params.economyVolatility + (1 - world.economy) * params.economyPull, params.economyMin, params.economyMax)" } },
+    { "setWorld": { "market": "(rnd() - 0.5) * 2 * params.marketVolatility + params.marketDrift + (world.economy - 1) * params.marketEconomyLink" } },
+    { "chance": "params.marketShockChance", "then": [
+      { "setWorld": { "market": "rnd() < 0.5 ? -params.marketShock : params.marketShock * 0.8" } }
+    ] }
   ],
 
   "afterWork": [
@@ -66,24 +108,32 @@
     { "if": "jobLocation() == 'sawmill'", "then": [{ "setFlag": { "xpSawmill": "flag('xpSawmill') + hours / 8" } }] },
     { "if": "jobLocation() == 'village_shop'", "then": [{ "setFlag": { "xpShop": "flag('xpShop') + hours / 8" } }] },
     { "if": "jobLocation() == 'library'", "then": [{ "setFlag": { "xpLibrary": "flag('xpLibrary') + hours / 8" } }] },
-    { "if": "jobLocation() == 'bank'", "then": [{ "setFlag": { "xpBank": "flag('xpBank') + hours / 8" } }] }
+    { "if": "jobLocation() == 'bank'", "then": [{ "setFlag": { "xpBank": "flag('xpBank') + hours / 8" } }] },
+    { "if": "jobLocation() == 'health_centre'", "then": [{ "setFlag": { "xpHealth": "flag('xpHealth') + hours / 8" } }] },
+    { "if": "jobLocation() == 'dance_pavilion'", "then": [{ "setFlag": { "xpBand": "flag('xpBand') + hours / 8" } }] },
+    { "call": "countShift", "args": { "hours": "hours" } }
   ],
 
   "afterLesson": [
     { "chance": "knowledge / 100 * params.knowledgeBonusChance + (has('computer') ? params.computerBonusChance : 0)",
       "then": [{ "let": { "gain": "2" } }] },
+    { "if": "lessonsThisWeek >= params.maxLessonsPerWeek", "then": [
+      { "add": { "stress": "params.stressPerLesson" } },
+      { "chance": "1 - params.crammingChance", "then": [
+        { "let": { "gain": "0" } },
+        { "message": "Your head is full this week. The lesson goes in one ear and out the other." }
+      ] }
+    ] },
     { "add": { "knowledge": "1", "stress": "params.stressPerLesson", "lessonsThisWeek": "1" } }
   ],
 
   "afterMove": [],
 
-  "lessonRequires": [
-    { "test": "lessonsThisWeek < params.maxLessonsPerWeek", "message": "Your head is full. No more lessons this week." }
-  ],
+  "lessonRequires": [],
 
   "turnEndChecks": [
-    { "test": "food >= 1", "message": "There is no food at home. You will go hungry this weekend." },
-    { "test": "!homeIs('rental_flat') || rentOwed < params.rentFlat * world.economy * 2", "message": "Your rent is overdue, and the landlady is losing patience." }
+    { "test": "homeIs('parents_house') || food >= 1", "message": "There is no food at home. You will go hungry this weekend." },
+    { "test": "rentOwed < flag('rent') || flag('rent') == 0", "message": "This month's rent is unpaid." }
   ],
 
   "hints": [
@@ -95,8 +145,17 @@
     "Money in your pocket attracts the wrong kind of attention.",
     "Nobody stays happy without a little sauna now and then.",
     "Living with your parents is cheap, but it wears on you.",
+    "Eating out every week adds up. A kitchen of your own pays for itself.",
     "The city pays well, if you have the papers for it.",
     "Stay too long in one job and someone upstairs may notice you.",
+    "Bosses count shifts. Show up often enough and the pay goes up, diploma or not.",
+    "A diploma is the quick way up. Years on the shop floor are the slow way. Both work.",
+    "You don't always need a course to get a certificate. At the school you can show what you already know.",
+    "The house band at the lava is always looking for a voice. They listen at karaoke night.",
+    "Some people work for a boss. Some people buy a kiosk.",
+    "Shares go up more than savings. They also go down more than savings.",
+    "A cottage you don't live in can pay for itself. Summer people pay well.",
+    "Not every wise person has a degree. The library is free.",
     "Prices go up and down with the times. So do wages.",
     "Never skip meals. A hungry week is a wasted week.",
     "Old-timers say the furniture factory always needs strong hands.",

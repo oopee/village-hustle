@@ -12,9 +12,17 @@
       "buy": ["Enjoy your ice cream!", "One cone, coming up."],
       "broke": ["Ticket first, then the tango.", "No money, no dance, I'm afraid."],
       "refuse": ["The band's packing up, come back next week."],
-      "dance": ["You've got rhythm! Mostly.", "Lovely tango. Same time next week?", "Even the accordion player smiled."],
-      "ice_cream": ["Blueberry, the best flavour.", "Eat it before it melts!"]
+      "dance": ["You've got rhythm! Mostly.", "Lovely tango. Same time next week?", "Even the accordion player smiled.", "You again? The band is starting to recognise you."],
+      "work": ["What a night! They want an encore next week.", "Three tangos and a humppa medley. The floor was full.", "A grandmother asked for your autograph. On a napkin.", "You were a little flat in the second verse. Nobody noticed. I noticed."],
+      "hired": ["Welcome to the band! Wear something shiny.", "The stage is yours. Don't trip on the cables."],
+      "ice_cream": ["Blueberry, the best flavour.", "Eat it before it melts!", "Another one? I won't tell your mother."]
     }
+  },
+  "pokes": {
+    "accordion": { "lines": [
+        "You squeeze the accordion. It wheezes like a moose with a cold. Arvo winces.",
+        "The accordion has a sticker on it: \"Ryttylä Tango Champion 1979\". The sticker is the youngest part of it."
+    ] }
   },
   "actions": [
     {
@@ -22,28 +30,44 @@
       "description": "Humppa, tango and a summer night.",
       "time": "params.danceTime",
       "cost": "params.dancePrice * world.economy",
-      "requires": [{ "test": "flag('danceWeek') != player.week", "message": "Your feet are still sore. The next dance is next week." }],
       "effects": [
+        { "if": "flag('danceWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.danceJoy * 0.4 / (1 + funThisWeek * params.funFatigue)", "health": "-1" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Your feet are still sore from last time. You dance one slow tango and spend the rest of the night on the bench." }] },
+              { "weight": "1", "do": [{ "message": "The band plays the exact same set as last time. So does the man who always asks everyone to dance." }] }
+            ] }
+          ],
+          "else": [
+            { "add": { "happiness": "params.danceJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5" } },
+            { "pick": [
+              { "weight": "3", "do": [{ "message": "You dance humppa until your shirt is soaked." }] },
+              { "weight": "1", "do": [{ "message": "Someone asks you for a second tango. Your heart skips.", "tone": "good" }] },
+              { "weight": "1", "do": [{ "message": "You step on three different feet. Nobody minds." }] }
+            ] }
+          ] },
         { "setFlag": { "danceWeek": "player.week" } },
-        { "add": { "happiness": "params.danceJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5" } },
-        { "add": { "funThisWeek": "1" } },
-        { "pick": [
-          { "weight": "3", "do": [{ "message": "You dance humppa until your shirt is soaked." }] },
-          { "weight": "1", "do": [{ "message": "Someone asks you for a second tango. Your heart skips.", "tone": "good" }] },
-          { "weight": "1", "do": [{ "message": "You step on three different feet. Nobody minds." }] }
-        ] }
+        { "add": { "funThisWeek": "1" } }
       ]
     },
     {
       "id": "ice_cream", "kind": "basic", "label": "Ice cream from the kiosk",
       "time": "1",
       "cost": "params.iceCreamPrice",
-      "requires": [{ "test": "flag('iceCreamWeek') != player.week", "message": "One cone a week. Doctor's orders." }],
       "effects": [
-        { "setFlag": { "iceCreamWeek": "player.week" } },
-        { "add": { "happiness": "params.iceCreamJoy" } },
-        { "message": "Blueberry ice cream by the pond. Summer in one cone." }
+        { "if": "flag('iceCreamWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.iceCreamJoy * 0.3" } },
+            { "message": "A second cone. Brain freeze! You stand by the pond holding your forehead while a duck judges you." }
+          ],
+          "else": [
+            { "add": { "happiness": "params.iceCreamJoy" } },
+            { "message": "Blueberry ice cream by the pond. Summer in one cone." }
+          ] },
+        { "setFlag": { "iceCreamWeek": "player.week" } }
       ]
-    }
+    },
+    { "id": "work", "kind": "work" }
   ]
 }

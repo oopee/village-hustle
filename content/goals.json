@@ -5,8 +5,8 @@
     {
       "id": "wealth",
       "label": "Wealth",
-      "description": "Cash, savings and what your belongings are worth, minus unpaid rent. Clothes count for nothing, appliances for a little, property for a lot.",
-      "score": "(money + savings + itemsValue() - rentOwed) / params.wealthScale * 100",
+      "description": "Cash, savings, shares and what your belongings are worth, minus unpaid rent. Clothes count for nothing, appliances for a little, property and a business for a lot.",
+      "score": "(money + savings + shares + itemsValue() - rentOwed) / params.wealthScale * 100",
       "defaultTarget": 60
     },
     {
@@ -19,15 +19,15 @@
     {
       "id": "education",
       "label": "Education",
-      "description": "Degrees and diplomas earned.",
-      "score": "degreePoints() / params.educationScale * 100",
+      "description": "Degrees and diplomas earned, however you earned them, plus what you have taught yourself.",
+      "score": "(degreePoints() + knowledge * params.knowledgeEduWeight) / params.educationScale * 100",
       "defaultTarget": 60
     },
     {
       "id": "career",
       "label": "Career",
-      "description": "How far up the career ladder you are.",
-      "score": "jobCareer() * (params.careerBase + (1 - params.careerBase) * min(1, weeksInJob() / params.careerTenureWeeks))",
+      "description": "How far you have got at work: the job you hold, how settled you are in it, and the raises you have earned there.",
+      "score": "jobCareer() * (params.careerBase + (1 - params.careerBase) * min(1, weeksInJob() / params.careerTenureWeeks)) + raises() * params.seniorityCareer",
       "defaultTarget": 60
     }
   ]

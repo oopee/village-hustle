@@ -3,8 +3,15 @@
     "id": "groceries", "name": "Week of groceries", "category": "food", "consumable": true,
     "description": "Rye bread, potatoes, milk, karelian pies and a bit of salmon on Fridays.",
     "price": "params.groceriesPrice * world.economy",
-    "requires": [{ "test": "food < statMax('food')", "message": "Your cupboard is full. A fridge would hold more." }],
-    "onBuy": [{ "add": { "food": "1" } }, { "message": "You stock up on groceries." }]
+    "onBuy": [
+      { "if": "!has('hot_plate')",
+        "then": [{ "message": "You have nothing to cook on. You live on dry rye bread for a day and the rest goes off. Something to cook on would help." }],
+        "else": [
+          { "if": "food >= statMax('food')",
+            "then": [{ "message": "Your cupboard was already full. The extra goes off before you can eat it. A fridge would hold more." }],
+            "else": [{ "add": { "food": "1" } }, { "message": "You stock up on groceries and cook for the week." }] }
+        ] }
+    ]
   },
   {
     "id": "coffee_pulla", "name": "Coffee & pulla", "category": "treat", "consumable": true,
@@ -21,8 +28,11 @@
     "id": "grill_meal", "name": "Pizza or kebab with fries", "category": "food", "consumable": true,
     "description": "Kebab, pizza or makkaraperunat. Fills you up for the week, more or less.",
     "price": "params.grillMealPrice * world.economy", "time": "1",
-    "requires": [{ "test": "food < statMax('food')", "message": "You are already well fed." }],
-    "onBuy": [{ "add": { "food": "1", "happiness": "1", "health": "-1" } }, { "message": "Greasy, salty, perfect." }]
+    "onBuy": [
+      { "if": "food >= statMax('food')",
+        "then": [{ "add": { "health": "-2" } }, { "message": "You were already full. You eat it anyway and regret it all evening." }],
+        "else": [{ "add": { "food": "1", "happiness": "1", "health": "-1" } }, { "message": "Greasy, salty, perfect." }] }
+    ]
   },
   {
     "id": "lottery_ticket", "name": "Scratch card", "category": "gamble", "consumable": true,
@@ -67,6 +77,12 @@
   },
 
   {
+    "id": "hot_plate", "name": "Hot plate", "category": "appliance",
+    "description": "A two-ring hot plate and a dented pot. Now you can cook your own groceries at home.",
+    "price": "params.hotPlatePrice * world.economy",
+    "value": "params.hotPlatePrice * 0.3", "sellValue": "params.hotPlatePrice * 0.25"
+  },
+  {
     "id": "bicycle", "name": "Bicycle", "category": "appliance",
     "description": "Gets you around the village faster. Lock it up.",
     "price": "params.bicyclePrice * world.economy",
@@ -99,6 +115,34 @@
     "value": "params.computerPrice * 0.4", "sellValue": "params.computerPrice * 0.35"
   },
   {
+    "id": "rag_rug", "name": "Rag rug", "category": "decor",
+    "description": "A striped räsymatto, woven from somebody's old trousers. Makes a place feel like home. (Mom would never let you put it down at hers.)",
+    "price": "params.rugPrice * world.economy",
+    "value": "params.rugPrice * 0.3", "sellValue": "params.rugPrice * 0.2",
+    "weekly": [{ "add": { "happiness": "homeIs('parents_house') ? 0 : params.decorJoy" } }]
+  },
+  {
+    "id": "rubber_plant", "name": "Rubber plant", "category": "decor",
+    "description": "A big glossy rubber plant. Impossible to kill. You will try.",
+    "price": "params.plantPrice * world.economy",
+    "value": "params.plantPrice * 0.3", "sellValue": "params.plantPrice * 0.2",
+    "weekly": [{ "add": { "happiness": "homeIs('parents_house') ? 0 : params.decorJoy" } }]
+  },
+  {
+    "id": "lava_lamp", "name": "Lava lamp", "category": "decor",
+    "description": "Orange blobs rising and sinking forever. Hypnotic. Possibly a fire hazard.",
+    "price": "params.lavaLampPrice * world.economy",
+    "value": "params.lavaLampPrice * 0.3", "sellValue": "params.lavaLampPrice * 0.2",
+    "weekly": [{ "add": { "happiness": "homeIs('parents_house') ? 0 : params.decorJoy", "stress": "homeIs('parents_house') ? 0 : -1" } }]
+  },
+  {
+    "id": "ryijy", "name": "Ryijy wall rug", "category": "decor",
+    "description": "A hand-knotted ryijy in autumn colours. Your grandmother would approve. Your landlord would not.",
+    "price": "params.ryijyPrice * world.economy",
+    "value": "params.ryijyPrice * 0.4", "sellValue": "params.ryijyPrice * 0.3",
+    "weekly": [{ "add": { "happiness": "homeIs('parents_house') ? 0 : params.decorJoy * 2", "reputation": "homeIs('parents_house') ? 0 : 0.2" } }]
+  },
+  {
     "id": "flu_shot", "name": "Flu vaccination", "category": "health",
     "description": "Protects against the seasonal flu for a while.",
     "price": "params.fluShotPrice", "time": "1", "wearWeeks": "params.fluShotWeeks",
@@ -110,6 +154,29 @@
     "price": "params.cottagePrice * world.economy",
     "value": "params.cottageValue * world.economy",
     "requires": [{ "test": "ownedBy('cottage_deed') == ''", "message": "Sold! {ownedBy('cottage_deed')} owns the cottage now." }],
-    "weekly": [{ "add": { "happiness": "params.cottageJoy" } }]
+    "weekly": [
+      { "add": { "happiness": "params.cottageJoy" } },
+      { "if": "!homeIs('cottage')", "then": [
+        { "let": { "income": "round(params.cottageLetIncome * world.economy * (season() == 'summer' ? params.cottageLetSummer : season() == 'winter' ? params.cottageLetWinter : 1))" } },
+        { "add": { "savings": "income" } },
+        { "if": "flag('cottageLet') != 1", "then": [
+          { "setFlag": { "cottageLet": "1" } },
+          { "message": "Since you don't live in the red cottage, a family from Helsinki rents it by the week. The rent goes straight into your bank account. They complain about the outhouse.", "tone": "good" }
+        ] }
+      ] }
+    ]
+  },
+  {
+    "id": "beach_kiosk", "name": "Beach kiosk lease", "category": "business",
+    "description": "A long lease on the little kiosk at Ykslammi beach: coffee, ice cream, sausages and fishing worms. You would be your own boss, and quit any other job. Summers are busy. Winters are long.",
+    "price": "params.kioskPrice * world.economy",
+    "value": "params.kioskPrice * params.kioskValueShare * world.economy",
+    "requires": [{ "test": "ownedBy('beach_kiosk') == ''", "message": "{ownedBy('beach_kiosk')} already runs the kiosk." }],
+    "onBuy": [
+      { "if": "job != '' && job != 'kiosk_keeper'", "then": [{ "message": "You hand in your notice at your old job. From now on, you are the boss." }] },
+      { "setJob": "kiosk_keeper" },
+      { "add": { "happiness": "params.kioskBuyJoy", "reputation": "3" } },
+      { "message": "You sign the lease and get a key on a wooden float. The beach kiosk is yours! Kalevi orders the first coffee and asks for credit.", "tone": "good" }
+    ]
   }
 ]

@@ -23,6 +23,26 @@
       "pekki": ["He's alright, Pekki. Just don't ask about the dog.", "Same table since 1994. We're thinking of putting up a plaque.", "Thanks for keeping him company. He won't say it, but he likes it."]
     }
   },
+  "pokes": {
+    "pekki": { "name": "Pekki", "lines": [
+        "Mm.",
+        "Life is like a grill sausage. You don't want to know what's in it.",
+        "I was going to be an astronaut once. Then it was Monday.",
+        "Sit down. Don't talk. This is the good part of the evening.",
+        "Another one? No. Well. Maybe one.",
+        "They say it's always darkest before the dawn. In November it's darkest all day."
+    ] },
+    "dartboard": { "lines": [
+        "You throw a dart. It hits the wall, the clock and Pekki's cap, in that order.",
+        "Bullseye! Nobody saw it. Nobody will ever believe you.",
+        "Somebody has pinned a letter from the tax office to the middle of the dartboard. It is full of holes."
+    ] },
+    "oven": { "lines": [
+        "The grill hisses. Rane says the fat in it is older than you.",
+        "Something smells delicious. Something else smells like 1994.",
+        "You peek into the fryer. The fryer peeks back."
+    ] }
+  },
   "actions": [
     { "id": "food", "kind": "shop", "label": "Order", "items": ["grill_meal", "coffee_pulla", "lottery_ticket"] },
     {
@@ -30,28 +50,46 @@
       "description": "A pint and a microphone. What could go wrong?",
       "time": "params.karaokeTime",
       "cost": "params.karaokePrice * world.economy",
-      "requires": [{ "test": "flag('karaokeWeek') != player.week", "message": "Your voice hasn't recovered from last time. Come back next week." }],
       "effects": [
-        { "setFlag": { "karaokeWeek": "player.week" } },
-        { "add": { "happiness": "params.karaokeJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-4", "reputation": "1" } },
-        { "add": { "funThisWeek": "1" } },
-        { "pick": [
-          { "weight": "1", "do": [{ "message": "You sing a heartbroken schlager to a packed room. Someone films it." }] },
-          { "weight": "1", "do": [{ "message": "A duet with a retired train driver. The room goes quiet, then roars." }] },
-          { "weight": "1", "do": [{ "message": "You forget the second verse. The whole pub sings it for you." }] }
-        ] }
+        { "if": "flag('karaokeWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.karaokeJoy * 0.4 / (1 + funThisWeek * params.funFatigue)", "reputation": "-1" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Your voice hasn't recovered from last time. You croak through Tango and someone pulls the plug \"by accident\"." }] },
+              { "weight": "1", "do": [{ "message": "Same song as last time. The regulars sing along, mockingly. Rane turns the volume down a notch." }] }
+            ] }
+          ],
+          "else": [
+            { "add": { "happiness": "params.karaokeJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-4", "reputation": "1" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "You sing a heartbroken schlager to a packed room. Someone films it." }] },
+              { "weight": "1", "do": [{ "message": "A duet with a retired train driver. The room goes quiet, then roars." }] },
+              { "weight": "1", "do": [{ "message": "You forget the second verse. The whole pub sings it for you." }] }
+            ] }
+          ] },
+        { "setFlag": { "karaokeWeek": "player.week", "karaokeNights": "flag('karaokeNights') + 1" } },
+        { "if": "flag('karaokeNights') == params.gigKaraoke", "then": [
+          { "message": "A man in a shiny waistcoat has been listening from the back. \"I play bass in the house band at the lava,\" he says. \"We could use a voice like that.\"", "tone": "good" }
+        ] },
+        { "add": { "funThisWeek": "1" } }
       ]
     },
     {
       "id": "molkky", "kind": "basic", "label": "Play mölkky in the yard",
       "description": "Throw a stick at numbered sticks. A Finnish summer must.",
       "time": "params.molkkyTime",
-      "requires": [{ "test": "flag('molkkyWeek') != player.week", "message": "The regulars won't let you win twice in a week." }],
       "effects": [
+        { "if": "flag('molkkyWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.molkkyJoy * 0.4 / (1 + funThisWeek * params.funFatigue)" } },
+            { "message": "The regulars won't let you win twice in a week. They change the rules mid-game. Twice." }
+          ],
+          "else": [
+            { "add": { "happiness": "params.molkkyJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-2", "health": "1" } },
+            { "message": "An afternoon of mölkky with the regulars." }
+          ] },
         { "setFlag": { "molkkyWeek": "player.week" } },
-        { "add": { "happiness": "params.molkkyJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-2", "health": "1" } },
-        { "add": { "funThisWeek": "1" } },
-        { "message": "An afternoon of mölkky with the regulars." }
+        { "add": { "funThisWeek": "1" } }
       ]
     },
     {
@@ -59,17 +97,26 @@
       "description": "Pekki has held down the corner table since the nineties. He has views on life, and none of them are cheerful.",
       "time": "params.pekkiTime",
       "cost": "params.pekkiBeerPrice * world.economy",
-      "requires": [{ "test": "flag('pekkiWeek') != player.week", "message": "Pekki has gone home. Or somewhere. Try again next week." }],
       "effects": [
+        { "if": "flag('pekkiWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "-1" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Second beer this week. Pekki starts telling the ex-dog story again, from the beginning. It is sadder the second time." }] },
+              { "weight": "1", "do": [{ "message": "Pekki looks at you for a long time. \"Don't you have anywhere else to be?\" You don't. That's the sad part." }] }
+            ] }
+          ],
+          "else": [
+            { "add": { "happiness": "params.pekkiJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-3" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Pekki: \"Summer is just three months of waiting for winter.\" Somehow your own life looks a lot brighter." }] },
+              { "weight": "1", "do": [{ "message": "Pekki tells you about his ex-wife, his ex-job and his ex-dog. You walk home grateful for everything you have." }] },
+              { "weight": "1", "do": [{ "message": "Pekki stares into his beer for an hour, then says: \"Well. That's life.\" Deep stuff." }] },
+              { "weight": "1", "do": [{ "message": "Pekki: \"Things could be worse.\" Long pause. \"They will be, though.\" You laugh until your sides hurt. He doesn't." }] }
+            ] }
+          ] },
         { "setFlag": { "pekkiWeek": "player.week" } },
-        { "add": { "happiness": "params.pekkiJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-3" } },
-        { "add": { "funThisWeek": "1" } },
-        { "pick": [
-          { "weight": "1", "do": [{ "message": "Pekki: \"Summer is just three months of waiting for winter.\" Somehow your own life looks a lot brighter." }] },
-          { "weight": "1", "do": [{ "message": "Pekki tells you about his ex-wife, his ex-job and his ex-dog. You walk home grateful for everything you have." }] },
-          { "weight": "1", "do": [{ "message": "Pekki stares into his beer for an hour, then says: \"Well. That's life.\" Deep stuff." }] },
-          { "weight": "1", "do": [{ "message": "Pekki: \"Things could be worse.\" Long pause. \"They will be, though.\" You laugh until your sides hurt. He doesn't." }] }
-        ] }
+        { "add": { "funThisWeek": "1" } }
       ]
     },
     { "id": "work", "kind": "work" }

@@ -19,6 +19,13 @@
       "refuse": ["Can't do that, I'm afraid.", "Hmm, no."]
     }
   },
+  "pokes": {
+    "bottle_machine": { "lines": [
+        "You feed the bottle machine a can. It thinks for a long time, then spits it back out in disgust.",
+        "The bottle machine prints a receipt for 15 cents. You feel rich, briefly.",
+        "Someone has left a whole bag of empties next to the machine with a note: \"for whoever needs them\". Finnish kindness, in its purest form."
+    ] }
+  },
   "actions": [
     { "id": "groceries", "kind": "shop", "label": "Shop", "time": "1", "items": ["groceries", "coffee_pulla", "lottery_ticket"] },
     { "id": "work", "kind": "work" }

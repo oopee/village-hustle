@@ -106,6 +106,7 @@
   },
   {
     "id": "summer_cottage_invite", "weight": "1.5",
+    "requires": "season() == 'summer'",
     "effects": [
       { "add": { "happiness": "6", "stress": "-10" } },
       { "message": "Friends invited you to their summer cottage for the weekend. Sauna, lake, grilled sausages.", "tone": "good" }
@@ -145,24 +146,28 @@
   },
   {
     "id": "neighbour_party", "weight": "1",
+    "requires": "season() == 'summer'",
     "effects": [
       { "add": { "happiness": "4", "health": "-2" } },
       { "message": "The neighbours threw a crayfish party. You sang drinking songs until 3 a.m." }
     ]
   },
   {
-    "id": "mosquitoes", "weight": "0.8",
+    "id": "mosquitoes", "weight": "1.2",
+    "requires": "season() == 'summer' || season() == 'spring'",
     "effects": [{ "add": { "happiness": "-2" } }, { "message": "A mosquito kept you awake all night." }]
   },
   {
-    "id": "berry_season", "weight": "1",
+    "id": "berry_season", "weight": "1.5",
+    "requires": "season() == 'summer' || season() == 'autumn'",
     "effects": [
       { "add": { "money": "params.berryMoney", "happiness": "3" } },
       { "message": "You picked blueberries on Pirttisaari hill and sold the extra buckets.", "tone": "good" }
     ]
   },
   {
-    "id": "snowstorm", "weight": "1",
+    "id": "snowstorm", "weight": "2",
+    "requires": "season() == 'winter'",
     "effects": [{ "time": "-params.snowstormTimeLoss" }, { "message": "A snowstorm! You spent hours shovelling, and the R train was cancelled anyway.", "tone": "bad" }]
   },
   {
@@ -199,11 +204,12 @@
   },
   {
     "id": "apple_harvest", "weight": "1",
-    "requires": "has('cottage_deed')",
+    "requires": "has('cottage_deed') && season() == 'autumn'",
     "effects": [{ "add": { "money": "params.appleMoney", "happiness": "3" } }, { "message": "The cottage apple tree is heavy with fruit. You sell crates of apples at the roadside.", "tone": "good" }]
   },
   {
-    "id": "hockey_gold", "weight": "0.4",
+    "id": "hockey_gold", "weight": "1",
+    "requires": "season() == 'spring'",
     "effects": [{ "add": { "happiness": "5" } }, { "message": "Finland won the ice hockey world championship! The whole village celebrates in the Trokari yard.", "tone": "good" }]
   },
   {
@@ -215,5 +221,30 @@
     "id": "study_group", "weight": "0.8",
     "requires": "enrolled()",
     "effects": [{ "add": { "knowledge": "5" } }, { "message": "Your classmates started a study group at the library. Your notes are much better now.", "tone": "good" }]
+  },
+  {
+    "id": "kaamos", "weight": "1.5",
+    "requires": "season() == 'winter'",
+    "effects": [{ "add": { "happiness": "-2" } }, { "message": "The sun rose at ten and gave up by three. You spent the weekend under a blanket, glaring at the dark." }]
+  },
+  {
+    "id": "ice_hole", "weight": "0.8",
+    "requires": "season() == 'winter'",
+    "effects": [{ "add": { "happiness": "3", "health": "1", "stress": "-4" } }, { "message": "Kalevi talked you into the hole in the ice at Ykslammi. You screamed. Then you felt amazing.", "tone": "good" }]
+  },
+  {
+    "id": "vappu", "weight": "1.2",
+    "requires": "season() == 'spring'",
+    "effects": [{ "add": { "happiness": "4", "money": "-10" } }, { "message": "Vappu! Sima, munkki doughnuts and a picnic in the slush. Someone lent you a student cap you have not earned yet.", "tone": "good" }]
+  },
+  {
+    "id": "mushrooms", "weight": "1",
+    "requires": "season() == 'autumn'",
+    "effects": [{ "add": { "happiness": "2", "health": "1" } }, { "message": "A morning in the woods picking chanterelles. You found three, and a lost glove." }]
+  },
+  {
+    "id": "autumn_mud", "weight": "0.8",
+    "requires": "season() == 'autumn' && !has('bicycle')",
+    "effects": [{ "time": "-2" }, { "message": "The autumn rains turned the village paths to mud. Everything takes longer on foot." }]
   }
 ]

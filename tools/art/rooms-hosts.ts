@@ -380,7 +380,7 @@ function fx(c: Ctx) {
 
 // ------------------------------------------------------------------ shared bits
 
-const glasses = (col: RGBA, round = false) => (c: Ctx) => {
+export const glasses = (col: RGBA, round = false) => (c: Ctx) => {
   for (const x0 of [10, 18]) {
     for (let x = x0; x <= x0 + 3; x++) {
       if (!(round && (x === x0 || x === x0 + 3))) {
@@ -401,13 +401,13 @@ const glasses = (col: RGBA, round = false) => (c: Ctx) => {
   c.p(21, 13, hex('#ffffff', 120));
 };
 
-function paintHair(c: Ctx, m: Mask, hl: [number, number][] = [], split = 21) {
+export function paintHair(c: Ctx, m: Mask, hl: [number, number][] = [], split = 21) {
   m.paint(c.img, c.s.hair, { split });
   for (const [x, y] of hl) if (m.has(x, y + c.b)) c.p(x, y, c.s.hair[0]);
   return m;
 }
 
-function curls(c: Ctx, m: Mask, pts: [number, number][]) {
+export function curls(c: Ctx, m: Mask, pts: [number, number][]) {
   const col = c.s.hair[2];
   for (const [x, y] of pts) {
     if (m.has(x, y + c.b)) c.p(x, y, col);
@@ -417,14 +417,14 @@ function curls(c: Ctx, m: Mask, pts: [number, number][]) {
 
 // ------------------------------------------------------------------ skin & hair ramps
 
-const SKIN = ramp('#ffe4c8', '#f8c8a0', '#dc9a80', '#a86a70');
-const SKIN_OLD = ramp('#ffe0c8', '#f0bea0', '#d0907e', '#9c6470');
-const SKIN_ROSY = ramp('#ffdcc4', '#f6b898', '#d88878', '#a85a68');
-const EYE_BROWN = hex('#4a2c36');
-const EYE_BLUE = hex('#2c4478');
-const EYE_GREEN = hex('#2e5a4a');
+export const SKIN = ramp('#ffe4c8', '#f8c8a0', '#dc9a80', '#a86a70');
+export const SKIN_OLD = ramp('#ffe0c8', '#f0bea0', '#d0907e', '#9c6470');
+export const SKIN_ROSY = ramp('#ffdcc4', '#f6b898', '#d88878', '#a85a68');
+export const EYE_BROWN = hex('#4a2c36');
+export const EYE_BLUE = hex('#2c4478');
+export const EYE_GREEN = hex('#2e5a4a');
 
-const leftHold = (hand: [number, number], draw: (c: Ctx) => void, handFront = true) => ({ hand, draw, handFront });
+export const leftHold = (hand: [number, number], draw: (c: Ctx) => void, handFront = true) => ({ hand, draw, handFront });
 
 // ------------------------------------------------------------------ the 15 hosts
 

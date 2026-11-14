@@ -14,6 +14,7 @@
     "sim": "tsx src/tools/sim-cli.ts",
     "tune": "tsx src/tools/tune-cli.ts",
     "diag": "tsx src/tools/diag-cli.ts",
+    "paths": "tsx src/tools/paths-cli.ts",
     "art": "tsx tools/gen-art.ts",
     "audio": "tsx src/tools/audio-cli.ts",
     "play": "tsx src/tools/play-cli.ts"

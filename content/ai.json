@@ -2,7 +2,8 @@
   "needs": [
     { "id": "fed", "value": "min(food, 1)", "weight": 40 },
     { "id": "foodStock", "value": "min(food, 3) / 3", "weight": 4 },
-    { "id": "rent", "value": "-rentDueWeeks() - 3 * max(0, rentDueWeeks() - 1.5)", "weight": 12 },
+    { "id": "noChores", "value": "homeIs('parents_house') ? 0 : 1", "weight": 16 },
+    { "id": "rent", "value": "-rentDueMonths() - 3 * max(0, rentDueMonths() - 1)", "weight": 12 },
     { "id": "clothed", "value": "min(best('clothing'), 1)", "weight": 25 },
     { "id": "health", "value": "health / 100", "weight": 15 },
     { "id": "stress", "value": "-max(0, stress - 40) / 60", "weight": 15 },
@@ -10,9 +11,10 @@
     { "id": "income", "value": "min(jobWage() / 30, 1.5)", "weight": 20 },
     { "id": "cashAtRisk", "value": "-max(0, money - params.robberyThreshold) / 2000", "weight": 4 },
     { "id": "bicycle", "value": "has('bicycle') ? 1 : 0", "weight": 3 },
+    { "id": "canCook", "value": "has('hot_plate') ? 1 : 0", "weight": 4 },
     { "id": "knowledge", "value": "knowledge / 100", "weight": 3 },
     { "id": "experience", "value": "min(experience, 40) / 40", "weight": 5 },
-    { "id": "ownHome", "value": "homeIs('cottage') ? 1 : homeIs('rental_flat') ? 0.6 : 0", "weight": 14 }
+    { "id": "ownHome", "value": "homeIs('cottage') ? (has('cottage_deed') ? 1 : 0.8) : homeIs('rental_flat') ? (flag('basement') == 1 ? 0.35 : 0.6) : 0", "weight": 14 }
   ],
   "profiles": [
     { "id": "balanced", "name": "Balanced", "goals": {}, "caution": 1, "randomness": 0.1 },

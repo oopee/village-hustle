@@ -25,10 +25,13 @@
       "description": "Get checked up and treated.",
       "time": "params.doctorTime",
       "cost": "params.doctorPrice",
-      "requires": [{ "test": "health < 100", "message": "You are in perfect health." }],
       "effects": [
-        { "add": { "health": "params.doctorHeal", "stress": "-3" } },
-        { "message": "The doctor prescribes rest and fluids. You feel better.", "tone": "good" }
+        { "if": "health >= statMax('health')",
+          "then": [{ "add": { "stress": "-3" } }, { "message": "The doctor finds nothing wrong with you and bills you anyway." }],
+          "else": [
+            { "add": { "health": "params.doctorHeal", "stress": "-3" } },
+            { "message": "The doctor prescribes rest and fluids. You feel better.", "tone": "good" }
+          ] }
       ]
     },
     { "id": "vaccine", "kind": "shop", "label": "Vaccination", "items": ["flu_shot"] },

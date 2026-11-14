@@ -69,6 +69,10 @@ function runEffect(ctx: Ctx, e: EffectDef): void {
     p.home = e.setHome;
   } else if ('grantDegree' in e) {
     if (!p.degrees.includes(e.grantDegree)) p.degrees.push(e.grantDegree);
+    // A course leading to a degree the player now has is pointless; drop the enrollment.
+    for (const id of Object.keys(p.courses)) {
+      if (ctx.content.courseById.get(id)?.degree === e.grantDegree) delete p.courses[id];
+    }
   } else if ('moveTo' in e) {
     p.node = e.moveTo;
   } else if ('call' in e) {

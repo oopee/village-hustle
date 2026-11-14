@@ -13,7 +13,7 @@ import { runEffects, giveItem, takeItem } from './effects';
 import { hashString, nextRandom, randomSeedString } from './rng';
 import type { ActionDef, LocationDef } from './schema';
 import type { Ctx } from './rules-api';
-import { failedRequirements, makeCtx, setStat, withLocals } from './scope';
+import { failedRequirements, interp, makeCtx, setStat, withLocals } from './scope';
 import {
   ActionError,
   cloneState,
@@ -284,11 +284,14 @@ function optionImpls(ctx: Ctx, loc: LocationDef, a: ActionDef): OptionImpl[] {
           const wage = ctx.num(job.wage);
           const where = c.locationById.get(job.location)?.name ?? job.location;
           const reasons = [...baseReasons];
+          // Requirements are not shown up front: anyone may apply, and an unqualified
+          // application costs the application time and ends in a rejection that names the problem.
+          const refusals: string[] = [];
           if (p.job === job.id) reasons.push('This is already your job.');
           else {
-            reasons.push(...failedRequirements(ctx, job.requires));
             const holders = jobHolders(ctx, job.id);
-            if (holders) reasons.push(`The position is taken (${holders}).`);
+            if (holders) refusals.push(`The position is already taken (${holders}).`);
+            refusals.push(...failedRequirements(ctx, job.requires));
           }
           return {
             option: job.id,
@@ -300,6 +303,10 @@ function optionImpls(ctx: Ctx, loc: LocationDef, a: ActionDef): OptionImpl[] {
             reasons,
             locals: { jobId: job.id, wage },
             run: (rc: Ctx) => {
+              if (refusals.length) {
+                rc.message(`Application rejected: ${refusals[0]}`, 'bad');
+                return;
+              }
               if (rc.random() < rc.num(job.hireChance)) {
                 rc.player.job = job.id;
                 rc.player.jobSince = rc.state.week;
@@ -377,7 +384,13 @@ function optionImpls(ctx: Ctx, loc: LocationDef, a: ActionDef): OptionImpl[] {
                     runEffects(rc, co.onComplete);
                   } else {
                     rc.player.courses[co.id] = now;
-                    rc.message(gain > 1 ? `A very productive lesson! (${now}/${lessons})` : `You attended a lesson of ${co.name}. (${now}/${lessons})`);
+                    rc.message(
+                      gain > 1
+                        ? `A very productive lesson! (${now}/${lessons})`
+                        : gain === 1
+                          ? `You attended a lesson of ${co.name}. (${now}/${lessons})`
+                          : `No progress this time. (${now}/${lessons})`,
+                    );
                   }
                 },
               };
@@ -499,6 +512,7 @@ export function applyAction(
   if (action.player !== p.id) throw new ActionError('It is not your turn.');
   const events: GameEvent[] = [];
   const ctx = makeCtx(content, s, p, events);
+  const timeBefore = p.timeLeft;
 
   switch (action.type) {
     case 'move':
@@ -515,9 +529,11 @@ export function applyAction(
   if (s.phase === 'playing') {
     if (content.game.winCheck === 'immediate') checkWin(ctx);
     else noticeGoalsMet(ctx);
-    if (s.phase === 'playing' && (ctx.endTurn || p.timeLeft <= 0)) {
-      if (p.timeLeft <= 0) events.push({ type: 'message', player: p.id, text: 'Your time is up for this week.', tone: 'info' });
-      endTurn(content, s, events);
+    // Running out of time does not end the week by itself: the player stays where they
+    // are (zero-time things are still possible) until they head home or end the week.
+    if (s.phase === 'playing' && ctx.endTurn) endTurn(content, s, events);
+    else if (s.phase === 'playing' && p.timeLeft <= 0 && timeBefore > 0) {
+      events.push({ type: 'message', player: p.id, text: 'You are out of time for this week. Head home when you are done here.', tone: 'info' });
     }
   }
   return { state: s, events };
@@ -574,8 +590,9 @@ function endTurn(content: Content, s: GameState, events: GameEvent[]) {
   const ctx = makeCtx(content, s, p, events);
   for (const m of content.modules) m.onTurnEnd?.(ctx);
   p.timeLeft = 0;
+  const from = p.node;
   p.node = homeNode(content, p);
-  events.push({ type: 'turnEnded', player: p.id });
+  events.push({ type: 'turnEnded', player: p.id, path: mapPath(content.map, from, p.node) });
   if (s.phase !== 'playing') return;
 
   s.current++;
@@ -704,6 +721,40 @@ export function turnEndWarnings(content: Content, state: GameState, playerId: st
   if (!p) return [];
   const ctx = makeCtx(content, state, p, []);
   return failedRequirements(ctx, content.rules.turnEndChecks);
+}
+
+export interface HudIcon {
+  id: string;
+  icon: string;
+  text: string;
+  warn: boolean;
+  dim: boolean;
+  badge?: number;
+}
+
+/** The game.json status icons that apply to a player right now (for the top bar). */
+export function hudIcons(content: Content, state: GameState, playerId: string): HudIcon[] {
+  const p = state.players.find((x) => x.id === playerId);
+  if (!p) return [];
+  const ctx = makeCtx(content, state, p, []);
+  const out: HudIcon[] = [];
+  for (const d of content.game.hud) {
+    try {
+      if (d.visible !== undefined && !ctx.bool(d.visible)) continue;
+      const badge = d.badge !== undefined ? Math.round(ctx.num(d.badge)) : undefined;
+      out.push({
+        id: d.id,
+        icon: d.icon,
+        text: interp(ctx, d.text),
+        warn: d.warn !== undefined && ctx.bool(d.warn),
+        dim: d.dim !== undefined && ctx.bool(d.dim),
+        badge,
+      });
+    } catch {
+      // A broken icon must never break the HUD; the validator reports bad expressions.
+    }
+  }
+  return out;
 }
 
 /** Overall progress 0..1: average of goal completion (each capped at 1). */

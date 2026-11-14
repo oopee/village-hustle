@@ -18,6 +18,46 @@ export interface HostDef {
   anims: Partial<Record<HostAnim, number[]>>;
 }
 
+/** A regular who hangs around an interior (drawn like a host, without owning the place). */
+export interface ExtraDef extends HostDef {
+  /** The content id it belongs to: the action done with them, and the location's pokes key. */
+  id: string;
+  /** Mirror horizontally. */
+  flip?: boolean;
+  /** Drawn above the interiorFront layer (e.g. sitting in front of a counter). */
+  front?: boolean;
+}
+
+/** A piece of furniture shown in the player's own home when they own the item of that id. */
+export interface FurnitureDef {
+  sprite: string;
+  x: number;
+  y: number;
+  /** Drawn above the interiorFront layer. */
+  front?: boolean;
+}
+
+/** A clickable hit area in an interior (the content location's pokes say what happens). */
+export interface PropDef {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface LocationArt {
+  sprite?: string;
+  x: number;
+  y: number;
+  interior?: string;
+  interiorFront?: string;
+  host?: HostDef;
+  extras?: ExtraDef[];
+  furniture?: Record<string, FurnitureDef>;
+  props?: PropDef[];
+}
+
 export interface ThemeDef {
   name: string;
   width: number;
@@ -26,7 +66,7 @@ export interface ThemeDef {
   /** Optional layer drawn above buildings and the player. */
   foreground?: string;
   nodes: Record<string, [number, number]>;
-  locations: Record<string, { sprite?: string; x: number; y: number; interior?: string; interiorFront?: string; host?: HostDef }>;
+  locations: Record<string, LocationArt>;
   /** Pixel size of the interior images (default 200x120). */
   interiorSize?: [number, number];
   /** Animated map decorations (horizontal frame strips). */
@@ -49,6 +89,16 @@ export interface ThemeDef {
 export interface HostArt {
   def: HostDef;
   sheet: HTMLImageElement;
+}
+
+export interface ExtraArt {
+  def: ExtraDef;
+  sheet: HTMLImageElement;
+}
+
+export interface FurnitureArt {
+  def: FurnitureDef;
+  img: HTMLImageElement;
 }
 
 export interface OverlayArt {
@@ -83,6 +133,11 @@ export interface Theme {
   interiorFronts: Map<string, string>;
   interiorSize: [number, number];
   hosts: Map<string, HostArt>;
+  /** Per location id. */
+  extras: Map<string, ExtraArt[]>;
+  /** Per location id, then item id. */
+  furniture: Map<string, Map<string, FurnitureArt>>;
+  props: Map<string, PropDef[]>;
   overlays: OverlayArt[];
   /** [colorIndex][frame] */
   playerFrames: HTMLCanvasElement[][];
@@ -180,6 +235,9 @@ export async function loadTheme(id: string, locationIds: string[], nodeIds: stri
   const interiors = new Map<string, string>();
   const interiorFronts = new Map<string, string>();
   const hosts = new Map<string, HostArt>();
+  const extras = new Map<string, ExtraArt[]>();
+  const furniture = new Map<string, Map<string, FurnitureArt>>();
+  const props = new Map<string, PropDef[]>();
   // Indexed so the draw order follows theme.json regardless of load order.
   const overlaySlots: (OverlayArt | null)[] = (def.overlays ?? []).map(() => null);
   await Promise.all([
@@ -200,6 +258,22 @@ export async function loadTheme(id: string, locationIds: string[], nodeIds: stri
         } catch (e) {
           warnings.push((e as Error).message);
         }
+      }
+      if (l.props?.length) props.set(locId, l.props);
+      if (l.extras?.length) {
+        const list = await Promise.all(
+          l.extras.map((x) => loadImage(base + x.sprite).then((sheet) => ({ def: x, sheet }), (e: Error) => (warnings.push(e.message), null))),
+        );
+        extras.set(locId, list.filter((x): x is ExtraArt => !!x));
+      }
+      if (l.furniture) {
+        const m = new Map<string, FurnitureArt>();
+        await Promise.all(
+          Object.entries(l.furniture).map(([item, f]) =>
+            loadImage(base + f.sprite).then((img) => void m.set(item, { def: f, img }), (e: Error) => void warnings.push(e.message)),
+          ),
+        );
+        furniture.set(locId, m);
       }
       if (!l.sprite) return;
       try {
@@ -223,5 +297,5 @@ export async function loadTheme(id: string, locationIds: string[], nodeIds: stri
   const interiorSize = def.interiorSize ?? [200, 120];
   document.documentElement.style.setProperty('--interior-w', `${interiorSize[0]}px`);
   document.documentElement.style.setProperty('--interior-h', `${interiorSize[1]}px`);
-  return { def, base, background, foreground, buildings, interiors, interiorFronts, interiorSize, hosts, overlays, playerFrames, warnings };
+  return { def, base, background, foreground, buildings, interiors, interiorFronts, interiorSize, hosts, extras, furniture, props, overlays, playerFrames, warnings };
 }

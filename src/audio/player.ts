@@ -510,7 +510,7 @@ export class AudioPlayer {
     let i = from;
     while (i < to && !/[a-zåäöšž]/i.test(text[i])) i++;
     if (i >= to) return;
-    this.nextBlip = now + BLIP_GAP;
+    this.nextBlip = now + BLIP_GAP * (this.cfg.voices?.[who]?.gap ?? 1);
     const vowel = vowelFor(text, i);
     const key = blipKey(VOWELS.includes(vowel) ? vowel : 'a', onsetOf(text[i]), (i * 7 + text.length) % BLIP_VARIANTS);
     void set.then((blips) => {

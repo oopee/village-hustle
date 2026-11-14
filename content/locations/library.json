@@ -17,6 +17,19 @@
       "refuse": ["Not today, dear.", "Hmm, no."]
     }
   },
+  "pokes": {
+    "stove": { "lines": [
+        "The old tiled stove is warm. Aili says it has been lit every winter since 1923, \"except during the war, and that was the Russians' fault\".",
+        "You put your hands on the tiled stove. For a moment, all is well with the world.",
+        "A sign on the stove: DO NOT DRY MITTENS HERE. Six mittens are drying on it."
+    ] },
+    "olli": { "name": "Olli", "lines": [
+        "Have you heard of my app? It's a to-do list. But with dark mode.",
+        "I'm not addicted to coffee. I'm a coffee-based life form.",
+        "Have you tried turning your life off and on again?",
+        "The library wifi password is \"kirjasto\". I hacked it. By asking."
+    ] }
+  },
   "actions": [
     {
       "id": "read", "kind": "basic", "label": "Read novels",
@@ -32,26 +45,35 @@
       "id": "self_study", "kind": "basic", "label": "Self-study",
       "description": "Read textbooks on your own.",
       "time": "params.selfStudyTime",
-      "requires": [{ "test": "knowledge < 100", "message": "You have read everything here." }],
       "effects": [
-        { "add": { "knowledge": "params.selfStudyGain" } },
-        { "message": "You take careful notes. Your next lessons should go more smoothly." }
+        { "if": "knowledge >= statMax('knowledge')",
+          "then": [{ "message": "You read for hours, but it's all things you already know." }],
+          "else": [
+            { "add": { "knowledge": "params.selfStudyGain" } },
+            { "message": "You take careful notes. Your next lessons should go more smoothly." }
+          ] }
       ]
     },
     {
       "id": "olli", "kind": "basic", "label": "Ask Olli for computer help",
       "description": "Olli sits at the library computer every day, \"helping\". He knows a lot. He will make sure you know he knows.",
       "time": "params.olliTime",
-      "requires": [{ "test": "flag('olliWeek') != player.week", "message": "You can't take any more Olli this week. Your nerves won't allow it." }],
       "effects": [
-        { "setFlag": { "olliWeek": "player.week" } },
-        { "add": { "knowledge": "params.olliKnowledge", "stress": "params.olliStress" } },
-        { "pick": [
-          { "weight": "1", "do": [{ "message": "Olli fixes your problem, then explains three problems you didn't have, then why you should switch to Linux." }] },
-          { "weight": "1", "do": [{ "message": "Olli: \"Have you tried turning it off and on again?\" He laughs at his own joke for a full minute. You learn a lot, though." }] },
-          { "weight": "1", "do": [{ "message": "Olli pitches his blockchain startup for an hour. In between, you actually learn something useful." }] },
-          { "weight": "1", "do": [{ "message": "Olli sighs loudly every time you click something. You learn fast, just to make it stop." }] }
-        ] }
+        { "if": "flag('olliWeek') == player.week",
+          "then": [
+            { "add": { "knowledge": "params.olliKnowledge * 0.5", "stress": "params.olliStress * 2", "happiness": "-1" } },
+            { "message": "Olli again. He remembers everything you got wrong last time and lists it, in order. You learn a little. Your eye twitches." }
+          ],
+          "else": [
+            { "add": { "knowledge": "params.olliKnowledge", "stress": "params.olliStress" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Olli fixes your problem, then explains three problems you didn't have, then why you should switch to Linux." }] },
+              { "weight": "1", "do": [{ "message": "Olli: \"Have you tried turning it off and on again?\" He laughs at his own joke for a full minute. You learn a lot, though." }] },
+              { "weight": "1", "do": [{ "message": "Olli pitches his blockchain startup for an hour. In between, you actually learn something useful." }] },
+              { "weight": "1", "do": [{ "message": "Olli sighs loudly every time you click something. You learn fast, just to make it stop." }] }
+            ] }
+          ] },
+        { "setFlag": { "olliWeek": "player.week" } }
       ]
     },
     { "id": "work", "kind": "work" }

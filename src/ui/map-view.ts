@@ -1,5 +1,6 @@
 /** Canvas renderer for the village map: background, buildings, hover and the walking player token. */
 import type { Content } from '../engine';
+import { daylightTint, seasonalCopy, type Season } from './season';
 import type { Direction, OverlayArt, Theme } from './theme';
 
 /** Footstep interval while walking (matches the walk cycle's feel). */
@@ -26,6 +27,12 @@ export class MapView {
   private frame = 0;
   private raf = 0;
   private walkToken = 0;
+  /** Current season (visual only) and daylight: 1 = start of the week, 0 = out of time. */
+  season: Season = 'summer';
+  daylight = 1;
+  private seasonal = new Map<Season, { bg: HTMLCanvasElement; fg: HTMLCanvasElement | null; buildings: Map<string, { img: HTMLCanvasElement; hover: HTMLCanvasElement }> }>();
+  private particles: { x: number; y: number; vx: number; vy: number; c: string; s: number; ph: number }[] = [];
+  private lastDraw = 0;
 
   constructor(
     readonly canvas: HTMLCanvasElement,
@@ -149,15 +156,71 @@ export class MapView {
     else if (id) this.onHover(id, x, y);
   }
 
+  /** Recoloured art for a season, built once on first use. */
+  private art(season: Season) {
+    let a = this.seasonal.get(season);
+    if (!a) {
+      const theme = this.theme;
+      const buildings = new Map<string, { img: HTMLCanvasElement; hover: HTMLCanvasElement }>();
+      for (const b of theme.buildings.values()) {
+        buildings.set(b.id, { img: seasonalCopy(b.img, season, true), hover: seasonalCopy(b.hover, season, true) });
+      }
+      a = {
+        bg: seasonalCopy(theme.background, season),
+        fg: theme.foreground ? seasonalCopy(theme.foreground, season) : null,
+        buildings,
+      };
+      this.seasonal.set(season, a);
+    }
+    return a;
+  }
+
+  /** Falling snow in winter, drifting leaves in autumn, the odd petal in spring. */
+  private weather(dt: number) {
+    const { ctx } = this;
+    const W = this.canvas.width;
+    const H = this.canvas.height;
+    const want = this.season === 'winter' ? 90 : this.season === 'autumn' ? 22 : this.season === 'spring' ? 8 : 0;
+    while (this.particles.length < want) {
+      const leaf = this.season === 'autumn';
+      const petal = this.season === 'spring';
+      this.particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H - (this.particles.length ? H : 0),
+        vx: leaf ? 10 + Math.random() * 12 : (Math.random() - 0.3) * 6,
+        vy: leaf ? 9 + Math.random() * 8 : petal ? 6 + Math.random() * 4 : 12 + Math.random() * 16,
+        c: leaf ? ['#c8642a', '#d9a23a', '#9a4a22'][Math.floor(Math.random() * 3)] : petal ? '#f6d4e0' : '#ffffff',
+        s: leaf ? 2 : Math.random() < 0.3 ? 2 : 1,
+        ph: Math.random() * 6.28,
+      });
+    }
+    if (this.particles.length > want) this.particles.length = want;
+    for (const p of this.particles) {
+      p.ph += dt * 2;
+      p.x += (p.vx + Math.sin(p.ph) * 6) * dt;
+      p.y += p.vy * dt;
+      if (p.y > H + 2 || p.x > W + 4 || p.x < -4) {
+        p.y = -2;
+        p.x = Math.random() * W;
+      }
+      ctx.fillStyle = p.c;
+      ctx.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s === 2 && this.season === 'autumn' ? 1 : p.s);
+    }
+  }
+
   draw() {
     const { ctx, theme } = this;
     const now = performance.now();
-    ctx.drawImage(theme.background, 0, 0);
+    const dt = Math.min(0.1, (now - (this.lastDraw || now)) / 1000);
+    this.lastDraw = now;
+    const art = this.art(this.season);
+    ctx.drawImage(art.bg, 0, 0);
     for (const o of theme.overlays) if (!o.above) this.drawOverlay(o, now);
     const sprites = [...theme.buildings.values()].sort((a, b) => a.y + a.h - (b.y + b.h));
     for (const b of sprites) {
-      if (this.hover === b.id) ctx.drawImage(b.hover, b.x - 1, b.y - 1);
-      else ctx.drawImage(b.img, b.x, b.y);
+      const sb = art.buildings.get(b.id);
+      if (this.hover === b.id) ctx.drawImage(sb?.hover ?? b.hover, b.x - 1, b.y - 1);
+      else ctx.drawImage(sb?.img ?? b.img, b.x, b.y);
     }
     // Signposts for locations that have no art yet.
     for (const loc of this.content.locations) {
@@ -203,6 +266,15 @@ export class MapView {
       } else ctx.drawImage(img, x, y);
     }
     for (const o of theme.overlays) if (o.above) this.drawOverlay(o, now);
-    if (theme.foreground) ctx.drawImage(theme.foreground, 0, 0);
+    if (art.fg) ctx.drawImage(art.fg, 0, 0);
+    this.weather(dt);
+    const tint = daylightTint(this.daylight);
+    if (tint) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = `rgb(${tint.map((v) => Math.round(v)).join(',')})`;
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      ctx.restore();
+    }
   }
 }

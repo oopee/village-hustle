@@ -370,6 +370,22 @@ export function grill(): Scene {
   pz.outlineOn(f, OUT);
   new Mask(W, H).ellipse(116, 72.5, 10, 2.5).fill(f, hex('#e05a3a'));
   for (const [x, y] of [[110, 72], [116, 73], [121, 72], [113, 71], [119, 71]] as const) f.set(x, y, hex('#fff4c0'));
+  // Pekki's corner table (he stands behind it; see rooms-furniture.ts)
+  shadow(b, 79, 126, 22, 3);
+  for (const lx of [61, 95]) {
+    f.rect(lx, 108, 3, 18, PAL.darkWood[2]);
+    f.frame(lx - 1, 108, 5, 19, OUT);
+  }
+  box(f, 57, 97, 44, 12, 5, PAL.darkWood, ramp('#c8885a', '#a0663e', '#7a4a34', '#54302e'));
+  f.hline(58, 99, 106, PAL.darkWood[3]);
+  // two empty glasses and a beer mat
+  for (const gx of [59, 65]) {
+    f.rect(gx, 92, 4, 6, hex('#e8f4ff', 140));
+    f.vline(gx, 92, 97, hex('#ffffff', 200));
+    f.hline(gx, gx + 3, 96, hex('#f2c040', 160));
+    f.frame(gx - 1, 91, 6, 8, hex('#2b1d2a', 200));
+  }
+  f.rect(88, 98, 8, 2, hex('#e8e0c8'));
   return s;
 }
 
@@ -415,18 +431,15 @@ export function rentalFlat(): Scene {
   lamp.paint(b, PAL.orange, { split: 205 });
   lamp.outlineOn(b, OUT);
   b.hline(193, 207, 21, hex('#fff4b0'));
-  // TV on a teak cabinet
+  // empty teak TV cabinet (the TV, rug and other owned things are furniture sprites,
+  // see rooms-furniture.ts, drawn only when the player owns them)
   shadowRect(b, 160, 98, 52, 4);
   box(b, 162, 74, 48, 24, 3, ramp('#d89a5a', '#b06e3a', '#844a2e', '#58302a'), ramp('#d89a5a', '#b06e3a', '#844a2e', '#58302a'));
   b.frame(166, 80, 18, 14, hex('#58302a'));
   b.frame(188, 80, 18, 14, hex('#58302a'));
-  box(b, 166, 46, 36, 28, 0, ramp('#c8885a', '#9c5e36', '#6a3c2c', '#44242a'), ramp('#c8885a', '#9c5e36', '#6a3c2c', '#44242a'));
-  b.rect(169, 49, 24, 21, hex('#2a3446'));
-  b.rect(170, 50, 22, 19, hex('#4a6a8a'));
-  b.rect(172, 52, 8, 4, hex('#8ab0d0'));
-  for (let i = 0; i < 3; i++) b.set(197, 52 + i * 5, PAL.metal[1]);
-  b.line(178, 46, 172, 34, PAL.metal[2]);
-  b.line(186, 46, 194, 34, PAL.metal[2]);
+  // a doily where the TV would go
+  for (let x = 176; x < 196; x += 2) b.set(x, 75, hex('#fffaf0'));
+  b.hline(178, 193, 74, hex('#fffaf0'));
   // sauna door
   box(b, 214, 26, 26, 70, 0, PAL.pine, PAL.pine);
   for (let x = 216; x < 238; x += 4) b.vline(x, 28, 94, PAL.pine[2]);
@@ -436,8 +449,6 @@ export function rentalFlat(): Scene {
   paper(b, 217, 52, 21, 7, hex('#fbf6e6'));
   b.text('SAUNA', 218, 53, PAL.darkWood[3]);
   b.rect(234, 62, 4, 2, PAL.metal[1]);
-  // rug
-  ragRug(b, 54, 126, 150, 22, [hex('#c4703e'), hex('#e8c070'), hex('#8e4a32'), hex('#e8c070')], r);
   // front: corduroy sofa (Leena stands behind it)
   const f = s.front;
   const sofa = ramp('#f0a050', '#c8742e', '#9a5028', '#6a3424', '#44222a');

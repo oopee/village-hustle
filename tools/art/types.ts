@@ -71,6 +71,40 @@ export interface MapArt {
 
 export type HostAnim = 'idle' | 'talk' | 'happy' | 'annoyed';
 
+/** A regular who hangs out in a room (drawn right after the host). */
+export interface RoomExtra {
+  /** Equals the content action id of that regular (e.g. 'pekki' at the grill). */
+  id: string;
+  sheet: Sheet;
+  /** Top-left of the frame inside the interior. */
+  x: number;
+  y: number;
+  anims: Record<HostAnim, number[]>;
+  /** Mirror horizontally. */
+  flip?: boolean;
+  /** Draw above the room's front layer. */
+  front?: boolean;
+}
+
+/** An owned item drawn in the player's home (key = item id). */
+export interface RoomFurniture {
+  img: Img;
+  /** Top-left inside the interior. */
+  x: number;
+  y: number;
+  /** Draw above the room's front layer (e.g. on a front-layer table). */
+  front?: boolean;
+}
+
+/** A clickable hit area over a funny object (cosmetic). */
+export interface RoomProp {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 /** Output of tools/art/rooms.ts */
 export interface RoomsArt {
   /** Size of every interior image. */
@@ -91,6 +125,9 @@ export interface RoomsArt {
         /** Frame indices per animation. idle should include a blink; talk alternates mouth open/closed. */
         anims: Record<HostAnim, number[]>;
       };
+      extras?: RoomExtra[];
+      furniture?: Record<string, RoomFurniture>;
+      props?: RoomProp[];
     }
   >;
 }

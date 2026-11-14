@@ -2,47 +2,85 @@
   "id": "cottage",
   "name": "Red Cottage",
   "node": "cottage",
-  "description": "A falu-red cottage by the woods near Punkanjoki: a woodshed, an apple tree and its own little sauna. There is only one, and it is for sale.",
+  "description": "A falu-red cottage by the woods near Punkanjoki: a woodshed, an apple tree and its own little sauna. There is only one. Eila rents it out for the owners' estate until somebody buys it.",
   "greeting": ["Birds sing in the birch trees.", "The apple tree is in bloom.", "Punkanjoki murmurs behind the woods."],
   "host": {
     "name": "Eila",
     "title": "the neighbour",
     "lines": {
       "hello": ["Hello, dear! I brought blueberries.", "The previous owner had such nice roses.", "You should put the sauna on. It's Saturday somewhere."],
+      "rent": ["I'll tell the estate you're a good tenant. Rent at the start of the month, dear.", "Lovely! Just don't let the apple tree die."],
       "buy": ["Welcome to the neighbourhood!", "Oh how lovely, a young person moving in!"],
       "move_in": ["Back home! I watered the plants."],
+      "pay_rent": ["Thank you, dear. I'll send it on to the estate.", "Right on time. Have a blueberry."],
       "relax": ["Enjoy the sauna, dear. I'll keep an eye on things.", "Lovely evening for a dip."],
       "broke": ["Ooh, it's not cheap, is it? Save up, dear.", "One day, dear. One day."],
       "refuse": ["Not today, dear."]
     }
   },
+  "pokes": {
+    "fireplace": { "lines": [
+        "The fire crackles. You could stare at it all evening. You do.",
+        "You poke the fire. It pokes back with a spark on your sock."
+    ] },
+    "rocking_chair": { "lines": [
+        "The rocking chair creaks back and forth by itself. Probably the draught. Probably.",
+        "You sit in the rocking chair and feel instantly forty years older. It's lovely."
+    ] }
+  },
   "actions": [
+    {
+      "id": "rent", "kind": "basic", "label": "Rent the cottage",
+      "description": "Live here until somebody buys the place. Rent is due monthly; the first month is paid now. If the cottage is sold, you have to move out.",
+      "visible": "!homeIs('cottage') && ownedBy('cottage_deed') == ''",
+      "time": "params.movingTime",
+      "cost": "params.rentCottage * world.economy",
+      "effects": [
+        { "setHome": "cottage" }, { "set": { "rentOwed": "0" } },
+        { "setFlag": { "basement": "0", "rent": "round(params.rentCottage * world.economy)" } },
+        { "add": { "happiness": "params.cottageRentJoy" } },
+        { "message": "You rent the red cottage. Woodshed, apple tree, your own sauna. Eila brings blueberries before you have unpacked.", "tone": "good" }
+      ]
+    },
+    {
+      "id": "pay_rent", "kind": "basic", "label": "Pay rent",
+      "description": "Settle what you owe.",
+      "visible": "homeIs('cottage') && rentOwed > 0",
+      "cost": "rentOwed",
+      "time": "0",
+      "effects": [{ "set": { "rentOwed": "0" } }, { "message": "Rent paid.", "tone": "good" }]
+    },
     {
       "id": "buy", "kind": "shop", "label": "Buy the cottage",
       "visible": "!has('cottage_deed')",
       "time": "params.movingTime",
       "items": ["cottage_deed"],
       "effects": [
-        { "setHome": "cottage" }, { "set": { "rentOwed": "0" } }, { "add": { "happiness": "params.cottageBuyJoy" } },
-        { "message": "The cottage is yours! You move in right away.", "tone": "good" }
+        { "setHome": "cottage" }, { "set": { "rentOwed": "0" } }, { "setFlag": { "rent": "0", "basement": "0" } },
+        { "add": { "happiness": "params.cottageBuyJoy" } },
+        { "message": "The cottage is yours! No more rent, ever.", "tone": "good" }
       ]
     },
     {
       "id": "move_in", "kind": "basic", "label": "Move back into the cottage",
       "visible": "has('cottage_deed') && !homeIs('cottage')",
       "time": "params.movingTime",
-      "effects": [{ "setHome": "cottage" }, { "set": { "rentOwed": "0" } }, { "message": "Home sweet home." }]
+      "effects": [{ "setHome": "cottage" }, { "set": { "rentOwed": "0" } }, { "setFlag": { "rent": "0", "basement": "0" } }, { "message": "Home sweet home." }]
     },
     {
       "id": "relax", "kind": "basic", "label": "Relax at the cottage",
       "description": "Wood-fired sauna and a swim in the river.",
       "visible": "homeIs('cottage')",
       "time": "params.relaxTime",
-      "requires": [{ "test": "relaxedThisWeek < 1", "message": "You already rested this week." }],
       "effects": [
-        { "add": { "happiness": "params.relaxJoyCottage", "stress": "-params.relaxStressRelief * 2", "health": "2", "relaxedThisWeek": "1" } },
-        { "if": "has('tv')", "then": [{ "add": { "happiness": "params.tvRelaxJoy" } }] },
-        { "message": "Wood-fired sauna, a cold dip, a sausage on the fire. Bliss." }
+        { "add": {
+          "happiness": "(params.relaxJoyCottage + (has('tv') ? params.tvRelaxJoy : 0)) / (1 + relaxedThisWeek)",
+          "stress": "-params.relaxStressRelief * 2 / (1 + relaxedThisWeek)",
+          "health": "relaxedThisWeek < 1 ? 2 : 0" } },
+        { "if": "relaxedThisWeek >= 1",
+          "then": [{ "message": "Another sauna. You are now more steam than person. Eila asks if you're feeling all right." }],
+          "else": [{ "message": "Wood-fired sauna, a cold dip, a sausage on the fire. Bliss." }] },
+        { "add": { "relaxedThisWeek": "1" } }
       ]
     }
   ]

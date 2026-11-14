@@ -79,7 +79,8 @@ export type GameEvent =
   | { type: 'moved'; player: string; path: string[]; time: number }
   | { type: 'did'; player: string; location: string; action: string; option?: string; label: string }
   | { type: 'turnStarted'; player: string; week: number }
-  | { type: 'turnEnded'; player: string }
+  /** `path` is the walk home (map nodes, starting where the player was); a single node if already home. */
+  | { type: 'turnEnded'; player: string; path: string[] }
   | { type: 'weekEnded'; week: number }
   | { type: 'gameOver'; winner: string | null; reason: 'goals' | 'maxWeeks' };
 

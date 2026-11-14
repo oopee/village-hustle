@@ -49,6 +49,8 @@ This guide covers changing the game without touching the engine. Everything belo
 ### Add a job
 1. **Add it to `content/jobs.json`.** It needs `location`, `career` (0–100), `wage` per hour and `shift` hours, plus optional `requires`, `hireChance`, `promoteTo` and `onWork`.
 2. **Make it workable.** The location needs a `{ "kind": "work" }` action so the player can work there. Any `{ "kind": "jobs" }` action (e.g. the Employment Office) lists all jobs.
+3. **Let it pay raises.** End the `wage` with `* payGrade()` (§5.4).
+4. **Give it a sound.** Add `action.<location>.work` to the theme's `audio.json` if the location has no work sound yet.
 
 ### Add a course
 Add a degree and a course in `content/education.json`. The course's `location` must have a `{ "kind": "courses" }` action.
@@ -69,7 +71,7 @@ Edit `content/rules.json` → `turnStart` (it runs for each player at the start 
 
 | File | What it defines |
 |---|---|
-| `game.json` | Title, subtitle, theme id, currency symbol, time unit, player limits; `turnTime` (hours per week) and `travelTime` (per walk, sees `distance`) formulas; `startHome`, `startStats`, `startItems`, `world` (global variables), `maxWeeks`, `eventChance`, `maxEnrollments`, `winCheck`, suggested `playerNames`, `intro` paragraphs |
+| `game.json` | Title, subtitle, theme id, currency symbol, time unit, player limits; `turnTime` (hours per week) and `travelTime` (per walk, sees `distance`) formulas; `startHome`, `startStats`, `startItems`, `world` (global variables), `maxWeeks`, `eventChance`, `maxEnrollments`, `winCheck`, suggested `playerNames`, `intro` paragraphs, `hud` status icons (see below) |
 | `stats.json` | Player stats: `id`, `label`, `default`, `min`, `max` (may be an expression), `display` (`money`, `number`, `bar`, `hidden`). `money` is required. Hidden stats are never shown to players. |
 | `goals.json` | Goals: `id`, `label`, `score` (expression, clamped to 0–100), `defaultTarget`; `targetMin`/`targetMax` for the setup sliders |
 | `map.json` | `nodes` and undirected `edges` `[a, b, distance]`. Walking uses the shortest path. |
@@ -78,11 +80,21 @@ Edit `content/rules.json` → `turnStart` (it runs for each player at the start 
 | `jobs.json` | Jobs (§5.4) |
 | `education.json` | `degrees` (`id`, `name`, `points`) and `courses` (§5.5) |
 | `events.json` | Random events: `weight` (expression), optional `requires`, `effects`. At most one event per turn, with probability `game.eventChance`. |
-| `rules.json` | Effect lists run by the engine: `turnStart`, `weekEnd`, `afterWork`, `afterLesson`, `afterMove`; `lessonRequires` (requirements checked before every lesson, e.g. a weekly lesson cap); `turnEndChecks` (requirements checked when a player ends the week; each failed one is shown as a warning in the confirm dialog); `hints` (strings for `hint()`) |
+| `rules.json` | Effect lists run by the engine: `turnStart`, `weekEnd`, `afterWork`, `afterLesson`, `afterMove`; `lessonRequires` (requirements checked before every lesson, e.g. a weekly lesson cap); `turnEndChecks` (requirements checked when a player ends the week, available to tools via `turnEndWarnings()`; the default UI deliberately does not show them, so players find things out for themselves); `hints` (strings for `hint()`) |
 | `balance.json` | `params` (§8) |
 | `balance-targets.json` | Simulator targets (see BALANCING.md) |
 | `ai.json` | Bot `needs` and `profiles` (§9) |
 | `rules/*.ts` | Rule code (§6) |
+
+**HUD status icons** (`game.json` → `hud`): small icons in the top bar so players can see at a glance what they have already taken care of. Each entry is `{ "id", "icon", "text", "visible"?, "warn"?, "dim"?, "badge"? }`:
+- `icon` is an emoji or short text; `text` is the tooltip (may contain `{expressions}`).
+- `visible` (expression, default true) hides the icon when false.
+- `warn` makes it blink red (e.g. `"food < 1"`), `dim` greys it out (e.g. not rested yet this week).
+- `badge` is a small number in the corner (e.g. `"food"`).
+
+```json
+{ "id": "food", "icon": "🍞", "text": "Food at home: {food} weeks", "warn": "food < 1", "badge": "food" }
+```
 
 ---
 
@@ -131,7 +143,7 @@ Expressions are strings (or plain numbers or booleans) used almost everywhere: c
   | `ownedBy('item')` | Names of the *other* players who own the item, or `''`. For one-of-a-kind things: `"requires": [{ "test": "ownedBy('cottage_deed') == ''", "message": "{ownedBy('cottage_deed')} owns it now." }]` |
   | `flag('name')` | A per-player flag set with `setFlag` (0 if unset) |
   | `statMax('stat')`, `turns()`, `hint()` | Misc |
-  | Rule-code functions | Anything a rule module adds (§6) |
+  | Rule-code functions | Anything a rule module adds (§6). The default `rules/core.ts` adds `season()` (`'summer'`, `'autumn'`, `'winter'` or `'spring'`; week 1 is early June, 13 weeks each, e.g. `"requires": "season() == 'winter'"`), `rentDueMonths()`, and `shifts()`, `raises()` and `payGrade()` (§5.4) |
 
 - **Text interpolation.** Messages, requirement messages and greetings may contain `{expression}`, e.g. `"You lost €{lost}."`.
 - **Validation.** The validator rejects unknown names, parameters, functions and syntax errors, and names the file they are in.
@@ -147,7 +159,7 @@ Effects are JSON objects run in order:
 | `{ "add": { "stat": "expr", ... } }` | Add to stats (clamped to min/max) |
 | `{ "set": { "stat": "expr" } }` | Set stats |
 | `{ "let": { "name": "expr" } }` | Set a local variable for the following effects/messages |
-| `{ "setWorld": { "key": "expr" } }` | Set a world variable |
+| `{ "setWorld": { "key": "expr" } }` | Set a world variable (declare it in `game.json` `world`). The default rules keep `world.economy` and `world.market`, the share price move of the week, which `turnStart` applies to each player's `shares` |
 | `{ "setFlag": { "name": "expr" } }` | Set a per-player flag (number, string or boolean) |
 | `{ "give": "item", "qty": "expr" }` / `{ "take": ... }` | Inventory |
 | `{ "message": "text {expr}", "tone": "good" \| "bad" \| "info" }` | Show a message (narration caption) |
@@ -156,7 +168,7 @@ Effects are JSON objects run in order:
 | `{ "chance": "expr", "then": [...], "else": [...] }` | Random with probability |
 | `{ "pick": [ { "weight": "expr", "do": [...] }, ... ] }` | Weighted random choice |
 | `{ "time": "expr" }` | Add (or with negative, remove) hours this turn |
-| `{ "setJob": "id" \| null }`, `{ "setHome": "location" }`, `{ "grantDegree": "id" }`, `{ "moveTo": "node" }` | State changes |
+| `{ "setJob": "id" \| null }`, `{ "setHome": "location" }`, `{ "grantDegree": "id" }`, `{ "moveTo": "node" }` | State changes. `grantDegree` also drops any enrollment in a course for that degree (used by the skills tests at the school) |
 | `{ "call": "effectName", "args": { "k": "expr" } }` | Run a rule-code effect |
 | `{ "endTurn": true }` | End the turn after this action |
 
@@ -182,7 +194,7 @@ Effects are JSON objects run in order:
 - `id`, `kind`, `label`, `description`
 - `visible`: an expression; when false the action is hidden
 - `time`, `cost`
-- `requires`: a list of `{ "test": "expr", "message": "why not" }`. Unmet requirements show greyed out with the reason.
+- `requires`: a list of `{ "test": "expr", "message": "why not" }`. Unmet requirements show greyed out with the reason. Use them for real rules (once a week, prerequisites), not to protect players from wasting time: if an action is merely pointless (eating when full, a doctor when healthy), let it run and say so in an `if` effect instead.
 - `effects`: run after the built-in behaviour
 - `ai`: an extra desirability hint for bots; an expression, positive is more attractive
 
@@ -193,7 +205,7 @@ Effects are JSON objects run in order:
 | `basic` | None; just `time`, `cost` and `effects` | — |
 | `shop` | One option per item; pays the item price and runs `onBuy` (consumables) or adds the item to the inventory | `items: [...]` |
 | `sell` | Sell owned items of the given categories for their `sellValue` | `categories: [...]` |
-| `jobs` | One option per job (all jobs, or listed ones); applying checks requirements and rolls `hireChance` | `jobs?: [...]` |
+| `jobs` | One option per job (all jobs, or listed ones). Every job can be applied for; the job's `requires` are checked only on applying, and an unqualified application costs the action's time and is rejected with the first unmet message. Otherwise it rolls `hireChance`. The UI groups vacancies by workplace | `jobs?: [...]` |
 | `work` | Shown only if the player's job is at this location; works one shift (or the hours left) and pays `wage × hours`; runs `job.onWork`, then `rules.afterWork` | — |
 | `courses` | Enroll in courses taught here (pay the fee), or attend a lesson of an enrolled course; the final lesson grants the degree | `courses?: [...]` |
 | `transfer` | Move amounts between two stats (e.g. bank) | `from`, `to`, `amounts`, `allowAll` |
@@ -202,6 +214,8 @@ Effects are JSON objects run in order:
 - A home is just a location id stored as the player's `home`. Turns start there.
 - Rent, nagging and similar rules live in `rules.json` → `turnStart`, using `homeIs('...')`.
 - To add a new home type, use a `basic` action with `{ "setHome": "my_place" }` plus rules for its upkeep.
+- **Default content:** everyone starts at the parents' house (free food, but Mom's chores eat time and happiness every week). Players may move out to the cheap basement flat or the better flat at Lasitehtaantie, rent the cottage, or buy it. The rent is locked in with the lease (`setFlag rent`) and charged **monthly**; `flag('basement')` marks the cheap flat.
+- The player's own items are drawn in their home if the theme has `furniture` for it (§7).
 
 ### 5.3 Items
 - **Required fields:** `id`, `name`, `category`, `price`.
@@ -228,16 +242,22 @@ Effects are JSON objects run in order:
   | Field | Meaning |
   |---|---|
   | `career` | Career rating; feeds the Career goal |
-  | `wage` | Pay per hour |
+  | `wage` | Pay per hour. Multiply by `payGrade()` so raises apply: `"params.wage_x * params.wageScale * world.economy * payGrade()"` |
   | `shift` | Hours per shift |
   | `requires` | Requirements to be hired |
-  | `openings` | Optional expression: how many players can hold the job at once. When it is full, applying shows "The position is taken (name)" and `canWork()` is false. Omit for unlimited. |
+  | `openings` | Optional expression: how many players can hold the job at once. When it is full, an application is rejected with "The position is already taken (name)" and `canWork()` is false. Omit for unlimited. |
   | `hireChance` | Probability that an application succeeds |
   | `rejectText` | Message when not hired |
-  | `promoteTo` | Job id; promotions are rule code in `rules/core.ts` |
+  | `promoteTo` | Job id of the next step up; promotions are rule code in `rules/core.ts` (see below) |
   | `onWork` | Effects after each shift |
 
-- **Experience** grows through `rules.afterWork`; requirements can test it. The default rules keep general experience in the `experience` stat and experience per workplace in flags (`flag('xpBank')` etc.), so a manager job can ask for experience at its own workplace.
+- **Experience** grows through `rules.afterWork`; requirements can test it. The default rules keep general experience in the `experience` stat and experience per workplace in flags (`flag('xpBank')`, `flag('xpHealth')`, `flag('xpBand')` etc.), so a manager job can ask for experience at its own workplace.
+- **Raises and promotions** (`rules/core.ts`). `rules.afterWork` calls `{ "call": "countShift", "args": { "hours": "hours" } }`, which counts shifts in the current job (a shift shorter than the job's `shift` counts partly) and announces each raise. Hiring or promotion starts the count again.
+  - `shifts()`: shifts in the current job. `raises()`: raises earned, one per `params.raiseShifts`, at most `params.maxRaises`. `payGrade()`: the wage multiplier, `1 + params.raiseStep * raises()`; it is 1 when another job's wage is being shown.
+  - At the start of a week, a player with at least `params.promotionShifts` shifts in a job with `promoteTo` is promoted with `params.promotionChance` (more with reputation) if `canWork()` the next job. If not, the boss names the first unmet requirement once per job.
+  - The Career goal adds `raises() * params.seniorityCareer`.
+- **Experience instead of a diploma.** Write the requirement as an "or": `"degree('vocational_trade') || flag('xpGrill') >= params.exp_grill_manager * params.veteranXp"`, with a message that names both ways ("You need a Retail & Trade diploma, or a lot more experience at the grill.").
+- **Jobs you get without applying.** An item's `onBuy` can `setJob` (the beach kiosk lease). Give the job a `requires` that checks the item, so applying for it elsewhere explains how to get it.
 
 ### 5.5 Courses
 - **Fields:** `id`, `name`, `location`, `degree`, `description`, plus:
@@ -292,6 +312,23 @@ Every location can have an owner who stands in the interior picture and reacts t
 - `refuse`: clicking any other greyed-out choice.
 
 Regular `message`s still appear as narration captions under the picture. Use `say` when the owner should speak, e.g. advice: `{ "say": "{tip}" }`. The art for the host (sprite sheet and animations) comes from the theme (section 7).
+
+If the theme draws a **regular** (an `extras` entry) whose id equals an action id at that location (e.g. `pekki` at the grill), doing that action makes the regular chat and react instead of the owner.
+
+### 5.7 Pokes (clickable things in a room)
+Pure flavour for the curious: the cat, a cuckoo clock, the regular at the corner table. Keys are the ids of the theme's `props` or `extras` in this interior (section 7). Clicking shows one random line in a bubble pointing at the thing; nothing in the game changes and no time passes.
+
+```json
+"pokes": {
+  "cat": { "name": "Mirri", "lines": ["Mrrrp.", "Mau. (Translation: the bowl is half empty.)"] },
+  "clock": { "lines": ["The cuckoo clock has said a quarter past something since 1987."] }
+}
+```
+
+- With a `name`, the line is spoken: the name is shown and the speaker babbles with the voice `voices.<id>` from `audio.json`, if there is one.
+- Without a name, the line is narration pointing at the prop.
+- The sound `poke.<location>.<id>` from `audio.json` plays on every click.
+- A prop or regular without a `pokes` entry is not clickable.
 
 ---
 
@@ -351,7 +388,14 @@ A theme is `public/themes/<id>/theme.json` plus images. `content/game.json` → 
                        "interiorFront": "interiors/parents_house-front.png", // optional: drawn over the host (counter)
                        "host": { "sprite": "hosts/parents_house.png", "frameWidth": 32, "frameHeight": 48,
                                  "x": 110, "y": 60,                     // top-left inside the interior
-                                 "anims": { "idle": [0, 1], "talk": [2, 3], "happy": [4], "annoyed": [5] } } }
+                                 "anims": { "idle": [0, 1], "talk": [2, 3], "happy": [4], "annoyed": [5] } },
+                       // optional regulars, drawn like the host; id = content action id / pokes key
+                       "extras": [{ "id": "pekki", "sprite": "hosts/extras-pekki.png", "frameWidth": 32, "frameHeight": 48,
+                                    "x": 20, "y": 70, "anims": { ... }, "flip": false, "front": true }],
+                       // optional: the player's own things, shown only when this is their home and they own the item
+                       "furniture": { "tv": { "sprite": "furniture/tv.png", "x": 166, "y": 34, "front": false } },
+                       // optional: clickable hit areas (content pokes say what happens)
+                       "props": [{ "id": "cat", "x": 24, "y": 96, "w": 20, "h": 16 }] }
   },
   "interiorSize": [256, 160],                // pixel size of all interiors
   "overlays": [                              // animated decorations: horizontal frame strips
@@ -371,6 +415,9 @@ A theme is `public/themes/<id>/theme.json` plus images. `content/game.json` → 
 - **Player tinting:** draw the player sheet with the two magenta key colours wherever the player colour should go.
 - **Walking:** `directions` lists frames per walking direction; the first one is the standing pose. Without it, the frames are mirrored for walking left.
 - **Hosts:** the host sheet is a horizontal strip of frames. Animations missing from `anims` fall back to `idle`. The speech bubble is placed above the host automatically.
+- **Interior draw order:** interior → furniture → host → extras → `interiorFront` → furniture and extras with `front: true` → speech bubble.
+- **Furniture** is keyed by item id. It shows only in the current player's own home, so the same item can have a different position in each home.
+- **Seasons and daylight** are drawn by the UI on top of the map art: week 1 is early June, each season lasts 13 weeks, greens are recoloured for autumn, winter and spring, and the map darkens towards evening as the week's hours run out. No extra art is needed.
 - **UI colours:** the `ui` colours become CSS variables (`--panel`, `--accent`, ...).
 
 **To make a new theme:**

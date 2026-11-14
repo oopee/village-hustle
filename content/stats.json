@@ -1,6 +1,7 @@
 [
   { "id": "money", "label": "Cash", "default": 0, "display": "money", "description": "Money in your pocket. Can be stolen." },
   { "id": "savings", "label": "Savings", "default": 0, "display": "money", "description": "Money in the bank." },
+  { "id": "shares", "label": "Shares", "default": 0, "display": "money", "description": "What your shares are worth today. Bought and sold at the bank; the price moves every week." },
   { "id": "happiness", "label": "Happiness", "default": 50, "max": 100, "display": "bar" },
   { "id": "health", "label": "Health", "default": 80, "max": 100, "display": "bar" },
   { "id": "food", "label": "Food supply", "default": 0, "max": "has('fridge') ? params.fridgeCapacity : 1", "display": "number", "description": "Weeks of food at home." },

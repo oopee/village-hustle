@@ -109,7 +109,30 @@
             8
           ]
         }
-      }
+      },
+      "furniture": {
+        "bicycle": {
+          "sprite": "furniture/bicycle-parents_house.png",
+          "x": 198,
+          "y": 122
+        }
+      },
+      "props": [
+        {
+          "id": "cat",
+          "x": 24,
+          "y": 96,
+          "w": 22,
+          "h": 17
+        },
+        {
+          "id": "clock",
+          "x": 70,
+          "y": 12,
+          "w": 21,
+          "h": 35
+        }
+      ]
     },
     "job_centre": {
       "sprite": "buildings/job_centre.png",
@@ -197,7 +220,16 @@
             8
           ]
         }
-      }
+      },
+      "props": [
+        {
+          "id": "pigeon",
+          "x": 26,
+          "y": 47,
+          "w": 17,
+          "h": 14
+        }
+      ]
     },
     "bank": {
       "sprite": "buildings/bank.png",
@@ -241,7 +273,57 @@
             8
           ]
         }
-      }
+      },
+      "extras": [
+        {
+          "id": "juho",
+          "sprite": "hosts/extras-juho.png",
+          "frameWidth": 32,
+          "frameHeight": 48,
+          "x": 198,
+          "y": 86,
+          "anims": {
+            "idle": [
+              0,
+              0,
+              2,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "talk": [
+              3,
+              0,
+              4,
+              9
+            ],
+            "happy": [
+              5,
+              6
+            ],
+            "annoyed": [
+              7,
+              8
+            ]
+          },
+          "flip": true
+        }
+      ],
+      "props": [
+        {
+          "id": "clock",
+          "x": 75,
+          "y": 15,
+          "w": 19,
+          "h": 19
+        }
+      ]
     },
     "sawmill": {
       "sprite": "buildings/sawmill.png",
@@ -285,7 +367,56 @@
             8
           ]
         }
-      }
+      },
+      "extras": [
+        {
+          "id": "matti",
+          "sprite": "hosts/extras-matti.png",
+          "frameWidth": 32,
+          "frameHeight": 48,
+          "x": 218,
+          "y": 62,
+          "anims": {
+            "idle": [
+              0,
+              0,
+              2,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "talk": [
+              3,
+              0,
+              4,
+              9
+            ],
+            "happy": [
+              5,
+              6
+            ],
+            "annoyed": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "saw",
+          "x": 14,
+          "y": 17,
+          "w": 28,
+          "h": 15
+        }
+      ]
     },
     "department_store": {
       "sprite": "buildings/department_store.png",
@@ -417,7 +548,77 @@
             8
           ]
         }
-      }
+      },
+      "furniture": {
+        "rag_rug": {
+          "sprite": "furniture/rag_rug-cottage.png",
+          "x": 69,
+          "y": 124
+        },
+        "ryijy": {
+          "sprite": "furniture/ryijy-cottage.png",
+          "x": 107,
+          "y": 4
+        },
+        "rubber_plant": {
+          "sprite": "furniture/rubber_plant-cottage.png",
+          "x": 0,
+          "y": 60
+        },
+        "tv": {
+          "sprite": "furniture/tv-cottage.png",
+          "x": 65,
+          "y": 54
+        },
+        "lava_lamp": {
+          "sprite": "furniture/lava_lamp-cottage.png",
+          "x": 221,
+          "y": 8
+        },
+        "fridge": {
+          "sprite": "furniture/fridge-cottage.png",
+          "x": 237,
+          "y": 51
+        },
+        "coffee_maker": {
+          "sprite": "furniture/coffee_maker-cottage.png",
+          "x": 184,
+          "y": 15
+        },
+        "hot_plate": {
+          "sprite": "furniture/hot_plate-cottage.png",
+          "x": 5,
+          "y": 120,
+          "front": true
+        },
+        "computer": {
+          "sprite": "furniture/computer-cottage.png",
+          "x": 97,
+          "y": 51,
+          "front": true
+        },
+        "bicycle": {
+          "sprite": "furniture/bicycle-cottage.png",
+          "x": 202,
+          "y": 124
+        }
+      },
+      "props": [
+        {
+          "id": "fireplace",
+          "x": 184,
+          "y": 34,
+          "w": 50,
+          "h": 64
+        },
+        {
+          "id": "rocking_chair",
+          "x": 16,
+          "y": 92,
+          "w": 50,
+          "h": 46
+        }
+      ]
     },
     "sauna": {
       "sprite": "buildings/sauna.png",
@@ -461,7 +662,16 @@
             8
           ]
         }
-      }
+      },
+      "props": [
+        {
+          "id": "bucket",
+          "x": 138,
+          "y": 43,
+          "w": 33,
+          "h": 31
+        }
+      ]
     },
     "village_shop": {
       "sprite": "buildings/village_shop.png",
@@ -505,7 +715,16 @@
             8
           ]
         }
-      }
+      },
+      "props": [
+        {
+          "id": "bottle_machine",
+          "x": 197,
+          "y": 63,
+          "w": 38,
+          "h": 36
+        }
+      ]
     },
     "grill": {
       "sprite": "buildings/grill.png",
@@ -549,7 +768,63 @@
             8
           ]
         }
-      }
+      },
+      "extras": [
+        {
+          "id": "pekki",
+          "sprite": "hosts/extras-pekki.png",
+          "frameWidth": 32,
+          "frameHeight": 48,
+          "x": 62,
+          "y": 64,
+          "anims": {
+            "idle": [
+              0,
+              0,
+              2,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "talk": [
+              3,
+              0,
+              4,
+              9
+            ],
+            "happy": [
+              5,
+              6
+            ],
+            "annoyed": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "dartboard",
+          "x": 90,
+          "y": 52,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "id": "oven",
+          "x": 14,
+          "y": 24,
+          "w": 56,
+          "h": 50
+        }
+      ]
     },
     "rental_flat": {
       "sprite": "buildings/rental_flat.png",
@@ -593,7 +868,75 @@
             8
           ]
         }
-      }
+      },
+      "furniture": {
+        "rag_rug": {
+          "sprite": "furniture/rag_rug-rental_flat.png",
+          "x": 51,
+          "y": 126
+        },
+        "ryijy": {
+          "sprite": "furniture/ryijy-rental_flat.png",
+          "x": 97,
+          "y": 6
+        },
+        "rubber_plant": {
+          "sprite": "furniture/rubber_plant-rental_flat.png",
+          "x": 96,
+          "y": 42
+        },
+        "tv": {
+          "sprite": "furniture/tv-rental_flat.png",
+          "x": 165,
+          "y": 34
+        },
+        "lava_lamp": {
+          "sprite": "furniture/lava_lamp-rental_flat.png",
+          "x": 199,
+          "y": 51
+        },
+        "fridge": {
+          "sprite": "furniture/fridge-rental_flat.png",
+          "x": 238,
+          "y": 49
+        },
+        "coffee_maker": {
+          "sprite": "furniture/coffee_maker-rental_flat.png",
+          "x": 240,
+          "y": 34
+        },
+        "hot_plate": {
+          "sprite": "furniture/hot_plate-rental_flat.png",
+          "x": 207,
+          "y": 86
+        },
+        "computer": {
+          "sprite": "furniture/computer-rental_flat.png",
+          "x": 3,
+          "y": 91
+        },
+        "bicycle": {
+          "sprite": "furniture/bicycle-rental_flat.png",
+          "x": 206,
+          "y": 128
+        }
+      },
+      "props": [
+        {
+          "id": "lamp",
+          "x": 190,
+          "y": 0,
+          "w": 21,
+          "h": 23
+        },
+        {
+          "id": "books",
+          "x": 61,
+          "y": 17,
+          "w": 36,
+          "h": 55
+        }
+      ]
     },
     "opisto": {
       "sprite": "buildings/opisto.png",
@@ -681,7 +1024,56 @@
             8
           ]
         }
-      }
+      },
+      "extras": [
+        {
+          "id": "olli",
+          "sprite": "hosts/extras-olli.png",
+          "frameWidth": 32,
+          "frameHeight": 48,
+          "x": 22,
+          "y": 80,
+          "anims": {
+            "idle": [
+              0,
+              0,
+              2,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "talk": [
+              3,
+              0,
+              4,
+              9
+            ],
+            "happy": [
+              5,
+              6
+            ],
+            "annoyed": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "props": [
+        {
+          "id": "stove",
+          "x": 189,
+          "y": 3,
+          "w": 46,
+          "h": 95
+        }
+      ]
     },
     "dance_pavilion": {
       "sprite": "buildings/dance_pavilion.png",
@@ -725,7 +1117,16 @@
             8
           ]
         }
-      }
+      },
+      "props": [
+        {
+          "id": "accordion",
+          "x": 14,
+          "y": 69,
+          "w": 22,
+          "h": 30
+        }
+      ]
     }
   },
   "interiorSize": [

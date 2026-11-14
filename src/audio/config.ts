@@ -96,7 +96,7 @@ export function checkAudioConfig(cfg: AudioConfig, songs: Set<string>, sfx: Set<
   song('music.gameover', m.gameover);
   for (const [loc, r] of Object.entries(m.locations ?? {})) song(`music.locations.${loc}`, r);
   for (const [key, ref] of Object.entries(cfg.sfx ?? {})) {
-    if (!/^(ui|walk|enter|action|item|category|kind|turn|week|game|msg)\./.test(key)) out.push(`sfx.${key}: unknown key type`);
+    if (!/^(ui|walk|enter|action|item|category|kind|turn|week|game|msg|poke)\./.test(key)) out.push(`sfx.${key}: unknown key type`);
     for (const { name } of scheduleOf(ref)) if (!isFile(name) && !sfx.has(name)) out.push(`sfx.${key}: unknown sound effect '${name}'`);
   }
   for (const [who, v] of Object.entries(cfg.voices ?? {})) {

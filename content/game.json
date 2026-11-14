@@ -13,16 +13,33 @@
     "food": "1"
   },
   "startItems": { "clothes_casual": 1 },
-  "world": { "economy": 1 },
+  "world": { "economy": 1, "market": 0 },
   "maxWeeks": 150,
   "eventChance": "params.eventChance",
   "maxEnrollments": "params.maxEnrollments",
+  "hud": [
+    { "id": "home_parents", "icon": "🏡", "visible": "homeIs('parents_house')", "text": "You live at your parents'. Mom feeds you, and Mom's chores eat part of every week." },
+    { "id": "home_basement", "icon": "🏚", "visible": "homeIs('rental_flat') && flag('basement') == 1", "text": "You rent the damp basement studio on Lasitehtaantie." },
+    { "id": "home_flat", "icon": "🏢", "visible": "homeIs('rental_flat') && flag('basement') != 1", "text": "You rent the one-room flat on Lasitehtaantie." },
+    { "id": "home_cottage", "icon": "🛖", "visible": "homeIs('cottage')", "text": "You live in the red cottage." },
+    { "id": "food", "icon": "🍞", "visible": "!homeIs('parents_house')", "warn": "food < 1", "badge": "food", "text": "Food at home for {food} weekend(s)." },
+    { "id": "rent", "icon": "🔑", "visible": "flag('rent') > 0", "warn": "rentOwed > 0", "text": "Rent is €{flag('rent')} a month, due at the start of the month. Unpaid now: €{rentOwed}." },
+    { "id": "clothes", "icon": "👕", "visible": "best('clothing') == 0", "warn": "1", "text": "You have nothing decent to wear." },
+    { "id": "rest", "icon": "🛋", "dim": "relaxedThisWeek < 1", "badge": "relaxedThisWeek", "text": "Rested at home {relaxedThisWeek} time(s) this week." },
+    { "id": "fun", "icon": "🎉", "dim": "funThisWeek < 1", "badge": "funThisWeek", "text": "Went out for fun {funThisWeek} time(s) this week." },
+    { "id": "lessons", "icon": "📖", "visible": "enrolled()", "dim": "lessonsThisWeek < 1", "badge": "lessonsThisWeek", "text": "Lessons attended this week: {lessonsThisWeek}." },
+    { "id": "shares", "icon": "📈", "visible": "shares >= 1", "warn": "world.market < 0", "text": "Your shares are worth €{shares}. Last week the market went {world.market < 0 ? 'down' : 'up'}." },
+    { "id": "raise", "icon": "⭐", "visible": "raises() > 0", "badge": "raises()", "text": "You have earned {raises()} raise(s) in your current job." },
+    { "id": "worn", "icon": "😩", "visible": "stress >= params.stressThreshold * 0.75", "warn": "stress >= params.stressThreshold", "text": "You are running on fumes. Rest, sauna or a lighter week would help." },
+    { "id": "sick", "icon": "🤒", "visible": "health < params.lowHealthThreshold", "warn": "1", "text": "You are in poor health, and it costs you time every week." }
+  ],
   "playerNames": ["Aino", "Eero", "Helmi", "Onni", "Kerttu", "Väinö", "Siiri", "Toivo"],
   "intro": [
-    "You have just finished school in Ryttylä, a small village by the railway in southern Finland. You live with your parents, own one set of clothes and have a little pocket money.",
+    "You have just finished school in Ryttylä, a small village by the railway in southern Finland. It is June, and you still live in your childhood room at your parents' house. Mom's food is free. Mom's chore list is not, and it grows every week. You own one set of clothes and have a little money saved from your summer job.",
+    "Stay at home and lose your weekends to gutters and Aunt Raili, or move out: a damp basement studio, a proper flat on Lasitehtaantie or the red cottage by the woods. Rent is due at the start of every month, and an empty fridge is your own problem.",
     "Each week you have a limited number of hours. Walk around the village, work, study, shop and rest. Walking takes time too.",
     "Set your own life goals before the game starts. Reach every goal and keep them all through the weekend to win. When someone does, the others still finish that week, and if several make it, the one furthest past their goals wins.",
     "Nobody tells you exactly how the village works. Eat every week, keep yourself presentable, look after your health, and listen to the locals: Pirjo at Sale, Rane at the Trokari and the others all have opinions.",
-    "And then there are the regulars. Gloomy Pekki at the Trokari's corner table, ever-cheerful Matti at the furniture factory, Olli the IT guy who lives at the library computer, Juho who counts every cent at the bank, and Pellinen the gamer in the basement flat. Spend time with them, or try to avoid them."
+    "And then there are the regulars. Gloomy Pekki at the Trokari's corner table, ever-cheerful Matti at the furniture factory, Olli the IT guy who lives at the library computer, Juho who counts every cent at the bank, and Pellinen the gamer in the basement on Lasitehtaantie. Spend time with them, or try to avoid them."
   ]
 }

@@ -88,6 +88,26 @@ export const GameSchema = z
     playerNames: z.array(z.string()).default([]),
     /** Short intro text shown on the "How to play" screen. */
     intro: z.array(z.string()).default([]),
+    /**
+     * Status icons in the top bar, evaluated for the current player. `text` is the hover text
+     * ({expr} placeholders allowed); `warn` paints the icon red, `dim` greys it out.
+     */
+    hud: z
+      .array(
+        z
+          .object({
+            id: z.string(),
+            icon: z.string(),
+            text: z.string(),
+            visible: ExprSchema.optional(),
+            warn: ExprSchema.optional(),
+            dim: ExprSchema.optional(),
+            /** A short badge drawn on the icon, e.g. a count. */
+            badge: ExprSchema.optional(),
+          })
+          .strict(),
+      )
+      .default([]),
   })
   .strict();
 
@@ -194,6 +214,15 @@ export const LocationSchema = z
       })
       .strict()
       .optional(),
+    /**
+     * Things in the room the player can click for a laugh (the cat, a clock, a regular at
+     * the corner table...). Keys are the ids of the theme's props / extras in this interior.
+     * Pure flavour: a random line is shown in a bubble; nothing in the game changes.
+     * With a `name`, the line is spoken (the speaker's name is shown and they get a voice).
+     */
+    pokes: z
+      .record(z.object({ name: z.string().optional(), lines: z.array(z.string()).min(1) }).strict())
+      .default({}),
     /** Effects run each time a player arrives here. */
     onArrive: z.array(EffectSchema).optional(),
     actions: z.array(ActionSchema).default([]),

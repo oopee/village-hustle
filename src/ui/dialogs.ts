@@ -63,7 +63,7 @@ export function statusView(content: Content, state: GameState, theme: Theme, p: 
           'table',
           { class: 'kv' },
           h('tr', null, h('th', null, 'Home'), h('td', null, home)),
-          h('tr', null, h('th', null, 'Job'), h('td', null, job ? `${job.title} (${money(content, jobWage(content, state, p))}/${content.game.timeUnit})` : 'Unemployed')),
+          h('tr', null, h('th', null, 'Job'), h('td', null, job ? `${job.title} at ${content.locationById.get(job.location)?.name ?? job.location} (${money(content, jobWage(content, state, p))}/${content.game.timeUnit})` : 'Unemployed')),
         ),
       ),
       h(
@@ -78,7 +78,23 @@ export function statusView(content: Content, state: GameState, theme: Theme, p: 
   );
 }
 
-export function goalsView(content: Content, state: GameState, theme: Theme) {
+/** A rough, word-sized reading of how far a goal is from its target. */
+export function goalBand(score: number, target: number): { word: string; fill: number; done: boolean } {
+  const r = target > 0 ? score / target : 1;
+  if (r >= 1) return { word: 'Reached', fill: 1, done: true };
+  if (r >= 0.88) return { word: 'Nearly there', fill: 0.9, done: false };
+  if (r >= 0.65) return { word: 'Getting close', fill: 0.7, done: false };
+  if (r >= 0.4) return { word: 'On the way', fill: 0.5, done: false };
+  if (r >= 0.15) return { word: 'A long way off', fill: 0.25, done: false };
+  return { word: 'Just starting', fill: 0.08, done: false };
+}
+
+/**
+ * The goal table. With `snapshots`, scores are each player's own reading from the start of
+ * their latest week, shown as rough bands: you see how life is going, not what one choice did.
+ * Without, exact bars (used on the game-over screen).
+ */
+export function goalsView(content: Content, state: GameState, theme: Theme, snapshots?: Map<string, Record<string, number>>) {
   const goals = content.goals.goals;
   return h(
     'div',
@@ -89,20 +105,27 @@ export function goalsView(content: Content, state: GameState, theme: Theme) {
       { class: 'goal-table' },
       h('tr', null, h('th', null, ''), goals.map((g) => h('th', { title: g.description ?? '' }, g.label))),
       state.players.map((p) => {
-        const scores = goalScores(content, state, p);
+        const scores = snapshots?.get(p.id) ?? goalScores(content, state, p);
         return h(
           'tr',
           { class: p.id === state.players[state.current].id && state.phase === 'playing' ? 'current' : '' },
           h('th', null, swatch(theme, p.color), ` ${p.name}`),
           goals.map((g) => {
             const target = state.settings.goals[g.id];
-            const done = scores[g.id] >= target;
-            return h('td', null, bar(scores[g.id], 100, done ? 'done' : '', target));
+            if (!snapshots) return h('td', null, bar(scores[g.id], 100, scores[g.id] >= target ? 'done' : '', target));
+            const b = goalBand(scores[g.id], target);
+            return h('td', { class: 'fuzzy' }, bar(b.fill, 1, b.done ? 'done' : ''), h('small', { class: b.done ? 'good' : 'muted' }, b.word));
           }),
         );
       }),
     ),
-    h('p', { class: 'muted small' }, 'The marker shows each goal you set. Reach every marker and keep them through the weekend to win.'),
+    h(
+      'p',
+      { class: 'muted small' },
+      snapshots
+        ? 'How each life feels at the start of the week. Nobody knows exactly where they stand. Reach every goal and keep them through the weekend to win.'
+        : 'The marker shows each goal you set. Reach every marker and keep them through the weekend to win.',
+    ),
   );
 }
 

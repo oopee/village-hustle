@@ -339,6 +339,11 @@ function validateReferences(c: Content, problems: string[]) {
   checkExpr('game.json travelTime', g.travelTime);
   checkExpr('game.json eventChance', g.eventChance);
   checkExpr('game.json maxEnrollments', g.maxEnrollments);
+  for (const icon of g.hud) {
+    const w = `game.json hud ${icon.id}`;
+    [icon.visible, icon.warn, icon.dim, icon.badge].forEach((e) => checkExpr(w, e));
+    for (const m of icon.text.matchAll(/\{([^{}]+)\}/g)) checkExpr(w, m[1].trim());
+  }
   if (!c.locationById.has(g.startHome)) problems.push(`game.json: startHome '${g.startHome}' is not a location`);
   for (const [k, v] of Object.entries(g.startStats)) {
     if (!c.statById.has(k)) problems.push(`game.json startStats: '${k}' is not a stat`);

@@ -8,7 +8,7 @@
     "name": "Raimo",
     "title": "shopkeeper",
     "lines": {
-      "hello": ["What are we building today?", "Need a fridge? Got a fridge.", "Mind the paint cans."],
+      "hello": ["What are we building today?", "Need a fridge? Got a fridge.", "Mind the paint cans.", "First flat? Everyone needs a hot plate. Trust me."],
       "buy": ["Good quality. That'll last.", "Kiitos! Guarantee's on the receipt.", "Want it wrapped? No? Good."],
       "sell": ["I'll put it on the flea-market table.", "Hmm, it's seen better days. Still, a deal."],
       "work": ["Good shift. Sold three shovels.", "Thanks. Lock the back on your way out."],
@@ -19,8 +19,9 @@
   },
   "actions": [
     { "id": "clothes", "kind": "shop", "label": "Clothing", "time": "1", "items": ["clothes_casual", "clothes_smart", "clothes_business", "work_overalls"] },
-    { "id": "goods", "kind": "shop", "label": "Home & leisure", "time": "1", "items": ["bicycle", "fridge", "coffee_maker", "tv", "computer"] },
-    { "id": "sell", "kind": "sell", "label": "Sell at the flea market", "time": "1", "categories": ["appliance", "clothing"] },
+    { "id": "goods", "kind": "shop", "label": "Home & leisure", "time": "1", "items": ["hot_plate", "bicycle", "fridge", "coffee_maker", "tv", "computer"] },
+    { "id": "decor", "kind": "shop", "label": "Furnishings", "time": "1", "items": ["rag_rug", "rubber_plant", "lava_lamp", "ryijy"] },
+    { "id": "sell", "kind": "sell", "label": "Sell at the flea market", "time": "1", "categories": ["appliance", "clothing", "decor"] },
     { "id": "work", "kind": "work" }
   ]
 }

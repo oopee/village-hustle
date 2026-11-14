@@ -16,32 +16,56 @@
       "refuse": ["Not like that. Not in my factory.", "No overalls, no entry.", "You'd hurt yourself."]
     }
   },
+  "pokes": {
+    "saw": { "lines": [
+        "The big saw screams through a log. You feel it in your fillings.",
+        "A sign by the saw says KEEP FINGERS. Somebody has scratched out the rest."
+    ] },
+    "matti": { "name": "Matti", "lines": [
+        "Coffee? It's from this morning. Last Tuesday morning.",
+        "Forty years at this mill and still all ten fingers! Well. Nine and a half.",
+        "Hard work never killed anybody. But why take the chance, eh? Ha ha!",
+        "My thermos is older than the foreman. And it works harder."
+    ] }
+  },
   "actions": [
     { "id": "work", "kind": "work" },
     {
       "id": "firewood", "kind": "basic", "label": "Chop firewood for cash",
       "description": "Odd jobs, paid in cash.",
       "time": "params.oddJobTime",
-      "requires": [{ "test": "health >= 30", "message": "You are not in shape for heavy work." }],
       "effects": [
-        { "add": { "money": "params.oddJobPay * world.economy", "health": "-2", "experience": "1" } },
-        { "message": "Your arms ache, but your wallet is a bit heavier." }
+        { "if": "health < 30",
+          "then": [
+            { "add": { "money": "params.oddJobPay * world.economy * 0.4", "health": "-3" } },
+            { "message": "You are not in shape for this. Masa watches you miss the log three times and pays you for what you managed. It isn't much." }
+          ],
+          "else": [
+            { "add": { "money": "params.oddJobPay * world.economy", "health": "-2", "experience": "1" } },
+            { "message": "Your arms ache, but your wallet is a bit heavier." }
+          ] }
       ]
     },
     {
       "id": "matti", "kind": "basic", "label": "Coffee break with Matti",
       "description": "Matti has worked here for thirty-one years and still whistles on his way in. His good mood is contagious.",
       "time": "params.mattiTime",
-      "requires": [{ "test": "flag('mattiWeek') != player.week", "message": "Matti is back at work. \"Breaks are earned, friend!\" Come back next week." }],
       "effects": [
-        { "setFlag": { "mattiWeek": "player.week" } },
-        { "add": { "stress": "-params.mattiStressRelief", "happiness": "1", "reputation": "1" } },
-        { "pick": [
-          { "weight": "1", "do": [{ "message": "Matti: \"Honest work, honest pay and coffee from a thermos. What more does a man need?\"" }] },
-          { "weight": "1", "do": [{ "message": "Matti: \"Monday is just Friday's little brother!\" He means it, every word." }] },
-          { "weight": "1", "do": [{ "message": "Matti pours you coffee. \"Things are always looking up. Unless you're on the roof, then look down.\"" }] },
-          { "weight": "1", "do": [{ "message": "Matti shows you photos of his grandchildren, his boat and a very straight stack of planks he is proud of." }] }
-        ] }
+        { "if": "flag('mattiWeek') == player.week",
+          "then": [
+            { "add": { "stress": "-params.mattiStressRelief * 0.5", "reputation": "-1" } },
+            { "message": "Matti takes a second break with you. Masa sees you both. \"Breaks are earned, friends!\" Matti is unbothered. You are not." }
+          ],
+          "else": [
+            { "add": { "stress": "-params.mattiStressRelief", "happiness": "1", "reputation": "1" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "Matti: \"Honest work, honest pay and coffee from a thermos. What more does a man need?\"" }] },
+              { "weight": "1", "do": [{ "message": "Matti: \"Monday is just Friday's little brother!\" He means it, every word." }] },
+              { "weight": "1", "do": [{ "message": "Matti pours you coffee. \"Things are always looking up. Unless you're on the roof, then look down.\"" }] },
+              { "weight": "1", "do": [{ "message": "Matti shows you photos of his grandchildren, his boat and a very straight stack of planks he is proud of." }] }
+            ] }
+          ] },
+        { "setFlag": { "mattiWeek": "player.week" } }
       ]
     }
   ]

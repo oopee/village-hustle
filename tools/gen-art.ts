@@ -29,7 +29,7 @@ const map = buildMap();
 const rooms = buildRooms();
 
 // Only the generated art is replaced; hand-made files (audio.json, audio/) are kept.
-for (const dir of ['buildings', 'interiors', 'hosts', 'overlays']) rmSync(join(OUT, dir), { recursive: true, force: true });
+for (const dir of ['buildings', 'interiors', 'hosts', 'overlays', 'furniture']) rmSync(join(OUT, dir), { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 
 const locations: Record<string, unknown> = {};
@@ -50,6 +50,26 @@ for (const id of LOCATIONS) {
       y: r.host.y,
       anims: r.host.anims,
     },
+    extras: r.extras?.map((e) => ({
+      id: e.id,
+      sprite: save(`hosts/extras-${e.id}.png`, e.sheet.img),
+      frameWidth: e.sheet.frameWidth,
+      frameHeight: e.sheet.frameHeight,
+      x: e.x,
+      y: e.y,
+      anims: e.anims,
+      flip: e.flip || undefined,
+      front: e.front || undefined,
+    })),
+    furniture: r.furniture
+      ? Object.fromEntries(
+          Object.entries(r.furniture).map(([item, f]) => [
+            item,
+            { sprite: save(`furniture/${item}-${id}.png`, f.img), x: f.x, y: f.y, front: f.front || undefined },
+          ]),
+        )
+      : undefined,
+    props: r.props,
   };
 }
 

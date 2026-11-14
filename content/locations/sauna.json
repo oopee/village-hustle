@@ -9,12 +9,22 @@
     "title": "sauna warden",
     "lines": {
       "hello": ["The stove's been heating since morning.", "Leave your worries in the changing room.", "Water's lovely. Lovely cold."],
-      "sauna": ["More löyly? More löyly!", "Now that's a proper sauna.", "Don't forget the cold dip."],
+      "sauna": ["More löyly? More löyly!", "Now that's a proper sauna.", "Don't forget the cold dip.", "Back again? You'll turn into a ham."],
       "swim": ["Brave! Your lips are blue.", "That's the spirit!"],
       "sausage": ["Sausage after sauna. The only way.", "Mustard's by the fire."],
       "broke": ["The sauna fee goes in the tin. You're short.", "A few coins short, friend."],
-      "refuse": ["Easy now. Once a week is plenty.", "Your skin is still pink! Next week."]
+      "kiosk": ["The kiosk's yours. Coffee for me, on credit.", "Good. Now the beach has a proper boss."],
+      "work": ["Busy day at the kiosk?", "Sold out of blueberry again.", "The worms are in the fridge. Not next to the ice cream, I hope.", "A quiet day. More time for the sauna."],
+      "hired": ["Back behind the counter, then."],
+      "refuse": ["Easy now.", "Not today, friend."]
     }
+  },
+  "pokes": {
+    "bucket": { "lines": [
+        "You throw a ladle of water on the stones. Sssssh! The old men nod in respect.",
+        "Someone has written KIUAS on the bucket in marker pen, in case anybody thought it was a hat.",
+        "You throw another ladle. And another. Kalevi looks proud. Your ears are melting."
+    ] }
   },
   "actions": [
     {
@@ -22,28 +32,56 @@
       "description": "Smoke sauna, cold lake, repeat.",
       "time": "params.saunaTime",
       "cost": "params.saunaPrice",
-      "requires": [{ "test": "flag('saunaWeek') != player.week", "message": "Your skin is still pink from the last round. Come back next week." }],
       "effects": [
+        { "if": "flag('saunaWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.saunaJoy * 0.4 / (1 + funThisWeek * params.funFatigue)", "stress": "-params.saunaStressRelief * 0.5" } },
+            { "message": "Second sauna this week. Your skin is still pink from the last one. Kalevi checks you're not a lobster." }
+          ],
+          "else": [
+            { "add": { "happiness": "params.saunaJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-params.saunaStressRelief", "health": "1" } },
+            { "message": "Löyly hisses on the stones. All worries melt away.", "tone": "good" }
+          ] },
         { "setFlag": { "saunaWeek": "player.week" } },
-        { "add": { "happiness": "params.saunaJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-params.saunaStressRelief", "health": "1" } },
-        { "add": { "funThisWeek": "1" } },
-        { "message": "Löyly hisses on the stones. All worries melt away.", "tone": "good" }
+        { "add": { "funThisWeek": "1" } }
       ]
     },
     {
       "id": "swim", "kind": "basic", "label": "Swim in Ykslammi",
       "description": "Free, refreshing, occasionally freezing.",
       "time": "params.swimTime",
-      "requires": [{ "test": "flag('swimWeek') != player.week", "message": "Once a week is plenty in water this cold." }],
-      "effects": [{ "setFlag": { "swimWeek": "player.week" } }, { "add": { "happiness": "params.swimJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-2", "health": "1" } }, { "add": { "funThisWeek": "1" } }, { "message": "Brrr! But you feel alive." }]
+      "effects": [
+        { "if": "flag('swimWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.swimJoy * 0.3 / (1 + funThisWeek * params.funFatigue)" } },
+            { "chance": "0.5",
+              "then": [{ "add": { "health": "-2" } }, { "message": "Another swim. A pike bites your toe. You are fine. The pike is smug." }],
+              "else": [{ "message": "Another swim. Your teeth chatter for an hour afterwards." }] }
+          ],
+          "else": [
+            { "add": { "happiness": "params.swimJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-2", "health": "1" } },
+            { "message": "Brrr! But you feel alive." }
+          ] },
+        { "setFlag": { "swimWeek": "player.week" } },
+        { "add": { "funThisWeek": "1" } }
+      ]
     },
     {
       "id": "sausage", "kind": "basic", "label": "Grill a sausage at the laavu",
       "time": "1",
       "cost": "params.saunaSausagePrice",
-      "visible": "flag('saunaWeek') == player.week",
-      "requires": [{ "test": "flag('sausageWeek') != player.week", "message": "One sausage is tradition. Two is just lunch." }],
-      "effects": [{ "setFlag": { "sausageWeek": "player.week" } }, { "add": { "happiness": "2 * 1 / (1 + funThisWeek * params.funFatigue)" } }, { "message": "Nothing beats a sausage after sauna." }]
-    }
+      "effects": [
+        { "if": "flag('saunaWeek') == player.week && flag('sausageWeek') != player.week",
+          "then": [{ "add": { "happiness": "2 * 1 / (1 + funThisWeek * params.funFatigue)" } }, { "message": "Nothing beats a sausage after sauna." }],
+          "else": [
+            { "if": "flag('sausageWeek') == player.week",
+              "then": [{ "message": "One sausage is tradition. Two is just lunch. It is a fine lunch, though." }],
+              "else": [{ "message": "A sausage without a sauna first. It's fine. Kalevi looks disappointed in you." }] }
+          ] },
+        { "setFlag": { "sausageWeek": "player.week" } }
+      ]
+    },
+    { "id": "kiosk", "kind": "shop", "label": "Lease the beach kiosk", "items": ["beach_kiosk"], "time": "2" },
+    { "id": "work", "kind": "work" }
   ]
 }

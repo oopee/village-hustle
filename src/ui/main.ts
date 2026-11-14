@@ -6,6 +6,7 @@ import { App } from './app';
 import { h } from './dom';
 import { loadBrowserContent } from './load-content';
 import { loadTheme } from './theme';
+import { installTooltips } from './tooltip';
 
 const stage = document.getElementById('stage')!;
 
@@ -55,6 +56,7 @@ async function boot() {
   const audio = await AudioPlayer.load(theme.base);
   stage.replaceChildren();
   const app = new App(content, theme, stage, audio);
+  installTooltips(stage);
   app.showTitle();
   (window as unknown as { app: App }).app = app;
 }

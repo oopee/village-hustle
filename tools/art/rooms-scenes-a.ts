@@ -367,6 +367,23 @@ export function station(): Scene {
   b.text('LIPUT', 26, 80, hex('#ffffff'));
   b.rect(28, 88, 14, 3, OUT);
   b.rect(30, 94, 10, 6, PAL.steel[3]);
+  // a pigeon that got in and now lives on the ticket machine
+  const pg = ramp('#dcdce8', '#a8a8bc', '#7a7a94', '#52526c');
+  const pb = new Mask(W, H).ellipse(35, 55, 6, 3.6).disc(30, 51, 2.6).tri(39, 54, 43, 52, 42, 57);
+  pb.paint(b, pg, { split: 37 });
+  pb.outlineOn(b, OUT);
+  for (const [x, y] of [[29, 53], [30, 54], [31, 53]] as const) b.set(x, y, hex('#6ab0a0'));
+  for (const [x, y] of [[34, 54], [36, 55], [38, 54]] as const) b.set(x, y, pg[3]);
+  b.set(29, 50, OUT);
+  b.set(30, 50, hex('#f08a3a'));
+  b.set(27, 51, hex('#f6d050'));
+  b.set(26, 51, OUT);
+  b.set(34, 59, hex('#e86a6a'));
+  b.set(37, 59, hex('#e86a6a'));
+  // ...and its contribution to the machine
+  b.set(41, 61, hex('#ffffff'));
+  b.set(42, 62, hex('#ffffff'));
+  b.set(41, 63, hex('#e8e8f0'));
   // bench by the wall (left) with a newspaper
   shadowRect(b, 52, 108, 34, 4);
   box(b, 54, 92, 30, 6, 3, PAL.wood, PAL.wood);
@@ -566,7 +583,7 @@ export function sawmill(): Scene {
   }
   for (let i = 0; i < 4; i++) b.line(66 + i * 5, 29, 74 + i * 5, fy + 2, OUT);
   // half-built chairs
-  for (const [cx, cy] of [[204, 128], [226, 110]] as const) {
+  for (const [cx, cy] of [[196, 130]] as const) {
     shadow(b, cx + 9, cy, 12, 3);
     for (const lx of [cx, cx + 16]) {
       b.rect(lx, cy - 30, 3, 31, PAL.pine[2]);
@@ -916,8 +933,6 @@ export function cottage(): Scene {
   b.hline(22, 58, 94, rc[0]);
   b.frame(21, 93, 39, 6, OUT);
   box(b, 20, 116, 41, 6, 3, ramp('#f8b0a0', '#e07060', '#b04a4a', '#7a3040'), rc);
-  // rag rug
-  ragRug(b, 72, 124, 118, 26, [hex('#5a8ad0'), hex('#e8e0d0'), hex('#e86a5a'), hex('#e8e0d0'), hex('#68a868')], r);
   // front: little round table with a lace cloth, coffee pot and cups
   const f = s.front;
   shadow(b, 136, 118, 36, 5);

@@ -106,13 +106,34 @@ describe('engine', () => {
     expect(s.winner).toBe(eero.id);
   });
 
-  it('a top job held by another player is not open', () => {
-    const s = newGame('openings', false);
+  it('a top job held by another player turns applicants away, after the application time', () => {
+    let s = newGame('openings', false);
     const [aino, eero] = s.players;
+    Object.assign(aino.stats, { experience: 1000, reputation: 100 });
+    aino.flags.xpGrill = 1000;
     s.players[1].job = 'grill_manager';
+    s = applyAction(content, s, { type: 'move', player: aino.id, to: 'job_centre' }).state;
     const opt = listOptions(content, s, aino.id, 'job_centre').find((o) => o.option === 'grill_manager');
-    expect(opt?.enabled).toBe(false);
-    expect(opt?.reasons.join(' ')).toContain(eero.name);
+    expect(opt?.enabled).toBe(true);
+    const before = currentPlayer(s).timeLeft;
+    const r = applyAction(content, s, { type: 'do', player: aino.id, action: 'apply', option: 'grill_manager' });
+    expect(currentPlayer(r.state).job).not.toBe('grill_manager');
+    expect(currentPlayer(r.state).timeLeft).toBe(before - opt!.time);
+    expect(JSON.stringify(r.events)).toContain(eero.name);
+  });
+
+  it('anyone can apply for any job, but an unqualified application is rejected with the reason', () => {
+    let s = newGame('apply', false);
+    const p = s.players[0];
+    s = applyAction(content, s, { type: 'move', player: p.id, to: 'job_centre' }).state;
+    const opt = listOptions(content, s, p.id, 'job_centre').find((o) => o.option === 'it_consultant')!;
+    expect(opt.enabled).toBe(true);
+    expect(opt.reasons).toEqual([]);
+    const before = currentPlayer(s).timeLeft;
+    const r = applyAction(content, s, { type: 'do', player: p.id, action: 'apply', option: 'it_consultant' });
+    expect(currentPlayer(r.state).job).toBeFalsy();
+    expect(currentPlayer(r.state).timeLeft).toBe(before - opt.time);
+    expect(JSON.stringify(r.events)).toContain('Application rejected');
   });
 
   it('the one cottage cannot be bought once another player owns it', () => {
@@ -132,21 +153,72 @@ describe('engine', () => {
     Object.assign(p.stats, { experience: 1000, reputation: 100 });
     p.degrees.push('business', 'management');
     p.items.clothes_business = { qty: 1, age: 0 };
-    const opt = () => listOptions(content, s, p.id, 'job_centre').find((o) => o.option === 'branch_manager')!;
-    expect(opt().reasons.some((r) => r.includes('at the bank'))).toBe(true);
+    p.node = content.locationById.get('job_centre')!.node;
+    const apply = () => JSON.stringify(applyAction(content, s, { type: 'do', player: p.id, action: 'apply', option: 'branch_manager' }).events);
+    expect(apply()).toContain('at the bank');
     p.flags.xpBank = 1000;
-    expect(opt().reasons.some((r) => r.includes('at the bank'))).toBe(false);
+    expect(apply()).not.toContain('at the bank');
   });
 
-  it('lessons per week are capped', () => {
+  it('lessons past the weekly limit can still be taken, but may not stick', () => {
     const s = newGame('lessons', false);
     const p = s.players[0];
     p.courses.c_basic = 0;
+    p.node = content.locationById.get('opisto')!.node;
     p.stats.lessonsThisWeek = s.params.maxLessonsPerWeek;
+    s.params.crammingChance = 0;
+    s.params.knowledgeBonusChance = 0;
+    s.params.computerBonusChance = 0;
     const opt = listOptions(content, s, p.id, 'opisto').find((o) => o.option === 'c_basic');
-    expect(opt?.enabled).toBe(false);
-    p.stats.lessonsThisWeek = 0;
-    expect(listOptions(content, s, p.id, 'opisto').find((o) => o.option === 'c_basic')?.reasons).not.toContain('Your head is full. No more lessons this week.');
+    expect(opt?.enabled).toBe(true);
+    const r = applyAction(content, s, { type: 'do', player: p.id, action: 'study', option: 'c_basic' });
+    expect(currentPlayer(r.state).courses.c_basic).toBe(0);
+    expect(JSON.stringify(r.events)).toContain('Your head is full');
+  });
+
+  it('turns do not end on their own when time runs out', () => {
+    const s = newGame('outoftime', false);
+    const p = s.players[0];
+    p.timeLeft = 1;
+    p.node = content.locationById.get('grill')!.node;
+    p.stats.money = 1000;
+    const r = applyAction(content, s, { type: 'do', player: p.id, action: 'food', option: 'coffee_pulla' });
+    expect(currentPlayer(r.state).id).toBe(p.id);
+    expect(currentPlayer(r.state).timeLeft).toBe(0);
+    const next = applyAction(content, r.state, { type: 'endTurn', player: p.id }).state;
+    expect(currentPlayer(next).id).not.toBe(p.id);
+  });
+
+  it('a new game starts at the parents, where chores eat the week but food is free', () => {
+    let s = newGame('chores', false);
+    const [aino, eero] = s.players;
+    expect(aino.home).toBe('parents_house');
+    s = applyAction(content, s, { type: 'endTurn', player: aino.id }).state;
+    s = applyAction(content, s, { type: 'endTurn', player: eero.id }).state;
+    const a = currentPlayer(s);
+    expect(a.id).toBe(aino.id);
+    expect(a.stats.hungryWeeks).toBe(0);
+    expect(a.timeLeft).toBeLessThan(s.params.hoursPerWeek);
+  });
+
+  it('rent is charged monthly at the rate locked in by the lease', () => {
+    let s = newGame('rent', false);
+    const p = s.players[0];
+    p.stats.money = 10000;
+    p.node = content.locationById.get('rental_flat')!.node;
+    s = applyAction(content, s, { type: 'do', player: p.id, action: 'lease' }).state;
+    const rent = currentPlayer(s).flags.rent;
+    expect(rent).toBeGreaterThan(0);
+    expect(currentPlayer(s).home).toBe('rental_flat');
+    let charged = 0;
+    for (let w = 0; w < s.params.weeksPerMonth * 2; w++) {
+      for (const pl of s.players) pl.stats.money = 10000;
+      const before = s.players[0].stats.rentOwed;
+      s = applyAction(content, s, { type: 'endTurn', player: currentPlayer(s).id }).state;
+      s = applyAction(content, s, { type: 'endTurn', player: currentPlayer(s).id }).state;
+      if (s.players[0].stats.rentOwed > before) charged++;
+    }
+    expect(charged).toBe(2);
   });
 
   it('a full bot game reaches the end', () => {

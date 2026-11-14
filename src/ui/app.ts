@@ -4,13 +4,13 @@ import {
   createGame,
   currentPlayer,
   goalScores,
+  hudIcons,
   isLocationOpen,
   listOptions,
   locationAt,
   makeCtx,
   overallProgress,
   travelTime,
-  turnEndWarnings,
   type Action,
   type ActionOption,
   type Content,
@@ -27,6 +27,7 @@ import { hours, money } from './format';
 import { HostScene, type Mood } from './host-scene';
 import { MapView } from './map-view';
 import { clearSave, findSave, LocalSession } from './session';
+import { SEASON_LABEL, seasonOfWeek } from './season';
 import { setupView } from './setup';
 import type { Theme } from './theme';
 
@@ -79,6 +80,8 @@ export class App {
   private gen = 0;
   private panelLoc: string | null = null;
   private panelMsgs: Msg[] = [];
+  /** Open submenu path inside the location panel: [] = top, [group] or [group, sub]. */
+  private menu: string[] = [];
   private greeting = '';
   private speed: Speed = storageGet<Speed>(SPEED_KEY, 'normal');
   private toastTimer = 0;
@@ -102,7 +105,9 @@ export class App {
     if (!(SPEEDS as Record<string, unknown>)[this.speed]) this.speed = 'normal';
 
     this.scene = new HostScene(theme);
-    this.scene.onType = (text, from, to) => this.panelLoc && audio.babble(this.panelLoc, text, from, to);
+    this.scene.onType = (text, from, to, voice) => voice && audio.babble(voice, text, from, to);
+    this.scene.pokeable = (id) => !!(this.panelLoc && this.content.locationById.get(this.panelLoc)?.pokes[id]);
+    this.scene.onPoke = (id) => this.poke(id);
     this.map = new MapView(canvas, theme, content);
     this.map.onStep = () => audio.cue('walk.step');
     this.map.onHover = (id, x, y) => {
@@ -183,7 +188,12 @@ export class App {
     if (e.key === 'Escape') {
       const top = this.modals[this.modals.length - 1];
       if (top?.closable) top.close();
-      else if (!top && this.panelLoc && this.isHumanTurn()) this.closePanel();
+      else if (!top && this.panelLoc && this.isHumanTurn()) {
+        if (this.menu.length) {
+          this.menu.pop();
+          this.render();
+        } else this.closePanel();
+      }
     }
   }
 
@@ -250,7 +260,8 @@ export class App {
           null,
           h('li', null, 'Click a building to walk there. Walking takes time.'),
           h('li', null, 'Inside, pick what to do. Greyed-out choices tell you why when clicked.'),
-          h('li', null, 'Your week ends when your time runs out, or press End week.'),
+          h('li', null, 'When your hours run out, finish up where you are and step outside: you hurry home for the weekend. Or press End week.'),
+          h('li', null, 'The icons in the top bar show your home, food, rent, clothes and how your week has gone so far. Hover them for details.'),
           h('li', null, 'Status and Goals show how you are doing. News lists everything that has happened.'),
           h('li', null, 'Press M to turn the sound on or off; volumes are in the Menu.'),
         ),
@@ -311,6 +322,7 @@ export class App {
   leaveGame() {
     this.gen++;
     this.closeAllModals();
+    this.goalSnaps.clear();
     this.session = null;
     this.busy = false;
     this.aiRunning = false;
@@ -339,6 +351,10 @@ export class App {
     if (!p || !this.isHumanTurn() || this.busy || this.modals.length) return;
     const loc = this.content.locationById.get(locId);
     if (!loc) return;
+    if (p.timeLeft <= 0) {
+      void this.endWeek();
+      return;
+    }
     if (p.node === loc.node) {
       this.openPanel(loc.id);
       return;
@@ -395,7 +411,6 @@ export class App {
       }
       if (action.type === 'do') this.panelMsgs = [];
       await this.playEvents(events, gen);
-      this.warnBeforeWeekend(action.player);
     } catch (e) {
       console.error(e);
       this.showError('Something went wrong', e);
@@ -406,25 +421,6 @@ export class App {
       }
     }
     if (gen === this.gen) this.maybeRunAi();
-  }
-
-  /**
-   * The week ends by itself when time runs out, so the end-of-week warnings (no food, rent)
-   * are flashed once a week when the time left gets short, not only on "End week".
-   */
-  private warnedWeek = '';
-  private warnBeforeWeekend(playerId: string) {
-    if (this.state.phase !== 'playing' || !this.isHumanTurn()) return;
-    const p = this.me();
-    if (!p || p.id !== playerId) return;
-    const key = `${p.id}:${this.state.week}`;
-    if (this.warnedWeek === key) return;
-    const full = Math.max(1, makeCtx(this.content, this.state, p, []).num(this.content.game.turnTime));
-    if (p.timeLeft > full / 4) return;
-    const warnings = turnEndWarnings(this.content, this.state, p.id);
-    if (!warnings.length) return;
-    this.warnedWeek = key;
-    this.flash(`The week is almost over. ${warnings.join(' ')}`, 'bad');
   }
 
   /** Animates and displays a batch of engine events. */
@@ -485,10 +481,22 @@ export class App {
           }
           break;
         }
-        case 'turnEnded':
+        case 'turnEnded': {
           flush();
           endedPlayer = e.player;
+          // Out of time: a quick dash home before the next player's turn.
+          const p = this.state.players.find((x) => x.id === e.player);
+          if (p && e.path.length > 1 && sp.walk > 0) {
+            this.panelLoc = null;
+            this.tooltip.classList.add('hidden');
+            this.map.setToken(p.color, e.path[0]);
+            this.audio.music('map');
+            this.render();
+            await this.map.walk(e.path, Math.max(sp.walk, SPEEDS.fast.walk) * 1.6);
+            if (gen !== this.gen) return;
+          }
           break;
+        }
         case 'turnStarted':
           started = e.player;
           break;
@@ -566,7 +574,20 @@ export class App {
     });
   }
 
+  /** Each player's goal scores as of the start of their latest week (see goalsView). */
+  private goalSnaps = new Map<string, Record<string, number>>();
+
+  private snapGoals(p: PlayerState): Record<string, number> {
+    let s = this.goalSnaps.get(p.id);
+    if (!s) {
+      s = goalScores(this.content, this.state, p);
+      this.goalSnaps.set(p.id, s);
+    }
+    return s;
+  }
+
   private beginTurnView(p: PlayerState) {
+    this.goalSnaps.set(p.id, goalScores(this.content, this.state, p));
     this.map.setToken(p.color, p.node);
     this.panelMsgs = [];
     const loc = locationAt(this.content, p.node);
@@ -612,12 +633,13 @@ export class App {
   private async endWeek() {
     const p = this.me();
     if (!p || !this.isHumanTurn() || this.busy) return;
-    const warnings = turnEndWarnings(this.content, this.state, p.id);
-    if (p.timeLeft > 0 || warnings.length) {
-      const q = p.timeLeft > 0 ? `End your week with ${hours(this.content, p.timeLeft)} left?` : 'End your week?';
-      if (!(await this.confirm(q, 'End week', 'Keep playing', warnings))) return;
-    }
+    if (p.timeLeft > 0 && !(await this.confirm(`End your week with ${hours(this.content, p.timeLeft)} left?`, 'End week', 'Keep playing'))) return;
     void this.act({ type: 'endTurn', player: p.id });
+  }
+
+  private outOfTime(): boolean {
+    const p = this.me();
+    return !!p && this.isHumanTurn() && p.timeLeft <= 0;
   }
 
   private showGameOver() {
@@ -648,12 +670,14 @@ export class App {
 
   private openPanel(locId: string | null) {
     if (locId !== this.panelLoc) {
+      this.menu = [];
       const loc = locId ? this.content.locationById.get(locId) : null;
       this.greeting = pick(loc?.greeting) ?? '';
       this.panelMsgs = [];
-      this.scene.setLocation(locId, loc?.name ?? '', loc?.host?.name ?? '');
+      this.scene.setLocation(locId, loc?.name ?? '', loc?.host?.name ?? '', this.furnitureAt(locId));
       if (locId) {
         this.audio.prepareVoice(locId);
+        for (const [id, pk] of Object.entries(loc?.pokes ?? {})) if (pk.name) this.audio.prepareVoice(id);
         this.audio.cue(`enter.${locId}`);
       }
       this.audio.music(locId ?? 'map');
@@ -662,6 +686,23 @@ export class App {
     }
     this.panelLoc = locId;
     this.render();
+  }
+
+  /** The things to show in a room: the current player's own items, if it is their home. */
+  private furnitureAt(locId: string | null): string[] {
+    const p = this.me();
+    return p && locId && p.home === locId ? Object.keys(p.items) : [];
+  }
+
+  /** Something in the room was clicked: the cat, a clock, a regular... Pure flavour. */
+  private poke(id: string) {
+    const locId = this.panelLoc;
+    const pk = locId ? this.content.locationById.get(locId)?.pokes[id] : undefined;
+    if (!locId || !pk) return;
+    const line = pick(pk.lines);
+    if (!line) return;
+    this.audio.cue(`poke.${locId}.${id}`);
+    this.scene.sayAt(id, line, pk.name);
   }
 
   private moodOf(msgs: Msg[]): Mood {
@@ -725,6 +766,8 @@ export class App {
       return;
     }
     const mood = this.moodOf(pd.msgs);
+    // Done with a regular (a pint with Pekki...): they chat and react, the host stays out of it.
+    if (this.scene.reactExtra(pd.action, mood)) return;
     if (!host) return this.scene.react(mood);
     const { cat } = this.reactionOf(pd, mood);
     // Most specific first: the bought item or chosen option, then the action, then the kind of reaction.
@@ -735,6 +778,11 @@ export class App {
   }
 
   private closePanel() {
+    // Out of hours: stepping outside means heading home for the weekend.
+    if (this.outOfTime() && !this.busy) {
+      void this.endWeek();
+      return;
+    }
     this.panelLoc = null;
     this.audio.music('map');
     this.render();
@@ -769,16 +817,7 @@ export class App {
     else {
       const opts = listOptions(this.content, this.state, p.id);
       if (!opts.length) right.append(h('p', { class: 'muted' }, 'Nothing to do here right now.'));
-      const groups = new Map<string, { title: string | null; items: ActionOption[] }>();
-      for (const o of opts) {
-        const key = o.kind === 'basic' ? '_basic' : o.action;
-        if (!groups.has(key)) groups.set(key, { title: o.kind === 'basic' ? null : o.group, items: [] });
-        groups.get(key)!.items.push(o);
-      }
-      for (const g of groups.values()) {
-        if (g.title) right.append(h('h4', null, g.title));
-        for (const o of g.items) right.append(this.optionButton(o));
-      }
+      else right.append(...this.renderMenu(opts, locked));
     }
 
     this.panel.append(
@@ -790,8 +829,79 @@ export class App {
       ),
       h('div', { class: 'body' }, left, right),
     );
+    this.scene.setFurniture(this.furnitureAt(loc.id));
     this.scene.attached();
     captions.scrollTop = captions.scrollHeight;
+  }
+
+  /**
+   * The location's actions as nested menus, at most two levels deep:
+   * top level = single actions plus one entry per group (shop, courses, vacancies...);
+   * job vacancies get a second level by workplace.
+   */
+  private renderMenu(opts: ActionOption[], locked: boolean): HTMLElement[] {
+    type Group = { key: string; title: string; items: ActionOption[] };
+    const groups: Group[] = [];
+    const top: (ActionOption | Group)[] = [];
+    for (const o of opts) {
+      if (o.kind === 'basic' || o.kind === 'work') {
+        top.push(o);
+        continue;
+      }
+      let g = groups.find((x) => x.key === o.action);
+      if (!g) {
+        g = { key: o.action, title: o.group, items: [] };
+        groups.push(g);
+        top.push(g);
+      }
+      g.items.push(o);
+    }
+    const isGroup = (x: ActionOption | Group): x is Group => 'items' in x;
+    const jobPlace = (o: ActionOption) => {
+      const job = o.option ? this.content.jobById.get(o.option) : undefined;
+      return job ? (this.content.locationById.get(job.location)?.name ?? job.location) : '';
+    };
+    const back = (title: string) => [
+      h(
+        'button',
+        { class: 'opt back', disabled: locked, onclick: () => (this.menu.pop(), this.render()) },
+        h('span', { class: 'lbl' }, `‹ ${title}`),
+        h('span', { class: 'meta' }, 'Back'),
+      ),
+    ];
+    const submenuButton = (label: string, count: number, open: () => void) =>
+      h(
+        'button',
+        { class: 'opt sub', disabled: locked, onclick: () => (open(), this.render()) },
+        h('span', { class: 'lbl' }, label),
+        h('span', { class: 'meta' }, `${count} ›`),
+      );
+
+    const [gKey, sub] = this.menu;
+    const group = gKey ? groups.find((g) => g.key === gKey) : undefined;
+    if (gKey && !group) this.menu = []; // the group vanished (e.g. after quitting a job)
+
+    if (!group) {
+      return top.map((x) =>
+        isGroup(x) ? submenuButton(x.title, x.items.length, () => (this.menu = [x.key])) : this.optionButton(x),
+      );
+    }
+
+    const isJobs = group.items[0]?.kind === 'jobs';
+    if (isJobs && sub === undefined) {
+      const places = [...new Set(group.items.map(jobPlace))];
+      return [
+        ...back(group.title),
+        ...places.map((place) =>
+          submenuButton(place, group.items.filter((o) => jobPlace(o) === place).length, () => (this.menu = [group.key, place])),
+        ),
+      ];
+    }
+    const items = isJobs ? group.items.filter((o) => jobPlace(o) === sub) : group.items;
+    return [
+      ...back(isJobs ? `${group.title}: ${sub}` : group.title),
+      ...items.map((o) => this.optionButton(isJobs ? { ...o, label: o.label.replace(/ — .*$/, '') } : o)),
+    ];
   }
 
   private optionButton(o: ActionOption): HTMLElement {
@@ -832,29 +942,47 @@ export class App {
     const p = this.me();
     if (!p || !this.session || this.state.phase !== 'playing') {
       this.hud.classList.add('hidden');
+      this.map.daylight = 1;
       return;
     }
     this.hud.classList.remove('hidden');
     clear(this.hud);
     const full = Math.max(1, makeCtx(this.content, this.state, p, []).num(this.content.game.turnTime));
+    const season = seasonOfWeek(this.state.week);
+    this.map.season = season;
+    this.map.daylight = Math.min(1, p.timeLeft / full);
     const human = this.isHumanTurn();
     const profile = p.controller === 'ai' ? this.content.ai.profiles.find((x) => x.id === p.aiProfile)?.name ?? 'Computer' : null;
-    const scores = goalScores(this.content, this.state, p);
+    const scores = this.snapGoals(p);
     const goalsDone = this.content.goals.goals.filter((g) => scores[g.id] >= this.state.settings.goals[g.id]).length;
-    const warnings = human ? turnEndWarnings(this.content, this.state, p.id) : [];
+    const icons = hudIcons(this.content, this.state, p.id);
     this.hud.append(
-      h('div', { class: 'who' }, swatch(this.theme, p.color), h('div', null, h('b', null, p.name), h('small', null, `Week ${this.state.week}${profile ? ` · AI ${profile}` : ''}`))),
+      h('div', { class: 'who' }, swatch(this.theme, p.color), h('div', null, h('b', null, p.name), h('small', null, `Week ${this.state.week} · ${SEASON_LABEL[season]}${profile ? ` · AI ${profile}` : ''}`))),
       h('div', { class: 'clock', title: 'Time left this week' }, h('small', null, 'Time'), bar(p.timeLeft, full, 'time'), h('b', null, hours(this.content, p.timeLeft))),
       h('div', { class: 'cash', title: 'Cash in hand' }, h('small', null, 'Cash'), h('b', null, money(this.content, p.stats.money ?? 0))),
       h('div', { class: 'goalsmini', title: 'Goals reached' }, h('small', null, 'Goals'), h('b', null, `${goalsDone}/${this.content.goals.goals.length}`)),
-      ...(warnings.length
-        ? [h('button', { class: 'hudwarn', title: warnings.join('\n'), onclick: () => this.flash(warnings.join(' '), 'bad') }, '!')]
-        : []),
+      h(
+        'div',
+        { class: 'hudicons' },
+        icons.map((i) =>
+          h(
+            'span',
+            { class: `hudicon${i.warn ? ' warn' : ''}${i.dim ? ' dim' : ''}`, title: i.text, onclick: () => this.flash(i.text, i.warn ? 'bad' : 'info') },
+            i.icon,
+            i.badge ? h('i', null, String(i.badge)) : null,
+          ),
+        ),
+      ),
       h(
         'div',
         { class: 'btns' },
         h('button', { onclick: () => this.openModal(statusTabs(this), { cls: 'wide' }) }, 'Status'),
-        h('button', { onclick: () => this.openModal(goalsView(this.content, this.state, this.theme), { cls: 'wide' }) }, 'Goals'),
+        h('button', {
+          onclick: () => {
+            for (const pl of this.state.players) this.snapGoals(pl);
+            this.openModal(goalsView(this.content, this.state, this.theme, this.goalSnaps), { cls: 'wide' });
+          },
+        }, 'Goals'),
         h('button', { onclick: () => this.openModal(logView(this.state, this.session!.log, this.theme), { cls: 'wide' }) }, 'News'),
         h('button', { class: `sound${this.audio.volumes().muted ? ' off' : ''}`, title: 'Sound on/off (M)', onclick: () => this.toggleSound() }, '♪'),
         h('button', { onclick: () => this.showMenu() }, 'Menu'),

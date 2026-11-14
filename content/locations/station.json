@@ -15,6 +15,13 @@
       "refuse": ["Not today, I think.", "Hmm. No."]
     }
   },
+  "pokes": {
+    "pigeon": { "lines": [
+        "A pigeon eyes your sandwich. You have no sandwich. It eyes you anyway.",
+        "This pigeon has waited for the R train longer than anyone. It never gets on.",
+        "Kurr kurr. The pigeon is not impressed by your career choices."
+    ] }
+  },
   "actions": [
     { "id": "work", "kind": "work", "label": "Take the train to work" },
     {
@@ -22,16 +29,22 @@
       "description": "Market square, museums and a bowl of salmon soup.",
       "time": "params.dayTripTime",
       "cost": "params.dayTripPrice * world.economy",
-      "requires": [{ "test": "flag('tripWeek') != player.week", "message": "One trip to the city a week is plenty." }],
       "effects": [
+        { "if": "flag('tripWeek') == player.week",
+          "then": [
+            { "add": { "happiness": "params.dayTripJoy * 0.4 / (1 + funThisWeek * params.funFatigue)", "stress": "2" } },
+            { "message": "A second trip to the city this week. The R train is late both ways and the same seagull is waiting for you." }
+          ],
+          "else": [
+            { "add": { "happiness": "params.dayTripJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5" } },
+            { "pick": [
+              { "weight": "1", "do": [{ "message": "A great day in the capital. A seagull stole your doughnut." }] },
+              { "weight": "1", "do": [{ "message": "Market square, a museum and salmon soup in the old market hall." }] },
+              { "weight": "1", "do": [{ "message": "You ride the ferry to Suomenlinna and back. The sea wind clears your head." }] }
+            ] }
+          ] },
         { "setFlag": { "tripWeek": "player.week" } },
-        { "add": { "happiness": "params.dayTripJoy * 1 / (1 + funThisWeek * params.funFatigue)", "stress": "-5" } },
-        { "add": { "funThisWeek": "1" } },
-        { "pick": [
-          { "weight": "1", "do": [{ "message": "A great day in the capital. A seagull stole your doughnut." }] },
-          { "weight": "1", "do": [{ "message": "Market square, a museum and salmon soup in the old market hall." }] },
-          { "weight": "1", "do": [{ "message": "You ride the ferry to Suomenlinna and back. The sea wind clears your head." }] }
-        ] }
+        { "add": { "funThisWeek": "1" } }
       ]
     }
   ]

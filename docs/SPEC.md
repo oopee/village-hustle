@@ -21,6 +21,7 @@ Status: playable prototype with placeholder art. This file is the source of trut
 - A player wins by **keeping every target through the weekend**: goals are checked at the start of their next week, not the moment they are reached. The other players then finish that round as their last chance. If several players qualify in the same round, the one furthest past their targets wins. If nobody manages it by the week limit, the player with the most overall progress wins. (`game.winCheck: "immediate"` restores the old instant win.)
 - The best jobs have limited openings: only one player at a time can hold each top position. Managers need experience from their own workplace. There is only one cottage for sale.
 - The Happiness goal averages current happiness with last week's, so a good mood has to last; Wealth subtracts unpaid rent.
+- **Every goal has more than one route** (see 2.4, "Routes to the goals"). School → better job → money is one way to win, not the only one.
 
 ### 2.2 Turns
 - A **week** is one turn for every player, in seat order (hot-seat).
@@ -35,33 +36,43 @@ Status: playable prototype with placeholder art. This file is the source of trut
 - During a turn the player:
   - **walks** between places, which costs hours by distance (a bicycle makes it cheaper)
   - **does things** at the place they're at, which costs hours and often money
-- The turn ends when the player chooses or when the hours run out. The player then returns home.
-- After everyone has played, a world update runs. Currently it moves the economy index, which affects prices and wages.
+- The turn ends when the player chooses to. Running out of hours does not end it by itself: the player stays where they are, can read what happened, and heads home when they leave the place (the token dashes home quickly). The map darkens towards evening as the hours run out.
+- The calendar starts in early June; seasons change every 13 weeks. Seasons recolour the map, bring weather, and change which random events can happen.
+- After everyone has played, a world update runs. It moves the economy index, which affects prices and wages, and the share market.
 
 ### 2.3 Places (default content)
 
 | Place | Purpose |
 |---|---|
-| Parents' House | Start home; free but nagging. Mom's soup, rest, advice. |
-| Lasitehtaantie Flat | Rent a place of your own; rest; pay rent. |
-| Red Cottage | Buy your own home. Passive happiness; the best rest. |
+| Parents' House | Start home: free food, but Mom's chores take time and happiness every week. Visitors can have soup. |
+| Lasitehtaantie Flats | Rent the cheap, gloomy basement or the proper one-room flat. Rent is monthly, at the rate locked in by the lease. |
+| Red Cottage | Rent it or buy it. Passive happiness; the best rest. |
 | Työkkäri (employment office) | Job listings, career counselling, quitting, case-worker job. |
-| Savings Bank | Deposit, withdraw (cash on hand can be stolen), jobs. |
+| Savings Bank | Deposit, withdraw (cash on hand can be stolen), buy and sell shares, jobs. |
 | Sale (village shop) | Groceries, coffee, scratch cards, jobs. |
 | Vanha Trokari (pizza & kebab grill) | Meals and coffee, karaoke, mölkky, entry-level jobs. |
-| Kolmilammi Dance Pavilion | Weekly dance night and ice cream; leisure. |
+| Kolmilammi Dance Pavilion | Weekly dance night and ice cream; leisure. The house band hires singers who have proved themselves at karaoke. |
 | Hardware & Home | Clothes (dress codes gate jobs), appliances, bicycle, computer; flea-market selling. |
 | Health Station | Doctor, flu shot, nursing courses and jobs. |
-| Ryttylä School (evening classes) | Courses that grant degrees. |
+| Ryttylä School (evening classes) | Courses that grant degrees; skills tests (näyttö) that turn work experience into a diploma. |
 | Village Library | Reading and self-study, library jobs. |
-| Ykslammi Beach | Sauna, swim, sausage; leisure and stress relief. |
+| Ykslammi Beach | Sauna, swim, sausage; leisure and stress relief. The beach kiosk can be leased and run as your own business. |
 | Furniture Factory | Odd jobs and industrial career path. |
 | Ryttylä Station | Commuter jobs in Helsinki (long shifts, high career), day trips. |
 
 Every place has an **owner** (host) who appears in the interior picture and comments on what the player does in cartoon speech bubbles. The setting is a fictionalised Ryttylä (Hausjärvi, Finland). The place names are inspired by the real village; the people are invented.
 
 ### 2.4 Systems
-- **Jobs** have a career rating, a wage, a shift length, requirements (degrees, clothing, experience) and an optional promotion target. Being promoted takes time in the job plus reputation and luck.
+- **Jobs** have a career rating, a wage, a shift length, requirements (degrees, clothing, experience) and an optional promotion target. Requirements are hidden: anyone may apply for any job, and an unqualified application wastes the application time and is rejected with the reason.
+- **Raises and promotions**: shifts worked in the same job are counted. Every so many shifts brings a raise (higher wage, a little career score), up to a top pay grade. After enough shifts, a job with a next step can lead to a promotion (reputation and luck help). If the player does not qualify yet, the boss says once what is missing. Changing jobs starts the count again.
+- **Routes to the goals**:
+  - *Career*: study for a better job; or stay and work your way up (raises, promotions; most manager posts accept long experience at that workplace instead of the diploma); or buy your own business (the beach kiosk: busy summers, slow winters); or sing your way in (karaoke nights and a known name get you into the dance band, which leads to bandleader).
+  - *Education*: courses; or skills tests at the school that turn workplace experience into vocational diplomas for a fee; and self-taught knowledge (reading, self-study, Olli) also counts.
+  - *Wealth*: wages and savings; or shares (better average growth than savings, but they can crash); or property (the cottage holds its value, and earns holiday rent if the owner lives elsewhere); or the kiosk lease, which keeps part of its value.
+  - *Happiness*: leisure, a nicer home, furnishings, the band job.
+- **Food**: living at home with Mom, eating out (grill, Mom's soup when visiting) or cooking at home, which needs a hot plate. Groceries without one go to waste.
+- **No hand-holding**: actions are rarely blocked outright. Repeating something in the same week usually still works, just worse (and often with a funny message). The game doesn't warn before the weekend about forgotten chores.
+- **Furnishings**: decor and appliances bought for your own place appear in its interior and make it nicer to live in.
 - **Education**: courses cost a fee and take several lessons; finishing one grants a degree. Degrees give education points and unlock jobs and further courses.
 - **Items**: consumables (meals, groceries), clothing (tiered dress code, wears out), appliances (passive benefits) and property (the cottage deed counts towards wealth).
 - **Hidden stats**: stress, reputation, knowledge, experience and others. They shape outcomes without being shown.
@@ -69,6 +80,7 @@ Every place has an **owner** (host) who appears in the interior picture and comm
 - **Hedonic adaptation**: high happiness fades faster, so it has to be maintained.
 - **Events**: one random event may hit a player at the start of a turn. Each event's weight depends on the situation (e.g. stress raises flu risk).
 - **Economy index**: a random walk around a baseline that scales prices and wages.
+- **Share market**: each week the world update picks one market move for everyone (noise, a small upward drift, a link to the economy, and rare booms and crashes). Shares are a stat whose value moves with it.
 
 ### 2.5 Hidden rules and randomization
 - All numbers live in `content/balance.json` (the "parameters").
@@ -105,7 +117,7 @@ src/sim + src/tools (Node: simulator, tuner, validator, diagnostics)
 - `listOptions` lists the available actions with reasons when they are disabled. `goalScores` and `overallProgress` compute goal scores and progress.
 - **Actions** are `move`, `do` (location action plus option) and `endTurn`. They are plain JSON.
 - **State** is plain JSON: players, week, world, rolled parameters, RNG state. It round-trips through `JSON.stringify` (tested).
-- **Events** describe what happened: `message`, `moved`, `did`, `turnStarted`, `turnEnded`, `weekEnded`, `gameOver`. The UI animates and logs from these.
+- **Events** describe what happened: `message`, `moved`, `did`, `turnStarted`, `turnEnded` (with the `path` walked home), `weekEnded`, `gameOver`. The UI animates and logs from these.
 - **Content loading** (`buildContent`) validates every file with zod and compiles every expression. It checks references (unknown parameters, items, jobs, nodes, functions) and reports them with file names. It also computes a content hash.
 - **Expressions**: a small safe language with no access to JavaScript. See CONTENT-GUIDE §3.
 - **Effects**: a JSON effect language. See CONTENT-GUIDE §4.
@@ -116,7 +128,9 @@ src/sim + src/tools (Node: simulator, tuner, validator, diagnostics)
 - **Theme loading** (`theme.ts`):
   - places sprites from `theme.json` coordinates, builds hover outlines, tints the player token per player colour, and sets UI colours as CSS variables
   - a location without art falls back to a signpost, so new content works before its art exists
-- **Location scene** (`host-scene.ts`): the interior picture, the animated owner sprite (idle / talk / happy / annoyed) and a typewriter speech bubble placed above the owner. `app.ts` decides what the owner says from `location.host.lines`, `say` effects and the tone of the action's messages. Other messages appear as narration captions.
+- **Location scene** (`host-scene.ts`): the interior picture, the animated owner sprite (idle / talk / happy / annoyed), regulars (extras), the player's own furniture when it is their home, clickable props (content `pokes`), and a typewriter speech bubble placed above whoever speaks. `app.ts` decides what the owner says from `location.host.lines`, `say` effects and the tone of the action's messages. Other messages appear as narration captions.
+- **Map** (`map-view.ts`, `season.ts`): seasonal recolouring of the map art, snow / leaves / petals, and a daylight tint that follows the hours left in the week.
+- **HUD**: money, hours, the week and season, status icons from `game.json` `hud`, and goal progress. During a game goals are shown as fuzzy word bands from a snapshot taken at the start of the turn, so a single choice's effect isn't directly visible; exact numbers appear at game over.
 - **Screens**: title, how to play, setup (players, AI, goals, randomize, seed), game (HUD, map, location panel, status, goals, news, menu), turn hand-off, game over.
 - **Autosave** goes to `localStorage` after every action and is tagged with the content hash. An outdated save is detected and not loaded.
 - **AI turns** run in the UI with selectable speed. The animation is driven by the same events.
@@ -125,6 +139,7 @@ src/sim + src/tools (Node: simulator, tuner, validator, diagnostics)
 - **Simulator**: bot-only games on worker threads, then aggregate metrics compared against `content/balance-targets.json`.
 - **Tuner**: hill climbing over parameters that have a `tune` range. It uses common random numbers (all candidates are played on the same seeds) and writes values back to `balance.json`, keeping a backup.
 - **Diagnostics**: per-player game state and the bot's ranked options at a given week.
+- **Routes report** (`npm run paths`): counts which routes bots took (final jobs, raises, promotions, skills tests, shares, kiosk, band, a let cottage) to spot dead or dominant paths. Prints counts only.
 - **Validator**: loads the content and prints errors.
 - **Text play** (`npm run play`, `src/tools/play-cli.ts`): a game saved under `playtest/` that people or AI agents play one command at a time. It shows only what the UI shows (visible stats, option lists, owner lines, news) and lets bots take their turns automatically. It is used for playtesting the hidden rules without revealing them.
 - **Art generator** (`tools/gen-art.ts` + `tools/art/`): draws the placeholder Ryttylä theme procedurally in a 16-bit, 3/4 top-down style. `map.ts` covers the map, buildings, overlays and player; `rooms.ts` covers the interiors and owners; `types.ts` is the contract between them; `preview.ts` writes enlarged previews.

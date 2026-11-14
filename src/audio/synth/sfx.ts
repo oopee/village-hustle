@@ -765,6 +765,52 @@ export const SFX: Record<string, SfxDef> = {
     },
   },
 
+  // ------------------------------------------------ things to poke
+  meow: {
+    about: 'A cat: a questioning "mrrrau?".',
+    len: 0.8,
+    level: 0.45,
+    variants: 3,
+    make(d) {
+      const p = d.rng.range(560, 700);
+      d.add(d.voice({ dur: d.rng.range(0.5, 0.65), pitch: (t) => p * (0.8 + 0.45 * Math.sin(Math.PI * Math.min(1, t * 1.2))), vowel: () => 'i>ä>a>u', breath: 0.3, buzz: 0.35, shift: 1.6, attack: 0.03, release: 0.15, vibrato: 1 }), 0, 0, 1);
+    },
+  },
+  cuckoo: {
+    about: 'A wall cuckoo clock: a wooden clack and "cu-ckoo".',
+    len: 0.9,
+    level: 0.4,
+    make(d) {
+      latch(d, 0, 0.5);
+      for (const [at, f] of [[0.12, 740], [0.38, 622]] as const) {
+        d.add(d.tone(0.22, () => f, { wave: 'tri', env: swell(0.15) }), at, 0, 0.8);
+        d.add(d.tone(0.22, () => f * 2, { env: swell(0.15) }), at, 0, 0.12);
+      }
+      d.room(0.4, 0.25);
+    },
+  },
+  coo: {
+    about: 'A pigeon: "kurr-kuu".',
+    len: 1,
+    level: 0.4,
+    variants: 2,
+    make(d) {
+      const p = d.rng.range(260, 320);
+      d.add(d.voice({ dur: 0.35, pitch: (t) => p * (1 + 0.15 * t), vowel: () => 'u', breath: 0.35, buzz: 0.2, amp: (t) => 0.55 + 0.45 * Math.sin(2 * Math.PI * 9 * t), attack: 0.03, release: 0.08 }), 0, 0, 1);
+      d.add(d.voice({ dur: 0.45, pitch: (t) => p * (1.2 - 0.3 * t), vowel: () => 'o>u', breath: 0.3, buzz: 0.2, attack: 0.04, release: 0.2 }), 0.42, 0, 1);
+    },
+  },
+  dart: {
+    about: 'A dart thunks into the board (or the wall).',
+    len: 0.35,
+    level: 0.45,
+    variants: 2,
+    make(d) {
+      d.add(d.noise(0.05, { bp: [3000, 1], env: (t) => t }), 0, 0, 0.2);
+      d.add(d.hit(0.2, d.rng.range(230, 300), [[1, 0.8, 0.06], [2.6, 0.3, 0.03]], { click: 0.6, clickFc: 2500 }), 0.05, 0, 1);
+    },
+  },
+
   // ------------------------------------------------ gadgets
   bikebell: {
     about: 'A bicycle bell: ring-ring!',

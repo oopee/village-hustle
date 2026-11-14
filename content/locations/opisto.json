@@ -12,6 +12,9 @@
       "enroll": ["Welcome to the course!", "Wonderful. First lesson is on Monday."],
       "lesson": ["Good work today.", "You're getting there!", "Excellent question."],
       "graduate": ["Congratulations! I knew you could do it.", "Well done! Frame that certificate."],
+      "demo_basic": ["See? You knew it all along.", "Experience is a fine teacher. Slower than me, though."],
+      "demo_trade": ["The examiner was impressed. Mostly by the wig.", "A born shopkeeper. Congratulations!"],
+      "demo_tech": ["Ten fingers. Excellent. Congratulations!", "The factory taught you well."],
       "work": ["Thank you, colleague. The class loved it.", "Good lesson. The biscuits in the staff room are communal.", "The pensioners asked for homework. Homework!", "Someone fell asleep in the back row. It happens to the best of us."],
       "hired": ["Welcome to the staff room. Biscuits are communal."],
       "broke": ["The course fee is due at enrolment, I'm afraid.", "Come back when you've saved a little."],
@@ -20,6 +23,42 @@
   },
   "actions": [
     { "id": "study", "kind": "courses", "label": "Courses", "time": "params.enrollTime" },
+    {
+      "id": "demo_basic", "kind": "basic", "label": "Skills test: Basic Skills",
+      "description": "A näyttö: no lessons, just show the examiner what years of working life have taught you.",
+      "visible": "!degree('basic_skills')",
+      "time": "params.demoTime",
+      "cost": "params.fee_basic * params.demoFeeShare",
+      "requires": [{ "test": "experience >= params.demoBasicXp", "message": "You need more working life behind you to show anything." }],
+      "effects": [
+        { "grantDegree": "basic_skills" },
+        { "message": "You fill in forms, count change and write a polite complaint letter while the examiner watches. Passed! The Basic Skills certificate is yours.", "tone": "good" }
+      ]
+    },
+    {
+      "id": "demo_trade", "kind": "basic", "label": "Skills test: Retail & Trade",
+      "description": "A näyttö for people who already know the trade. Shop counter or grill counter, it all counts.",
+      "visible": "!degree('vocational_trade')",
+      "time": "params.demoTime",
+      "cost": "params.fee_vocational * params.demoFeeShare",
+      "requires": [{ "test": "flag('xpShop') + flag('xpGrill') >= params.demoTradeXp", "message": "You need a lot more time behind a shop or grill counter first." }],
+      "effects": [
+        { "grantDegree": "vocational_trade" },
+        { "message": "You run a till, sort a pallet and calm down an angry customer (the examiner, in a wig). Passed! The Retail & Trade diploma is yours.", "tone": "good" }
+      ]
+    },
+    {
+      "id": "demo_tech", "kind": "basic", "label": "Skills test: Machinery & Woodworking",
+      "description": "A näyttö at the factory floor. If you can already run the planer, prove it.",
+      "visible": "!degree('vocational_tech')",
+      "time": "params.demoTime",
+      "cost": "params.fee_vocational * params.demoFeeShare",
+      "requires": [{ "test": "flag('xpSawmill') >= params.demoTechXp", "message": "You need a lot more time on the factory floor first." }],
+      "effects": [
+        { "grantDegree": "vocational_tech" },
+        { "message": "You plane a chair leg, change a saw blade and keep all ten fingers. Passed! The Machinery & Woodworking diploma is yours.", "tone": "good" }
+      ]
+    },
     { "id": "work", "kind": "work" }
   ]
 }

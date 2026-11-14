@@ -78,6 +78,30 @@ canvas.map {
   display: none !important;
 }
 
+/* In-game tooltip (replaces the browser's title tooltips) */
+.tooltip {
+  position: absolute;
+  z-index: 50;
+  max-width: 220px;
+  padding: 3px 6px 4px;
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--border);
+  box-shadow:
+    inset -2px -2px 0 var(--panel-dark),
+    2px 2px 0 rgba(0, 0, 0, 0.4);
+  font-size: 13px;
+  line-height: 1.05;
+  pointer-events: none;
+  white-space: normal;
+}
+.tooltip p {
+  margin: 0;
+}
+.tooltip p + p {
+  margin-top: 3px;
+}
+
 h1,
 h2,
 h3,
@@ -273,12 +297,37 @@ input[type='checkbox'] {
 .hud .clock small {
   grid-column: 1 / 3;
 }
-.hud .hudwarn {
-  font-size: 17px;
-  padding: 0 7px;
-  color: #fff;
+.hud .hudicons {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.hud .hudicon {
+  position: relative;
+  font-size: 15px;
+  line-height: 1;
+  padding: 3px 3px;
+  cursor: help;
+  border: 1px solid transparent;
+}
+.hud .hudicon.dim {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.hud .hudicon.warn {
   background: var(--bad);
+  border-color: #000;
   animation: hudwarn 1.2s steps(2) infinite;
+}
+.hud .hudicon i {
+  position: absolute;
+  right: -2px;
+  bottom: -3px;
+  font: 9px/1 monospace;
+  font-style: normal;
+  color: #fff;
+  background: #000;
+  padding: 0 2px;
 }
 @keyframes hudwarn {
   50% {
@@ -357,9 +406,11 @@ input[type='checkbox'] {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
-.scene > img {
+.scene > img,
+.scene > canvas {
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 .scene > img.front {
   pointer-events: none;
@@ -522,6 +573,14 @@ button.opt .meta {
 }
 button.opt.off {
   opacity: 0.5;
+}
+button.opt.sub .lbl {
+  font-weight: bold;
+}
+button.opt.back {
+  background: var(--panel-dark);
+  color: var(--accent);
+  margin-bottom: 4px;
 }
 button.opt.off:hover {
   background: var(--panel-dark);
@@ -801,6 +860,14 @@ table.kv {
 .goal-table .bar {
   width: 82px;
   height: 9px;
+}
+.goal-table td.fuzzy small {
+  display: block;
+  font-size: 10px;
+  margin-top: 1px;
+}
+.goal-table td.fuzzy .bar .fill {
+  filter: blur(1.5px);
 }
 .log ul {
   list-style: none;
