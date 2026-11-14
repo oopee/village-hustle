@@ -85,6 +85,11 @@
     "action.sauna.sausage": { "play": ["sizzle", "eat"], "gap": 1.1 },
     "action.sawmill.firewood": { "play": ["chop", "chop"], "gap": 0.6 },
     "action.station.day_trip": "train",
+    "action.grill.pekki": { "play": ["pour", "gulp"], "gap": 1.3 },
+    "action.sawmill.matti": { "play": ["pour", "gulp"], "gap": 1.3 },
+    "action.library.olli": { "play": ["boot", "typing"], "gap": 0.6 },
+    "action.bank.juho": { "play": ["scribble", "coins"], "gap": 0.6 },
+    "action.rental_flat.pellinen": { "play": ["tv_on", "cheer"], "gap": 0.8 },
 
     "action.bank.work": "typing",
     "action.department_store.work": "kaching",
