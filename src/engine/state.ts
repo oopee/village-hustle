@@ -76,7 +76,8 @@ export type Tone = 'good' | 'bad' | 'info';
 export type GameEvent =
   /** speaker 'host': said by the owner of the location the player is at (UI shows a speech bubble). */
   | { type: 'message'; player?: string; text: string; tone: Tone; speaker?: 'host' }
-  | { type: 'moved'; player: string; path: string[]; time: number }
+  /** `late`: the week ran out on the way; the turn ends right after. */
+  | { type: 'moved'; player: string; path: string[]; time: number; late?: boolean }
   | { type: 'did'; player: string; location: string; action: string; option?: string; label: string }
   | { type: 'turnStarted'; player: string; week: number }
   /** `path` is the walk home (map nodes, starting where the player was); a single node if already home. */

@@ -86,15 +86,28 @@ Edit `content/rules.json` → `turnStart` (it runs for each player at the start 
 | `ai.json` | Bot `needs` and `profiles` (§9) |
 | `rules/*.ts` | Rule code (§6) |
 
-**HUD status icons** (`game.json` → `hud`): small icons in the top bar so players can see at a glance what they have already taken care of. Each entry is `{ "id", "icon", "text", "visible"?, "warn"?, "dim"?, "badge"? }`:
-- `icon` is an emoji or short text; `text` is the tooltip (may contain `{expressions}`).
+**Status icons** (`game.json` → `hud`): short notes on the player's situation (home, rent, rest, shares, warnings). Each entry is `{ "id", "icon", "text", "bar"?, "visible"?, "warn"?, "dim"?, "badge"? }`:
+- `icon` is an emoji or short text; `text` is the note (may contain `{expressions}`).
+- `bar: true` puts the icon in the top bar. Keep this to one or two icons: the bar has room for little else, and the End week button must always fit. Every other icon is listed under *Right now* in the Status window, and the Status button lights up when one of them is a warning.
 - `visible` (expression, default true) hides the icon when false.
 - `warn` makes it blink red (e.g. `"food < 1"`), `dim` greys it out (e.g. not rested yet this week).
 - `badge` is a small number in the corner (e.g. `"food"`).
 
 ```json
-{ "id": "food", "icon": "🍞", "text": "Food at home: {food} weeks", "warn": "food < 1", "badge": "food" }
+{ "id": "food", "icon": "🍞", "bar": true, "text": "Food at home: {food} weeks", "warn": "food < 1", "badge": "food" }
 ```
+
+**Time bands** (`game.json` → `timeBands`): players never see exact hours. Every duration (walks, actions, lessons) is shown as the first band whose `max` it does not exceed; the last band catches the rest. The default is three bands of hourglasses: *Quick*, *Takes some time*, *Takes a lot of time*. The time left in the week is only a bar. Money and wages are still shown exactly.
+
+```json
+"timeBands": [
+  { "max": 2, "label": "Quick", "icon": "⏳" },
+  { "max": 5, "label": "Takes some time", "icon": "⏳⏳" },
+  { "max": 999, "label": "Takes a lot of time", "icon": "⏳⏳⏳" }
+]
+```
+
+**Stars:** goals, and stats shown as `"display": "bar"`, appear as stars: one star is a fifth of the scale, in half-star steps. Goal targets are set in half stars (steps of 10 on the 0–100 goal scale).
 
 ---
 

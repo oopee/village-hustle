@@ -34,8 +34,9 @@ Status: playable prototype with placeholder art. This file is the source of trut
   - savings earn interest
   - a random event may happen
 - During a turn the player:
-  - **walks** between places, which costs hours by distance (a bicycle makes it cheaper)
+  - **walks** between places, which costs hours by distance (a bicycle makes it cheaper). A player may set off for any place, even without enough time left: the week then runs out on the way, they get there as everything closes, and the week ends.
   - **does things** at the place they're at, which costs hours and often money
+- Players never see exact hours: walks and actions show as *quick*, *takes some time* or *takes a lot of time* (hourglass icons), and the time left in the week is a bar.
 - The turn ends when the player chooses to. Running out of hours does not end it by itself: the player stays where they are, can read what happened, and heads home when they leave the place (the token dashes home quickly). The map darkens towards evening as the hours run out.
 - The calendar starts in early June; seasons change every 13 weeks. Seasons recolour the map, bring weather, and change which random events can happen.
 - After everyone has played, a world update runs. It moves the economy index, which affects prices and wages, and the share market.
@@ -130,7 +131,8 @@ src/sim + src/tools (Node: simulator, tuner, validator, diagnostics)
   - a location without art falls back to a signpost, so new content works before its art exists
 - **Location scene** (`host-scene.ts`): the interior picture, the animated owner sprite (idle / talk / happy / annoyed), regulars (extras), the player's own furniture when it is their home, clickable props (content `pokes`), and a typewriter speech bubble placed above whoever speaks. `app.ts` decides what the owner says from `location.host.lines`, `say` effects and the tone of the action's messages. Other messages appear as narration captions.
 - **Map** (`map-view.ts`, `season.ts`): seasonal recolouring of the map art, snow / leaves / petals, and a daylight tint that follows the hours left in the week.
-- **HUD**: money, hours, the week and season, status icons from `game.json` `hud`, and goal progress. During a game goals are shown as fuzzy word bands from a snapshot taken at the start of the turn, so a single choice's effect isn't directly visible; exact numbers appear at game over.
+- **HUD**: the week and season, time left (a bar), cash, goals reached, the food icon, and the buttons. The buttons never shrink, so End week is always reachable. The other status icons from `game.json` `hud` are listed in the Status window, whose button lights up on a warning.
+- **Stars instead of numbers**: goals are stars (one star is a fifth of the scale, in half steps). Each goal shows as many stars as its target, filled from a snapshot taken at the start of the turn, so a single choice's effect isn't directly visible. Happiness and health in the Status window are stars too. Only money and wages are exact. The game-over screen shows exact bars.
 - **Screens**: title, how to play, setup (players, AI, goals, randomize, seed), game (HUD, map, location panel, status, goals, news, menu), turn hand-off, game over.
 - **Autosave** goes to `localStorage` after every action and is tagged with the content hash. An outdated save is detected and not loaded.
 - **AI turns** run in the UI with selectable speed. The animation is driven by the same events.

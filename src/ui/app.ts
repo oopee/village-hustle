@@ -10,6 +10,7 @@ import {
   locationAt,
   makeCtx,
   overallProgress,
+  timeBand,
   travelTime,
   type Action,
   type ActionOption,
@@ -23,7 +24,7 @@ import { chooseAction } from '../ai/bot';
 import type { AudioPlayer } from '../audio/player';
 import { clear, delay, h, storageGet, storageSet } from './dom';
 import { bar, goalsView, logView, statusView, swatch } from './dialogs';
-import { hours, money } from './format';
+import { money } from './format';
 import { HostScene, type Mood } from './host-scene';
 import { MapView } from './map-view';
 import { clearSave, findSave, LocalSession } from './session';
@@ -359,11 +360,7 @@ export class App {
       this.openPanel(loc.id);
       return;
     }
-    const t = travelTime(this.content, this.state, p, loc.node);
-    if (t > p.timeLeft) {
-      this.flash(`Walking to ${loc.name} takes ${hours(this.content, t)}. You only have ${hours(this.content, p.timeLeft)} left.`, 'bad');
-      return;
-    }
+    // Setting off without enough time is allowed: the week simply runs out on the way.
     void this.act({ type: 'move', player: p.id, to: loc.node });
   }
 
@@ -380,8 +377,9 @@ export class App {
     clear(this.tooltip);
     this.tooltip.append(
       h('b', null, loc.name),
-      h('span', { class: t > p.timeLeft ? 'bad' : 'muted' }, here ? 'You are here' : `${hours(this.content, t)} walk`),
+      h('span', { class: 'muted' }, here ? 'You are here' : `Walk: ${this.timeText(t)}`),
     );
+    if (!here && t > p.timeLeft) this.tooltip.append(h('span', { class: 'bad' }, 'The week will run out on the way'));
     if (!open) this.tooltip.append(h('span', { class: 'bad' }, 'Closed'));
     this.tooltip.classList.remove('hidden');
     const W = this.theme.def.width;
@@ -455,7 +453,7 @@ export class App {
           await this.map.walk(e.path, humanWalk);
           if (gen !== this.gen) return;
           const loc = locationAt(this.content, e.path[e.path.length - 1]);
-          this.openPanel(loc?.id ?? null);
+          this.openPanel(e.late ? null : loc?.id ?? null);
           break;
         }
         case 'did': {
@@ -633,7 +631,7 @@ export class App {
   private async endWeek() {
     const p = this.me();
     if (!p || !this.isHumanTurn() || this.busy) return;
-    if (p.timeLeft > 0 && !(await this.confirm(`End your week with ${hours(this.content, p.timeLeft)} left?`, 'End week', 'Keep playing'))) return;
+    if (p.timeLeft > 0 && !(await this.confirm('You still have time left this week. End it anyway?', 'End week', 'Keep playing'))) return;
     void this.act({ type: 'endTurn', player: p.id });
   }
 
@@ -904,10 +902,19 @@ export class App {
     ];
   }
 
+  /** A duration as players see it: an icon and a rough word, never exact hours. */
+  private timeText(t: number): string {
+    const b = timeBand(this.content, t);
+    return `${b.icon} ${b.label}`;
+  }
+
   private optionButton(o: ActionOption): HTMLElement {
-    const meta: string[] = [];
+    const meta: (string | HTMLElement)[] = [];
     if (o.detail) meta.push(o.detail);
-    if (o.time > 0) meta.push(hours(this.content, o.time));
+    if (o.time > 0) {
+      const b = timeBand(this.content, o.time);
+      meta.push(h('span', { class: 'time', title: b.label }, b.icon));
+    }
     if (o.cost > 0) meta.push(money(this.content, o.cost));
     return h(
       'button',
@@ -932,7 +939,7 @@ export class App {
         },
       },
       h('span', { class: 'lbl' }, o.label),
-      meta.length ? h('span', { class: 'meta' }, meta.join(' · ')) : null,
+      meta.length ? h('span', { class: 'meta' }, meta.flatMap((m, i) => (i ? [' · ', m] : [m]))) : null,
     );
   }
 
@@ -955,10 +962,13 @@ export class App {
     const profile = p.controller === 'ai' ? this.content.ai.profiles.find((x) => x.id === p.aiProfile)?.name ?? 'Computer' : null;
     const scores = this.snapGoals(p);
     const goalsDone = this.content.goals.goals.filter((g) => scores[g.id] >= this.state.settings.goals[g.id]).length;
-    const icons = hudIcons(this.content, this.state, p.id);
+    const all = hudIcons(this.content, this.state, p.id);
+    const icons = all.filter((i) => i.bar);
+    // Other status notes live in the Status window; its button lights up when one is a warning.
+    const alert = all.some((i) => !i.bar && i.warn);
     this.hud.append(
       h('div', { class: 'who' }, swatch(this.theme, p.color), h('div', null, h('b', null, p.name), h('small', null, `Week ${this.state.week} · ${SEASON_LABEL[season]}${profile ? ` · AI ${profile}` : ''}`))),
-      h('div', { class: 'clock', title: 'Time left this week' }, h('small', null, 'Time'), bar(p.timeLeft, full, 'time'), h('b', null, hours(this.content, p.timeLeft))),
+      h('div', { class: 'clock', title: 'Time left this week' }, h('small', null, 'Time'), bar(p.timeLeft, full, 'time')),
       h('div', { class: 'cash', title: 'Cash in hand' }, h('small', null, 'Cash'), h('b', null, money(this.content, p.stats.money ?? 0))),
       h('div', { class: 'goalsmini', title: 'Goals reached' }, h('small', null, 'Goals'), h('b', null, `${goalsDone}/${this.content.goals.goals.length}`)),
       h(
@@ -976,7 +986,12 @@ export class App {
       h(
         'div',
         { class: 'btns' },
-        h('button', { onclick: () => this.openModal(statusTabs(this), { cls: 'wide' }) }, 'Status'),
+        h(
+          'button',
+          { class: alert ? 'alert' : '', title: alert ? 'Something needs your attention' : 'Your situation', onclick: () => this.openModal(statusTabs(this), { cls: 'wide' }) },
+          'Status',
+          alert ? h('i', null, '!') : null,
+        ),
         h('button', {
           onclick: () => {
             for (const pl of this.state.players) this.snapGoals(pl);

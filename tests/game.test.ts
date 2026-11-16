@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { ActionError, applyAction, createGame, currentPlayer, listOptions, type Content, type GameState } from '../src/engine';
+import { ActionError, applyAction, createGame, currentPlayer, hudIcons, listOptions, timeBand, travelTime, type Content, type GameState } from '../src/engine';
 import { chooseAction } from '../src/ai/bot';
 import { simulateGame } from '../src/sim/simulate';
 import { loadNodeContent } from '../src/tools/node-content';
@@ -56,6 +56,35 @@ describe('engine', () => {
     const said = events.filter((e) => e.type === 'message' && e.speaker === 'host');
     expect(said).toHaveLength(1);
     expect(content.locationById.get('job_centre')?.host?.name).toBeTruthy();
+  });
+
+  it('setting off without enough time ends the week on the way', () => {
+    const s = newGame('late', false);
+    const p = currentPlayer(s);
+    p.timeLeft = 1;
+    const far = content.locations.find((l) => l.node !== p.node && travelTime(content, s, p, l.node) > 1)!;
+    const { state, events } = applyAction(content, s, { type: 'move', player: p.id, to: far.node });
+    expect(events.find((e) => e.type === 'moved')).toMatchObject({ late: true });
+    expect(events.some((e) => e.type === 'turnEnded' && e.player === p.id)).toBe(true);
+    expect(currentPlayer(state).id).not.toBe(p.id);
+  });
+
+  it('every duration falls into a time band, and longer never means a smaller band', () => {
+    let last = -1;
+    for (let t = 0; t <= 24; t += 0.5) {
+      const b = timeBand(content, t);
+      expect(b.level).toBeGreaterThanOrEqual(last);
+      last = b.level;
+    }
+    expect(timeBand(content, 1).level).toBe(0);
+    expect(timeBand(content, 1000).level).toBe(content.game.timeBands.length - 1);
+  });
+
+  it('only the top-bar status icons are marked for the bar', () => {
+    const s = newGame('hud', false);
+    const icons = hudIcons(content, s, currentPlayer(s).id);
+    expect(icons.filter((i) => i.bar).length).toBeLessThanOrEqual(2);
+    expect(content.game.hud.filter((d) => d.bar).map((d) => d.id)).toEqual(['food']);
   });
 
   it('does not mutate the input state unless asked', () => {

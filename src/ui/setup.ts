@@ -1,5 +1,6 @@
 /** New game setup: players (human / AI), life goals, rule randomization, seed. */
 import type { Content, GameSetup, PlayerSetup } from '../engine';
+import { stars, starsText } from './dialogs';
 import { clear, h, storageGet, storageSet } from './dom';
 import type { Theme } from './theme';
 
@@ -27,7 +28,9 @@ export function setupView(content: Content, theme: Theme, onStart: (setup: GameS
       ];
   while (players.length < Math.max(1, min)) players.push({ name: nameFor(players.length), color: players.length % colors.length, controller: 'human' });
   const goals: Record<string, number> = {};
-  for (const g of content.goals.goals) goals[g.id] = remembered?.goals?.[g.id] ?? g.defaultTarget;
+  // Targets move in half-star steps (a star is a fifth of the scale).
+  const snap = (v: number) => Math.min(content.goals.targetMax, Math.max(content.goals.targetMin, Math.round(v / 10) * 10));
+  for (const g of content.goals.goals) goals[g.id] = snap(remembered?.goals?.[g.id] ?? g.defaultTarget);
   let randomize = remembered?.randomizeBalance ?? true;
   let seed = '';
 
@@ -102,16 +105,22 @@ export function setupView(content: Content, theme: Theme, onStart: (setup: GameS
 
   const { targetMin, targetMax } = content.goals;
   const goalRows = content.goals.goals.map((g) => {
-    const out = h('span', { class: 'val' }, String(goals[g.id]));
+    const out = h('span', { class: 'val' });
+    const show = () => {
+      clear(out);
+      out.append(stars(goals[g.id], 100, 5));
+      out.title = starsText(goals[g.id]);
+    };
+    show();
     const input = h('input', {
       type: 'range',
       min: targetMin,
       max: targetMax,
-      step: 5,
+      step: 10,
       value: goals[g.id],
       oninput: (e: Event) => {
         goals[g.id] = Number((e.target as HTMLInputElement).value);
-        out.textContent = String(goals[g.id]);
+        show();
       },
     });
     return h('label', { class: 'goal-row', title: g.description ?? '' }, h('span', { class: 'lbl' }, g.label), input, out);

@@ -17,12 +17,17 @@
   "maxWeeks": 150,
   "eventChance": "params.eventChance",
   "maxEnrollments": "params.maxEnrollments",
+  "timeBands": [
+    { "max": 2, "label": "Quick", "icon": "⏳" },
+    { "max": 5, "label": "Takes some time", "icon": "⏳⏳" },
+    { "max": 999, "label": "Takes a lot of time", "icon": "⏳⏳⏳" }
+  ],
   "hud": [
     { "id": "home_parents", "icon": "🏡", "visible": "homeIs('parents_house')", "text": "You live at your parents'. Mom feeds you, and Mom's chores eat part of every week." },
     { "id": "home_basement", "icon": "🏚", "visible": "homeIs('rental_flat') && flag('basement') == 1", "text": "You rent the damp basement studio on Lasitehtaantie." },
     { "id": "home_flat", "icon": "🏢", "visible": "homeIs('rental_flat') && flag('basement') != 1", "text": "You rent the one-room flat on Lasitehtaantie." },
     { "id": "home_cottage", "icon": "🛖", "visible": "homeIs('cottage')", "text": "You live in the red cottage." },
-    { "id": "food", "icon": "🍞", "visible": "!homeIs('parents_house')", "warn": "food < 1", "badge": "food", "text": "Food at home for {food} weekend(s)." },
+    { "id": "food", "icon": "🍞", "bar": true, "visible": "!homeIs('parents_house')", "warn": "food < 1", "badge": "food", "text": "Food at home for {food} weekend(s)." },
     { "id": "rent", "icon": "🔑", "visible": "flag('rent') > 0", "warn": "rentOwed > 0", "text": "Rent is €{flag('rent')} a month, due at the start of the month. Unpaid now: €{rentOwed}." },
     { "id": "clothes", "icon": "👕", "visible": "best('clothing') == 0", "warn": "1", "text": "You have nothing decent to wear." },
     { "id": "rest", "icon": "🛋", "dim": "relaxedThisWeek < 1", "badge": "relaxedThisWeek", "text": "Rested at home {relaxedThisWeek} time(s) this week." },

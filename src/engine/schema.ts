@@ -89,8 +89,21 @@ export const GameSchema = z
     /** Short intro text shown on the "How to play" screen. */
     intro: z.array(z.string()).default([]),
     /**
-     * Status icons in the top bar, evaluated for the current player. `text` is the hover text
-     * ({expr} placeholders allowed); `warn` paints the icon red, `dim` greys it out.
+     * How durations are shown to players: instead of exact hours, each time falls into the
+     * first band whose `max` it does not exceed (the last band catches the rest).
+     */
+    timeBands: z
+      .array(z.object({ max: z.number(), label: z.string(), icon: z.string() }).strict())
+      .min(1)
+      .default([
+        { max: 2, label: 'Quick', icon: '⏳' },
+        { max: 5, label: 'Takes some time', icon: '⏳⏳' },
+        { max: Infinity, label: 'Takes a lot of time', icon: '⏳⏳⏳' },
+      ]),
+    /**
+     * Status icons, evaluated for the current player. `text` is the hover text ({expr}
+     * placeholders allowed); `warn` paints the icon red, `dim` greys it out. Only `bar` icons
+     * sit in the top bar; the rest are listed in the Status window.
      */
     hud: z
       .array(
@@ -99,6 +112,7 @@ export const GameSchema = z
             id: z.string(),
             icon: z.string(),
             text: z.string(),
+            bar: z.boolean().default(false),
             visible: ExprSchema.optional(),
             warn: ExprSchema.optional(),
             dim: ExprSchema.optional(),

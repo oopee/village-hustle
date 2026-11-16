@@ -1,5 +1,5 @@
 /** Read-only views: player status, goals overview, message log. */
-import { goalScores, type Content, type GameState, type PlayerState } from '../engine';
+import { goalScores, hudIcons, type Content, type GameState, type PlayerState } from '../engine';
 import { h } from './dom';
 import { jobWage, money, statMaxFor } from './format';
 import type { LogEntry } from './session';
@@ -19,6 +19,29 @@ export function bar(value: number, max: number, cls = '', target?: number) {
   );
 }
 
+/**
+ * A reading in stars, each star a fifth of `max`, in half-star steps (rounded down, so a
+ * full row means really there). With `slots`, only that many stars are drawn (in halves of
+ * a star), e.g. the stars of a goal; otherwise five.
+ */
+export function stars(value: number, max = 100, slots?: number, cls = '') {
+  const halves = Math.max(0, Math.floor((value / Math.max(1e-9, max)) * 10 + 1e-9));
+  const slotHalves = Math.max(1, Math.round((slots ?? 5) * 2));
+  const out: HTMLElement[] = [];
+  for (let i = 0; i < slotHalves; i += 2) {
+    const narrow = i + 1 === slotHalves; // a half-star slot at the end of the row
+    const fill = halves >= i + 2 && !narrow ? 'full' : halves >= i + 1 ? 'half' : 'empty';
+    out.push(h('span', { class: `star ${fill}${narrow ? ' narrow' : ''}` }));
+  }
+  return h('span', { class: `stars ${cls}` }, out);
+}
+
+/** Star count words for hover texts. */
+export function starsText(value: number, max = 100): string {
+  const n = Math.max(0, Math.min(5, Math.floor((value / Math.max(1e-9, max)) * 10 + 1e-9) / 2));
+  return `${n} star${n === 1 ? '' : 's'}`;
+}
+
 export function statusView(content: Content, state: GameState, theme: Theme, p: PlayerState) {
   const statRows = content.stats
     .filter((s) => s.display !== 'hidden')
@@ -26,7 +49,7 @@ export function statusView(content: Content, state: GameState, theme: Theme, p: 
       const v = p.stats[s.id] ?? 0;
       let value: HTMLElement | string;
       if (s.display === 'money') value = money(content, v);
-      else if (s.display === 'bar') value = bar(v, statMaxFor(content, state, p, s.id) ?? 100, 'stat');
+      else if (s.display === 'bar') value = stars(v, statMaxFor(content, state, p, s.id) ?? 100);
       else {
         const max = statMaxFor(content, state, p, s.id);
         value = max !== undefined ? `${Math.floor(v * 10) / 10} / ${max}` : String(Math.round(v * 10) / 10);
@@ -43,6 +66,11 @@ export function statusView(content: Content, state: GameState, theme: Theme, p: 
       return h('li', { title: it?.description ?? '' }, `${it?.name ?? id}${o.qty > 1 ? ` ×${o.qty}` : ''}`);
     });
   const degrees = p.degrees.map((d) => h('li', null, content.degreeById.get(d)?.name ?? d));
+  // The status notes that are not in the top bar (home, rest, fun, shares, raises, warnings…).
+  const notes = hudIcons(content, state, p.id)
+    .filter((i) => !i.bar)
+    .sort((a, b) => Number(b.warn) - Number(a.warn))
+    .map((i) => h('li', { class: i.warn ? 'bad' : i.dim ? 'muted' : '' }, h('span', { class: 'ico' }, i.icon), ' ', i.text));
   const courses = Object.entries(p.courses).map(([id, done]) => {
     const c = content.courseById.get(id);
     return h('li', null, `${c?.name ?? id}: ${done} lesson${done === 1 ? '' : 's'} done`);
@@ -65,6 +93,7 @@ export function statusView(content: Content, state: GameState, theme: Theme, p: 
           h('tr', null, h('th', null, 'Home'), h('td', null, home)),
           h('tr', null, h('th', null, 'Job'), h('td', null, job ? `${job.title} at ${content.locationById.get(job.location)?.name ?? job.location} (${money(content, jobWage(content, state, p))}/${content.game.timeUnit})` : 'Unemployed')),
         ),
+        notes.length ? h('div', null, h('h3', null, 'Right now'), h('ul', { class: 'notes' }, notes)) : null,
       ),
       h(
         'div',
@@ -78,20 +107,23 @@ export function statusView(content: Content, state: GameState, theme: Theme, p: 
   );
 }
 
-/** A rough, word-sized reading of how far a goal is from its target. */
-export function goalBand(score: number, target: number): { word: string; fill: number; done: boolean } {
-  const r = target > 0 ? score / target : 1;
-  if (r >= 1) return { word: 'Reached', fill: 1, done: true };
-  if (r >= 0.88) return { word: 'Nearly there', fill: 0.9, done: false };
-  if (r >= 0.65) return { word: 'Getting close', fill: 0.7, done: false };
-  if (r >= 0.4) return { word: 'On the way', fill: 0.5, done: false };
-  if (r >= 0.15) return { word: 'A long way off', fill: 0.25, done: false };
-  return { word: 'Just starting', fill: 0.08, done: false };
+/**
+ * A goal as stars: one star is a fifth of the full scale, and the row has as many stars as
+ * the target (half stars included), filled as the goal gets closer.
+ */
+export function goalStars(score: number, target: number) {
+  const done = score >= target;
+  return h(
+    'span',
+    { class: `goal-stars${done ? ' done' : ''}`, title: done ? 'Reached' : `${starsText(Math.min(score, target))} of ${starsText(target)}` },
+    stars(Math.min(score, target), 100, target / 20),
+    done ? h('b', null, ' ✓') : null,
+  );
 }
 
 /**
  * The goal table. With `snapshots`, scores are each player's own reading from the start of
- * their latest week, shown as rough bands: you see how life is going, not what one choice did.
+ * their latest week, shown as stars: you see how life is going, not what one choice did.
  * Without, exact bars (used on the game-over screen).
  */
 export function goalsView(content: Content, state: GameState, theme: Theme, snapshots?: Map<string, Record<string, number>>) {
@@ -113,8 +145,7 @@ export function goalsView(content: Content, state: GameState, theme: Theme, snap
           goals.map((g) => {
             const target = state.settings.goals[g.id];
             if (!snapshots) return h('td', null, bar(scores[g.id], 100, scores[g.id] >= target ? 'done' : '', target));
-            const b = goalBand(scores[g.id], target);
-            return h('td', { class: 'fuzzy' }, bar(b.fill, 1, b.done ? 'done' : ''), h('small', { class: b.done ? 'good' : 'muted' }, b.word));
+            return h('td', null, goalStars(scores[g.id], target));
           }),
         );
       }),
@@ -123,7 +154,7 @@ export function goalsView(content: Content, state: GameState, theme: Theme, snap
       'p',
       { class: 'muted small' },
       snapshots
-        ? 'How each life feels at the start of the week. Nobody knows exactly where they stand. Reach every goal and keep them through the weekend to win.'
+        ? 'How each life feels at the start of the week: fill every star of your goals and keep them through the weekend to win. Nobody knows exactly where they stand.'
         : 'The marker shows each goal you set. Reach every marker and keep them through the weekend to win.',
     ),
   );

@@ -343,7 +343,7 @@ function optionImpls(ctx: Ctx, loc: LocationDef, a: ActionDef): OptionImpl[] {
               setStat(rc, 'money', (rc.player.stats.money ?? 0) + pay);
               runEffects(rc, job.onWork);
               runEffects(rc, rc.content.rules.afterWork);
-              rc.message(`You worked ${Math.round(hours)}${unit} as ${job.title} and earned ${cur}${pay}.`, 'good');
+              rc.message(`You worked ${hours < shift ? 'a short shift' : 'a shift'} as ${job.title} and earned ${cur}${pay}.`, 'good');
             },
           };
         }),
@@ -402,7 +402,7 @@ function optionImpls(ctx: Ctx, loc: LocationDef, a: ActionDef): OptionImpl[] {
             return {
               option: co.id,
               label: `Enroll: ${co.name}`,
-              detail: `${lessons} lessons × ${Math.round(ctx.num(co.lessonTime))}${unit}`,
+              detail: `${lessons} lessons, each ${timeBand(c, ctx.num(co.lessonTime)).icon}`,
               description: co.description,
               time: baseTime,
               cost: fee + baseCost,
@@ -544,8 +544,19 @@ function doMove(ctx: Ctx, to: string) {
   if (!(to in c.map.dist)) throw new ActionError(`Unknown place '${to}'.`);
   if (p.node === to) throw new ActionError('You are already there.');
   const time = travelTime(c, s, p, to);
-  if (time > p.timeLeft) throw new ActionError('Not enough time left to walk there.');
   const path = mapPath(c.map, p.node, to);
+  if (time > p.timeLeft) {
+    // Anyone may set off, but the week runs out on the way: they get there as everything
+    // closes, and the week ends.
+    const spent = p.timeLeft;
+    p.timeLeft = 0;
+    p.node = to;
+    ctx.events.push({ type: 'moved', player: p.id, path, time: spent, late: true });
+    const name = locationAt(c, to)?.name ?? 'there';
+    ctx.message(`The week runs out before you get anything done at ${name}. You head home.`, 'info');
+    ctx.endTurn = true;
+    return;
+  }
   p.timeLeft = Math.max(0, p.timeLeft - time);
   p.node = to;
   ctx.events.push({ type: 'moved', player: p.id, path, time });
@@ -730,9 +741,19 @@ export interface HudIcon {
   warn: boolean;
   dim: boolean;
   badge?: number;
+  /** Shown in the top bar itself, not only in the Status window. */
+  bar: boolean;
 }
 
-/** The game.json status icons that apply to a player right now (for the top bar). */
+/** The rough size of a duration, as players see it (game.json `timeBands`). */
+export function timeBand(content: Content, hours: number): { label: string; icon: string; level: number } {
+  const bands = content.game.timeBands;
+  const i = bands.findIndex((b) => hours <= b.max);
+  const level = i < 0 ? bands.length - 1 : i;
+  return { label: bands[level].label, icon: bands[level].icon, level };
+}
+
+/** The game.json status icons that apply to a player right now (top bar and Status window). */
 export function hudIcons(content: Content, state: GameState, playerId: string): HudIcon[] {
   const p = state.players.find((x) => x.id === playerId);
   if (!p) return [];
@@ -749,6 +770,7 @@ export function hudIcons(content: Content, state: GameState, playerId: string): 
         warn: d.warn !== undefined && ctx.bool(d.warn),
         dim: d.dim !== undefined && ctx.bool(d.dim),
         badge,
+        bar: d.bar,
       });
     } catch {
       // A broken icon must never break the HUD; the validator reports bad expressions.

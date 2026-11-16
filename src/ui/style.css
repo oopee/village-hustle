@@ -278,29 +278,30 @@ input[type='checkbox'] {
   font-weight: normal;
   font-size: 17px;
 }
+.hud > * {
+  flex: 0 1 auto;
+  min-width: 0;
+}
 .hud .who {
   display: flex;
   align-items: center;
   gap: 5px;
-  min-width: 112px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .hud .who .swatch {
   width: 12px;
   height: 12px;
 }
 .hud .clock {
-  display: grid;
-  grid-template-columns: auto auto;
-  column-gap: 5px;
-  align-items: center;
-}
-.hud .clock small {
-  grid-column: 1 / 3;
+  flex-shrink: 0;
 }
 .hud .hudicons {
   display: flex;
   gap: 2px;
   align-items: center;
+  overflow: hidden;
 }
 .hud .hudicon {
   position: relative;
@@ -334,14 +335,31 @@ input[type='checkbox'] {
     opacity: 0.55;
   }
 }
+/* The buttons (End week above all) must always fit: they never shrink. */
 .hud .btns {
   margin-left: auto;
   display: flex;
   gap: 3px;
+  flex: 0 0 auto;
 }
 .hud .btns button {
   font-size: 14px;
   padding: 2px 5px 1px;
+}
+.hud .btns button.alert {
+  position: relative;
+  border-color: var(--bad);
+}
+.hud .btns button.alert i {
+  position: absolute;
+  right: -3px;
+  top: -4px;
+  font: bold 9px/10px monospace;
+  font-style: normal;
+  color: #fff;
+  background: var(--bad);
+  padding: 0 2px;
+  animation: hudwarn 1.2s steps(2) infinite;
 }
 
 /* ---------------------------------------------------------------- location panel */
@@ -758,6 +776,11 @@ button.opt.off:hover {
 }
 .setup .col-goals {
   flex: 1;
+  min-width: 0;
+}
+.goal-row input[type='range'] {
+  width: 100%;
+  min-width: 0;
 }
 .player-row {
   display: flex;
@@ -787,7 +810,7 @@ button.add {
 }
 .goal-row {
   display: grid;
-  grid-template-columns: 72px 1fr 24px;
+  grid-template-columns: 72px minmax(0, 1fr) 62px;
   align-items: center;
   gap: 4px;
   margin: 2px 0;
@@ -861,13 +884,64 @@ table.kv {
   width: 82px;
   height: 9px;
 }
-.goal-table td.fuzzy small {
-  display: block;
-  font-size: 10px;
-  margin-top: 1px;
+/* Stars: one star is a fifth of the scale; half stars fill the left half. */
+.stars {
+  display: inline-flex;
+  gap: 1px;
+  vertical-align: middle;
 }
-.goal-table td.fuzzy .bar .fill {
-  filter: blur(1.5px);
+.star {
+  position: relative;
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  font: 12px/11px sans-serif;
+  overflow: hidden;
+}
+.star::before,
+.star::after {
+  content: '★';
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.star::before {
+  color: var(--panel-dark);
+  -webkit-text-stroke: 0.5px var(--muted);
+}
+.star.full::after,
+.star.half::after {
+  color: #d9a21b;
+  -webkit-text-stroke: 0.5px var(--border);
+}
+.star.half::after {
+  width: 5.5px;
+  overflow: hidden;
+}
+.star.empty::after {
+  content: none;
+}
+.star.narrow {
+  width: 6px;
+}
+.goal-stars.done .star.full::after {
+  color: #e8c23a;
+}
+.goal-stars b {
+  color: var(--good);
+  font-size: 13px;
+}
+.status ul.notes {
+  list-style: none;
+  padding: 0;
+  margin: 2px 0;
+}
+.status ul.notes li {
+  padding: 1px 0;
+}
+.status ul.notes .ico {
+  display: inline-block;
+  width: 18px;
 }
 .log ul {
   list-style: none;
